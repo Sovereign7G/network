@@ -12,6 +12,9 @@
     let isDragging = false;
     let dragOffset = { x: 0, y: 0 };
 
+    import BlockAnnotation from "./BlockAnnotation.svelte";
+    let showAnnotations = false;
+
     function handleDragStart(e) {
         isDragging = true;
         const rect = e.target.getBoundingClientRect();
@@ -49,6 +52,24 @@
     on:dblclick={handleDoubleClick}
     transition:fly={{ y: 10, duration: 200 }}
 >
+    <!-- Block Toolbar for Annotations -->
+    <div class="block-toolbar" on:click|stopPropagation>
+        <button
+            class="annotate-btn"
+            on:click={() => (showAnnotations = !showAnnotations)}
+            title="Annotations"
+        >
+            💬
+        </button>
+    </div>
+
+    {#if showAnnotations}
+        <BlockAnnotation
+            blockId={id}
+            onClose={() => (showAnnotations = false)}
+        />
+    {/if}
+
     {#if type === "tile"}
         <slot name="tile" {content} />
     {:else if type === "canvas"}
@@ -84,6 +105,35 @@
 
     .composable-block:hover {
         background: rgba(255, 215, 0, 0.05);
+    }
+
+    .block-toolbar {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        z-index: 10;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    .composable-block:hover .block-toolbar {
+        opacity: 1;
+    }
+
+    .annotate-btn {
+        background: rgba(0, 0, 0, 0.6);
+        border: 1px solid rgba(255, 215, 0, 0.3);
+        border-radius: 6px;
+        color: white;
+        cursor: pointer;
+        padding: 0.25rem 0.5rem;
+        font-size: 1rem;
+        backdrop-filter: blur(4px);
+    }
+
+    .annotate-btn:hover {
+        border-color: #ffd700;
+        background: rgba(255, 215, 0, 0.2);
     }
 
     .composable-block.is-dragging {
