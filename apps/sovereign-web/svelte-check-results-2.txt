@@ -1,0 +1,3135 @@
+npm warn config ignoring workspace config at /home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/.npmrc
+
+> sovereign-web@0.0.1 check
+> svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
+
+You have specified a baseUrl and/or paths in your tsconfig.json which interferes with SvelteKit's auto-generated tsconfig.json. Remove it to avoid problems with intellisense. For path aliases, use `kit.alias` instead: https://svelte.dev/docs/kit/configuration#alias
+Loading svelte-check in workspace: /home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web
+Getting Svelte diagnostics...
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/nai/engine.svelte.ts:2:26
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. 
+import type { A2UIFrame, A2UIComponent } from './types';
+import { manifold } from '$lib/stores/master-store.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/sovereign-store.svelte.ts:2:77
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import type { SovereignState, SovereignProfile, SovereignPreferences } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/sovereign-store.svelte.ts:81:42
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. 
+        try {
+            const { api } = await import('$lib/services/api');
+            const response = await api.request('/identity/generate', { method: 'POST' });
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/sovereign-store.svelte.ts:92:42
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. 
+        try {
+            const { api } = await import('$lib/services/api');
+            const response = await api.request('/identity/register', {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/sovereign-store.svelte.ts:109:42
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. 
+        try {
+            const { api } = await import('$lib/services/api');
+            const data = await api.request('/identity');
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/constants.ts:1:76
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import type { MemoryType, ProposalType, ProposalStatus, Personality } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import { MEMORY_TYPES, RESONANCE_TIERS } from './constants';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:8:8
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+    HearthFilters
+} from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:46:55
+Error: Parameter 'm' implicitly has an 'any' type. 
+            if (stored.memories) {
+                stored.memories = stored.memories.map(m => ({
+                    ...m,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:49:53
+Error: Parameter 'r' implicitly has an 'any' type. 
+                    timestamp: new Date(m.timestamp),
+                    reflections: m.reflections?.map(r => ({
+                        ...r,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:56:63
+Error: Parameter 'a' implicitly has an 'any' type. 
+            if (stored.achievements) {
+                stored.achievements = stored.achievements.map(a => ({
+                    ...a,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:62:71
+Error: Parameter 'r' implicitly has an 'any' type. 
+            if (stored.resonanceHistory) {
+                stored.resonanceHistory = stored.resonanceHistory.map(r => ({
+                    ...r,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:68:55
+Error: Parameter 'i' implicitly has an 'any' type. 
+            if (stored.insights) {
+                stored.insights = stored.insights.map(i => ({
+                    ...i,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:111:66
+Error: Parameter 'r' implicitly has an 'any' type. 
+        // Update history
+        const existingHistory = this.state.resonanceHistory.find(r => r.date.toDateString() === today);
+        if (existingHistory) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:125:52
+Error: Parameter 'a' implicitly has an 'any' type. 
+        if (this.state.memories.length === 1) {
+            const a = this.state.achievements.find(a => a.id === '1');
+            if (a) { a.earned = true; a.earnedAt = new Date(); }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:133:49
+Error: Parameter 'm' implicitly has an 'any' type. 
+    addReflection(memoryId: string, reflection: string) {
+        const memory = this.state.memories.find(m => m.id === memoryId);
+        if (memory) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:145:49
+Error: Parameter 'm' implicitly has an 'any' type. 
+    deleteMemory(id: string) {
+        const memory = this.state.memories.find(m => m.id === id);
+        if (memory) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:148:62
+Error: Parameter 'm' implicitly has an 'any' type. 
+            this.state.totalResonance = Math.max(0, this.state.totalResonance - (memory.resonance || 0));
+            this.state.memories = this.state.memories.filter(m => m.id !== id);
+            this.persist();
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/hearth-store.svelte.ts:165:43
+Error: Parameter 'memory' implicitly has an 'any' type. 
+    get filteredMemories(): Memory[] {
+        return this.state.memories.filter(memory => {
+            const matchesType = this.state.filters.type === 'all' || memory.type === this.state.filters.type;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import type { VaultState, Transaction } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:3:46
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import type { VaultState, Transaction } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:28:63
+Error: Parameter 'tx' implicitly has an 'any' type. 
+            if (stored.transactions) {
+                stored.transactions = stored.transactions.map(tx => ({ ...tx, timestamp: new Date(tx.timestamp) }));
+            }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:32:85
+Error: Parameter 'p' implicitly has an 'any' type. 
+                Object.keys(stored.priceHistory).forEach(key => {
+                    stored.priceHistory[key] = (stored.priceHistory[key] || []).map(p => ({ ...p, date: new Date(p.date) }));
+                });
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:42:46
+Error: 'amount' is of type 'unknown'. 
+        return Object.entries(this.state.balances).reduce(
+            (sum, [asset, amount]) => sum + (amount * (this.state.assetPrices[asset] || 0)),
+            0
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/vault-store.svelte.ts:82:42
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. 
+        try {
+            const { api } = await import('$lib/services/api');
+            const [balances, transactions] = await Promise.all([
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/governance-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import { PROPOSAL_STATUS } from './constants';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/governance-store.svelte.ts:4:66
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import { PROPOSAL_STATUS } from './constants';
+import type { GovernanceState, Proposal, ActivityFeedItem } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/governance-store.svelte.ts:39:57
+Error: Parameter 'p' implicitly has an 'any' type. 
+            if (stored.proposals) {
+                stored.proposals = stored.proposals.map(p => {
+                    const proposal: Proposal = {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/governance-store.svelte.ts:52:63
+Error: Parameter 'a' implicitly has an 'any' type. 
+            if (stored.activityFeed) {
+                stored.activityFeed = stored.activityFeed.map(a => ({ ...a, timestamp: new Date(a.timestamp) }));
+            }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/governance-store.svelte.ts:62:52
+Error: Parameter 'p' implicitly has an 'any' type. 
+    castVote(proposalId: string, support: 'for' | 'against' | 'abstain') {
+        const proposal = this.state.proposals.find(p => p.id === proposalId);
+        if (!proposal || this.state.userVotes[proposalId]) return;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import { CONCIERGE_PERSONALITIES, CONCIERGE_CAPABILITIES } from './constants';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:4:28
+Error: Cannot find module '$lib/services/llm-service.svelte' or its corresponding type declarations. 
+import { CONCIERGE_PERSONALITIES, CONCIERGE_CAPABILITIES } from './constants';
+import { llmService } from '$lib/services/llm-service.svelte';
+import type {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:13:8
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+    Personality
+} from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:98:65
+Error: Parameter 'c' implicitly has an 'any' type. 
+            if (stored.conversations) {
+                stored.conversations = stored.conversations.map(c => ({
+                    ...c,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:101:47
+Error: Parameter 'm' implicitly has an 'any' type. 
+                    timestamp: new Date(c.timestamp),
+                    messages: c.messages?.map(m => ({
+                        ...m,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:108:55
+Error: Parameter 'i' implicitly has an 'any' type. 
+            if (stored.insights) {
+                stored.insights = stored.insights.map(i => ({ ...i, timestamp: new Date(i.timestamp) }));
+            }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:111:75
+Error: Parameter 'r' implicitly has an 'any' type. 
+            if (stored.scheduledReminders) {
+                stored.scheduledReminders = stored.scheduledReminders.map(r => ({
+                    ...r,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:134:70
+Error: Parameter 'c' implicitly has an 'any' type. 
+
+        const conversationIndex = this.state.conversations.findIndex(c => c.id === this.state.currentConversationId);
+        if (conversationIndex >= 0) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:155:18
+Error: Parameter 'chunk' implicitly has an 'any' type. 
+                personality,
+                (chunk) => {
+                    fullResponse += chunk.content;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:157:72
+Error: Parameter 'c' implicitly has an 'any' type. 
+                    fullResponse += chunk.content;
+                    const convIdx = this.state.conversations.findIndex(c => c.id === this.state.currentConversationId);
+                    if (convIdx >= 0) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:178:64
+Error: Parameter 'c' implicitly has an 'any' type. 
+            // Finalize
+            const convIdx = this.state.conversations.findIndex(c => c.id === this.state.currentConversationId);
+            if (convIdx >= 0) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:203:64
+Error: Parameter 'c' implicitly has an 'any' type. 
+            console.error('LLM API error:', error);
+            const convIdx = this.state.conversations.findIndex(c => c.id === this.state.currentConversationId);
+            if (convIdx >= 0) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:244:52
+Error: Parameter 'c' implicitly has an 'any' type. 
+        this.state.currentConversationId = id;
+        const conv = this.state.conversations.find(c => c.id === id);
+        if (conv) conv.unread = false;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:250:68
+Error: Parameter 'c' implicitly has an 'any' type. 
+    deleteConversation(id: string) {
+        this.state.conversations = this.state.conversations.filter(c => c.id !== id);
+        if (this.state.currentConversationId === id) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:281:21
+Error: Parameter 's' implicitly has an 'any' type. 
+        return this.state.suggestions
+            .filter(s => s.context === context)
+            .sort((a, b) => b.priority - a.priority);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:282:20
+Error: Parameter 'a' implicitly has an 'any' type. 
+            .filter(s => s.context === context)
+            .sort((a, b) => b.priority - a.priority);
+    }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/concierge-store.svelte.ts:282:23
+Error: Parameter 'b' implicitly has an 'any' type. 
+            .filter(s => s.context === context)
+            .sort((a, b) => b.priority - a.priority);
+    }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/telemetry-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import { API_CONFIG } from '$lib/config/api';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/telemetry-store.svelte.ts:3:28
+Error: Cannot find module '$lib/config/api' or its corresponding type declarations. 
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import { API_CONFIG } from '$lib/config/api';
+import type { TelemetryState, TelemetryLog, SystemVitals, TelemetryAlert } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/telemetry-store.svelte.ts:4:81
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import { API_CONFIG } from '$lib/config/api';
+import type { TelemetryState, TelemetryLog, SystemVitals, TelemetryAlert } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/telemetry-store.svelte.ts:34:49
+Error: Parameter 'l' implicitly has an 'any' type. 
+            // Rehydrate logs and alerts
+            this.logs = (stored.logs || []).map(l => ({ ...l, timestamp: new Date(l.timestamp) }));
+            this.alerts = (stored.alerts || []).map(a => ({ ...a, timestamp: new Date(a.timestamp) }));
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/telemetry-store.svelte.ts:35:53
+Error: Parameter 'a' implicitly has an 'any' type. 
+            this.logs = (stored.logs || []).map(l => ({ ...l, timestamp: new Date(l.timestamp) }));
+            this.alerts = (stored.alerts || []).map(a => ({ ...a, timestamp: new Date(a.timestamp) }));
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-state.svelte.ts:1:39
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import type { GovernanceBranch } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:18:48
+Error: Cannot find module '$lib/services/zk-attester-engine.svelte' or its corresponding type declarations. 
+import { manifold } from './master-store.svelte';
+import { zkAttesterEngine as zkAttester } from '$lib/services/zk-attester-engine.svelte';
+import { meshStressEngine as meshStress } from '$lib/services/mesh-stress-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:19:48
+Error: Cannot find module '$lib/services/mesh-stress-engine.svelte' or its corresponding type declarations. 
+import { zkAttesterEngine as zkAttester } from '$lib/services/zk-attester-engine.svelte';
+import { meshStressEngine as meshStress } from '$lib/services/mesh-stress-engine.svelte';
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:20:34
+Error: Cannot find module '$lib/services/tokenomics-engine.svelte' or its corresponding type declarations. 
+import { meshStressEngine as meshStress } from '$lib/services/mesh-stress-engine.svelte';
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+import { auditEngine } from '$lib/services/audit-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:21:29
+Error: Cannot find module '$lib/services/audit-engine.svelte' or its corresponding type declarations. 
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+import { auditEngine } from '$lib/services/audit-engine.svelte';
+import { metabolicEngine } from '$lib/services/metabolic-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:22:33
+Error: Cannot find module '$lib/services/metabolic-engine.svelte' or its corresponding type declarations. 
+import { auditEngine } from '$lib/services/audit-engine.svelte';
+import { metabolicEngine } from '$lib/services/metabolic-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:173:23
+Error: Parameter 'type' implicitly has an 'any' type. 
+        meshStress.setCallbacks({
+            onEvent: (type, msg) => manifold.recordEvent(type, msg),
+            onGlitch: (active) => { manifold.visualFX.glitchActive = active; },
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:173:29
+Error: Parameter 'msg' implicitly has an 'any' type. 
+        meshStress.setCallbacks({
+            onEvent: (type, msg) => manifold.recordEvent(type, msg),
+            onGlitch: (active) => { manifold.visualFX.glitchActive = active; },
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/manifold-controller.svelte.ts:174:24
+Error: Parameter 'active' implicitly has an 'any' type. 
+            onEvent: (type, msg) => manifold.recordEvent(type, msg),
+            onGlitch: (active) => { manifold.visualFX.glitchActive = active; },
+        });
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:7:35
+Error: Cannot find module '$lib/services/opencode-engine.svelte' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { sovereignOpenCode } from '$lib/services/opencode-engine.svelte';
+import { sovereignMolecule } from '$lib/services/mol-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:8:35
+Error: Cannot find module '$lib/services/mol-engine.svelte' or its corresponding type declarations. 
+import { sovereignOpenCode } from '$lib/services/opencode-engine.svelte';
+import { sovereignMolecule } from '$lib/services/mol-engine.svelte';
+import { sovereignPicoClaw } from '$lib/services/picoclaw-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:9:35
+Error: Cannot find module '$lib/services/picoclaw-engine.svelte' or its corresponding type declarations. 
+import { sovereignMolecule } from '$lib/services/mol-engine.svelte';
+import { sovereignPicoClaw } from '$lib/services/picoclaw-engine.svelte';
+import { sovereignZVec } from '$lib/services/zvec-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:10:31
+Error: Cannot find module '$lib/services/zvec-engine.svelte' or its corresponding type declarations. 
+import { sovereignPicoClaw } from '$lib/services/picoclaw-engine.svelte';
+import { sovereignZVec } from '$lib/services/zvec-engine.svelte';
+import { sovereignSDD } from '$lib/services/sdd-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:11:30
+Error: Cannot find module '$lib/services/sdd-engine.svelte' or its corresponding type declarations. 
+import { sovereignZVec } from '$lib/services/zvec-engine.svelte';
+import { sovereignSDD } from '$lib/services/sdd-engine.svelte';
+import { sovereignEdgeScaler } from '$lib/services/edge-scaler.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:12:37
+Error: Cannot find module '$lib/services/edge-scaler.svelte' or its corresponding type declarations. 
+import { sovereignSDD } from '$lib/services/sdd-engine.svelte';
+import { sovereignEdgeScaler } from '$lib/services/edge-scaler.svelte';
+import { sovereignRouteAgent } from '$lib/services/route-agent.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:13:37
+Error: Cannot find module '$lib/services/route-agent.svelte' or its corresponding type declarations. 
+import { sovereignEdgeScaler } from '$lib/services/edge-scaler.svelte';
+import { sovereignRouteAgent } from '$lib/services/route-agent.svelte';
+import { sovereignPhilosophy } from '$lib/services/philosophy-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:14:37
+Error: Cannot find module '$lib/services/philosophy-engine.svelte' or its corresponding type declarations. 
+import { sovereignRouteAgent } from '$lib/services/route-agent.svelte';
+import { sovereignPhilosophy } from '$lib/services/philosophy-engine.svelte';
+import { simulationEngine } from '$lib/services/simulation-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:15:34
+Error: Cannot find module '$lib/services/simulation-engine.svelte' or its corresponding type declarations. 
+import { sovereignPhilosophy } from '$lib/services/philosophy-engine.svelte';
+import { simulationEngine } from '$lib/services/simulation-engine.svelte';
+import { sovereignStore } from './sovereign-store.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:22:29
+Error: Cannot find module '$lib/services/web3-service.svelte' or its corresponding type declarations. 
+import { telemetryStore } from './telemetry-store.svelte';
+import { web3Service } from '$lib/services/web3-service.svelte';
+import { icpService } from '$lib/services/icp-service.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:23:28
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. 
+import { web3Service } from '$lib/services/web3-service.svelte';
+import { icpService } from '$lib/services/icp-service.svelte';
+import { agentGateway, type AgentGatewayEvent } from '$lib/services/agent-gateway';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:24:54
+Error: Cannot find module '$lib/services/agent-gateway' or its corresponding type declarations. 
+import { icpService } from '$lib/services/icp-service.svelte';
+import { agentGateway, type AgentGatewayEvent } from '$lib/services/agent-gateway';
+import { notaryService } from '$lib/services/notary-service';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:25:31
+Error: Cannot find module '$lib/services/notary-service' or its corresponding type declarations. 
+import { agentGateway, type AgentGatewayEvent } from '$lib/services/agent-gateway';
+import { notaryService } from '$lib/services/notary-service';
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:26:34
+Error: Cannot find module '$lib/services/tokenomics-engine.svelte' or its corresponding type declarations. 
+import { notaryService } from '$lib/services/notary-service';
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+import { meshStressEngine } from '$lib/services/mesh-stress-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:27:34
+Error: Cannot find module '$lib/services/mesh-stress-engine.svelte' or its corresponding type declarations. 
+import { tokenomicsEngine } from '$lib/services/tokenomics-engine.svelte';
+import { meshStressEngine } from '$lib/services/mesh-stress-engine.svelte';
+import { zkAttesterEngine } from '$lib/services/zk-attester-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:28:34
+Error: Cannot find module '$lib/services/zk-attester-engine.svelte' or its corresponding type declarations. 
+import { meshStressEngine } from '$lib/services/mesh-stress-engine.svelte';
+import { zkAttesterEngine } from '$lib/services/zk-attester-engine.svelte';
+import { metabolicEngine } from '$lib/services/metabolic-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:29:33
+Error: Cannot find module '$lib/services/metabolic-engine.svelte' or its corresponding type declarations. 
+import { zkAttesterEngine } from '$lib/services/zk-attester-engine.svelte';
+import { metabolicEngine } from '$lib/services/metabolic-engine.svelte';
+import { validatorEngine } from '$lib/services/validator-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:30:33
+Error: Cannot find module '$lib/services/validator-engine.svelte' or its corresponding type declarations. 
+import { metabolicEngine } from '$lib/services/metabolic-engine.svelte';
+import { validatorEngine } from '$lib/services/validator-engine.svelte';
+import { computeEngine } from '$lib/services/compute-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:31:31
+Error: Cannot find module '$lib/services/compute-engine.svelte' or its corresponding type declarations. 
+import { validatorEngine } from '$lib/services/validator-engine.svelte';
+import { computeEngine } from '$lib/services/compute-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:35:37
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+
+import type { CognitiveEpoch } from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:381:33
+Error: Parameter 'event' implicitly has an 'any' type. 
+        // Subscribe to gateway events for manifold-level observability
+        agentGateway.subscribe((event) => {
+            this._gatewayEvents = [event, ...this._gatewayEvents].slice(0, 100);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/master-store.svelte.ts:484:20
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+export { controller } from './manifold-controller.svelte';
+export type * from '$lib/types';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/api.ts:2:28
+Error: Cannot find module '$lib/config/api' or its corresponding type declarations. 
+// apps/sovereign-web/src/lib/services/api.ts
+import { API_CONFIG } from '$lib/config/api';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/llm-service.svelte.ts:2:69
+Error: Cannot find module '$lib/types' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import type { UserContext, Conversation, ConversationMessage } from '$lib/types';
+import { sovereignOpenCode } from './opencode-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/neural-sensor-service.svelte.ts:1:26
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. 
+import { manifold } from '$lib/stores/master-store.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/simulation-engine.svelte.ts:2:26
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { manifold } from '$lib/stores/master-store.svelte';
+import { metabolicEngine } from './metabolic-engine.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/simulation-engine.svelte.ts:98:48
+Error: Parameter 'l' implicitly has an 'any' type. 
+        if (manifold.kernelState?.lanes) {
+            manifold.kernelState.lanes.forEach(l => {
+                l.traffic = Math.max(0, Math.min(100, l.traffic + (Math.random() - 0.5) * 15));
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:3:34
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. 
+import { ethers } from 'ethers';
+import { SUPPORTED_CHAINS } from '$lib/types/blockchain';
+import type { ChainConfig } from '$lib/types/blockchain';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:4:34
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. 
+import { SUPPORTED_CHAINS } from '$lib/types/blockchain';
+import type { ChainConfig } from '$lib/types/blockchain';
+import { bridgeStore } from '$lib/stores/bridge-store.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:5:29
+Error: Cannot find module '$lib/stores/bridge-store.svelte' or its corresponding type declarations. 
+import type { ChainConfig } from '$lib/types/blockchain';
+import { bridgeStore } from '$lib/stores/bridge-store.svelte';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:88:65
+Error: 'c' is of type 'unknown'. 
+        // Update bridge store with connected chain
+        const chain = Object.values(SUPPORTED_CHAINS).find(c => c.id === newChainId);
+        if (chain) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:90:44
+Error: Property 'shortName' does not exist on type '{}'. 
+        if (chain) {
+            bridgeStore.connectChain(chain.shortName);
+        }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:128:69
+Error: 'c' is of type 'unknown'. 
+            // Auto-connect supported chains
+            const chain = Object.values(SUPPORTED_CHAINS).find(c => c.id === chainId);
+            if (chain) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:130:48
+Error: Property 'shortName' does not exist on type '{}'. 
+            if (chain) {
+                bridgeStore.connectChain(chain.shortName);
+            }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:176:69
+Error: 'c' is of type 'unknown'. 
+        if (this.state.chainId) {
+            const chain = Object.values(SUPPORTED_CHAINS).find(c => c.id === this.state.chainId);
+            if (chain) {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:178:51
+Error: Property 'shortName' does not exist on type '{}'. 
+            if (chain) {
+                bridgeStore.disconnectChain(chain.shortName);
+            }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:289:65
+Error: 'c' is of type 'unknown'. 
+
+        const chain = Object.values(SUPPORTED_CHAINS).find(c => c.id === this.state.chainId);
+        if (!chain) return null;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/services/web3-service.svelte.ts:292:25
+Error: Property 'explorerUrl' does not exist on type '{}'. 
+
+        return `${chain.explorerUrl}/tx/${txHash}`;
+    }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/bridge-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import type { BridgeTransaction, BridgeQuote, CrossChainBalance } from '$lib/types/blockchain';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/bridge-store.svelte.ts:3:72
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. 
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+import type { BridgeTransaction, BridgeQuote, CrossChainBalance } from '$lib/types/blockchain';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/bridge-store.svelte.ts:37:63
+Error: Parameter 'tx' implicitly has an 'any' type. 
+            if (stored.transactions) {
+                stored.transactions = stored.transactions.map(tx => ({
+                    ...tx,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/dashboard-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/stores/onboarding-store.svelte.ts:2:48
+Error: Cannot find module '$lib/utils/storage' or its corresponding type declarations. 
+import { browser } from '$app/environment';
+import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Governance.svelte:17:31
+Error: Cannot find module '$lib/nai/engine.svelte' or its corresponding type declarations. (ts)
+
+    import { naiEngine } from "$lib/nai/engine.svelte";
+    import VisualOverlay from "$lib/nai/VisualOverlay.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Governance.svelte:18:31
+Error: Cannot find module '$lib/nai/VisualOverlay.svelte' or its corresponding type declarations. (ts)
+    import { naiEngine } from "$lib/nai/engine.svelte";
+    import VisualOverlay from "$lib/nai/VisualOverlay.svelte";
+    import SovereignAnnotation from "./SovereignAnnotation.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Governance.svelte:20:35
+Error: Cannot find module '$lib/utils/SparkleEmitter' or its corresponding type declarations. (ts)
+    import SovereignAnnotation from "./SovereignAnnotation.svelte";
+    import { spawnSparkles } from "$lib/utils/SparkleEmitter";
+    import type {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Governance.svelte:26:12
+Error: Cannot find module '$lib/nai/types' or its corresponding type declarations. (ts)
+        ActionComponent,
+    } from "$lib/nai/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Governance.svelte:36:20
+Error: Parameter 'c' implicitly has an 'any' type. (ts)
+            .getComponents<PrivacyComponent>("privacy")
+            .some((c) => c.peekerDetected),
+    );
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryForm.svelte:3:34
+Error: Cannot find module '$lib/stores/hearth-store.svelte' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import { MEMORY_TYPES } from "$lib/stores/hearth-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryForm.svelte:55:32
+Error: 'memoryType' is of type 'unknown'. (ts)
+            {#each Object.values(MEMORY_TYPES) as memoryType}
+                <option value={memoryType.id}>
+                    {memoryType.icon}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryForm.svelte:56:22
+Error: 'memoryType' is of type 'unknown'. (ts)
+                <option value={memoryType.id}>
+                    {memoryType.icon}
+                    {memoryType.label} (+{memoryType.resonance})
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryForm.svelte:57:22
+Error: 'memoryType' is of type 'unknown'. (ts)
+                    {memoryType.icon}
+                    {memoryType.label} (+{memoryType.resonance})
+                </option>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryForm.svelte:57:43
+Error: 'memoryType' is of type 'unknown'. (ts)
+                    {memoryType.icon}
+                    {memoryType.label} (+{memoryType.resonance})
+                </option>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/MemoryCard.svelte:3:34
+Error: Cannot find module '$lib/stores/hearth-store.svelte' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import { MEMORY_TYPES } from "$lib/stores/hearth-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:2:47
+Error: Cannot find module '$lib/stores/hearth-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { hearthStore, MEMORY_TYPES } from "$lib/stores/hearth-store.svelte";
+    import MemoryForm from "./MemoryForm.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:15:51
+Error: Parameter 'memory' implicitly has an 'any' type. (ts)
+    let filteredMemories = $derived.by(() => {
+        return hearthStore.state.memories.filter((memory) => {
+            const matchesType =
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:73:36
+Error: 'type' is of type 'unknown'. (ts)
+                {#each Object.values(MEMORY_TYPES) as type}
+                    <option value={type.id}>
+                        {type.icon}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:74:26
+Error: 'type' is of type 'unknown'. (ts)
+                    <option value={type.id}>
+                        {type.icon}
+                        {type.label}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:75:26
+Error: 'type' is of type 'unknown'. (ts)
+                        {type.icon}
+                        {type.label}
+                    </option>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:130:59
+Error: 'type' is of type 'unknown'. (ts)
+                {#each Object.values(MEMORY_TYPES) as type}
+                    <div class="tip" style="--tip-color: {type.color}">
+                        <span class="tip-icon">{type.icon}</span>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:131:49
+Error: 'type' is of type 'unknown'. (ts)
+                    <div class="tip" style="--tip-color: {type.color}">
+                        <span class="tip-icon">{type.icon}</span>
+                        <div>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:133:38
+Error: 'type' is of type 'unknown'. (ts)
+                        <div>
+                            <strong>{type.label}</strong>
+                            <span class="tip-value"
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Hearth.svelte:135:36
+Error: 'type' is of type 'unknown'. (ts)
+                            <span class="tip-value"
+                                >+{type.resonance} resonance</span
+                            >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/Market.svelte:14:35
+Error: Cannot find module '$lib/utils/SparkleEmitter' or its corresponding type declarations. (ts)
+    import SovereignAnnotation from "./SovereignAnnotation.svelte";
+    import { spawnSparkles } from "$lib/utils/SparkleEmitter";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/VisualOverlay.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { onMount } from "svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/blocks/BlockAnnotation.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/blocks/ComposableBlock.svelte:13:47
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import SovereignField from "../ui/SovereignField.svelte";
+    import { manifold as manifoldStore } from "$lib/stores/master-store.svelte";
+    import { type Snippet } from "svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/blocks/ComposableBlock.svelte:265:14
+Error: Parameter 'p' implicitly has an 'any' type. (ts)
+        return manifoldStore.designPatches.some(
+            (p) => p.blockId === id && p.field === field,
+        );
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ThoughtLoop.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { Search, ArrowRight, Sparkles, X, Quote } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { DAVINCI_QUOTES } from "../../registries/davinci-wisdom";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ThoughtLoop.svelte:44:14
+Error: Parameter 'c' implicitly has an 'any' type. (ts)
+        const activeCtx = manifold.contexts.find(
+            (c) => c.id === manifold.activeContextId,
+        );
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/blocks/WorkspaceCanvas.svelte:15:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import type { Snippet } from "svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:2:33
+Error: Cannot find module '$lib/services/web3-service.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:3:38
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. (ts)
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+    const walletState = web3Service.state;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:36:20
+Error: 'c' is of type 'unknown'. (ts)
+        return Object.values(SUPPORTED_CHAINS).find(
+            (c) => c.id === walletState.chainId,
+        );
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:120:71
+Error: Property 'color' does not exist on type '{}'. (ts)
+                                (showChainSelector = !showChainSelector)}
+                            style="--chain-color: {getCurrentChain()?.color ||
+                                '#9370DB'}"
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:124:54
+Error: Property 'icon' does not exist on type '{}'. (ts)
+                            <span class="chain-icon"
+                                >{getCurrentChain()?.icon || "🌐"}</span
+                            >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:127:54
+Error: Property 'name' does not exist on type '{}'. (ts)
+                            <span class="chain-name"
+                                >{getCurrentChain()?.name || "Unknown"}</span
+                            >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:142:64
+Error: 'chain' is of type 'unknown'. (ts)
+                                        onclick={() => switchChain(id)}
+                                        style="--chain-color: {chain.color}"
+                                    >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:139:55
+Error: 'chain' is of type 'unknown'. (ts)
+                                        class="chain-option"
+                                        class:active={chain.id ===
+                                            walletState.chainId}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:145:47
+Error: 'chain' is of type 'unknown'. (ts)
+                                        <span class="chain-icon"
+                                            >{chain.icon}</span
+                                        >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:148:47
+Error: 'chain' is of type 'unknown'. (ts)
+                                        <span class="chain-name"
+                                            >{chain.name}</span
+                                        >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/WalletConnector.svelte:163:45
+Error: Property 'currency' does not exist on type '{}'. (ts)
+                        )}
+                        {getCurrentChain()?.currency || "ETH"}
+                    </span>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/BridgeInterface.svelte:3:33
+Error: Cannot find module '$lib/stores/bridge-store.svelte' or its corresponding type declarations. (ts)
+    import WalletConnector from "./WalletConnector.svelte";
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
+    import { web3Service } from "$lib/services/web3-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/BridgeInterface.svelte:4:33
+Error: Cannot find module '$lib/services/web3-service.svelte' or its corresponding type declarations. (ts)
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/BridgeInterface.svelte:5:38
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. (ts)
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+    import type { BridgeQuote } from "$lib/types/blockchain";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/BridgeInterface.svelte:6:38
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. (ts)
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+    import type { BridgeQuote } from "$lib/types/blockchain";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/bridge/BridgeInterface.svelte:17:9
+Error: Spread types may only be created from object types. (ts)
+        key,
+        ...config,
+    }));
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/ConversationList.svelte:3:39
+Error: Cannot find module '$lib/types' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import type { Conversation } from "$lib/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/InsightPanel.svelte:3:34
+Error: Cannot find module '$lib/types' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import type { Insight } from "$lib/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:69:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="config-section">
+            <label class="config-label">Provider</label>
+            <div class="provider-grid">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:88:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="config-section">
+            <label class="config-label">API Key</label>
+            <div class="api-key-input">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:116:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="config-section">
+            <label class="config-label">Model</label>
+            <select class="config-select" bind:value={model}>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:125:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="config-section">
+            <label class="config-label">
+                Temperature: {temperature.toFixed(1)}
+                <span class="setting-hint">(0 = precise, 1 = creative)</span>
+            </label>
+            <input
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:140:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="config-section">
+            <label class="config-label">
+                Max Tokens: {maxTokens}
+                <span class="setting-hint">(max response length)</span>
+            </label>
+            <input
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:370:9
+Warn: Also define the standard property 'appearance' for compatibility (css)
+        border-radius: 2px;
+        -webkit-appearance: none;
+    }
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:3:50
+Error: Cannot find module '$lib/services/llm-service.svelte' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import { llmService, PROVIDER_CONFIGS } from "$lib/services/llm-service.svelte";
+    import type { LLMProvider } from "$lib/services/llm-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:4:38
+Error: Cannot find module '$lib/services/llm-service.svelte' or its corresponding type declarations. (ts)
+    import { llmService, PROVIDER_CONFIGS } from "$lib/services/llm-service.svelte";
+    import type { LLMProvider } from "$lib/services/llm-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:77:37
+Error: 'info' is of type 'unknown'. (ts)
+                            provider = id as LLMProvider;
+                            model = info.defaultModel;
+                        }}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:80:54
+Error: 'info' is of type 'unknown'. (ts)
+                    >
+                        <span class="provider-icon">{info.icon}</span>
+                        <span class="provider-name">{info.name}</span>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/concierge/LLMConfigModal.svelte:81:54
+Error: 'info' is of type 'unknown'. (ts)
+                        <span class="provider-icon">{info.icon}</span>
+                        <span class="provider-name">{info.name}</span>
+                    </button>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AIForge.svelte:2:34
+Error: Cannot find module '$lib/services/agent-service.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { agentService } from "$lib/services/agent-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AIForge.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { agentService } from "$lib/services/agent-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { icpService } from "$lib/services/icp-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AIForge.svelte:4:32
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. (ts)
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AIForge.svelte:72:43
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+        <div class="flex-1 overflow-y-auto p-2 space-y-1">
+            {#each sophia.history.filter((m) => m.role === "user") as item}
+                <button
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ActivityFeed.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AdVortex.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade, fly } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AdjointAuditor.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgentGatewayPanel.svelte:19:12
+Error: Cannot find module '$lib/services/agent-gateway' or its corresponding type declarations. (ts)
+        type GatewayMetrics,
+    } from "$lib/services/agent-gateway";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgentGatewayPanel.svelte:20:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "$lib/services/agent-gateway";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgentGatewayPanel.svelte:46:47
+Error: Parameter 'event' implicitly has an 'any' type. (ts)
+        // Subscribe to live events
+        unsubscribe = agentGateway.subscribe((event) => {
+            recentEvents = [event, ...recentEvents].slice(0, 50);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgenticAuditStudio.svelte:2:34
+Error: Cannot find module '$lib/services/agent-gateway' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { agentGateway } from "$lib/services/agent-gateway";
+    import { auditEngine } from "$lib/services/audit-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgenticAuditStudio.svelte:3:33
+Error: Cannot find module '$lib/services/audit-engine.svelte' or its corresponding type declarations. (ts)
+    import { agentGateway } from "$lib/services/agent-gateway";
+    import { auditEngine } from "$lib/services/audit-engine.svelte";
+    import { fade, slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgenticAuditStudio.svelte:12:14
+Error: Parameter 'l' implicitly has an 'any' type. (ts)
+        logs.find(
+            (l) =>
+                l.payload.jobId === selectedJobId ||
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgenticAuditStudio.svelte:19:53
+Error: Parameter 'event' implicitly has an 'any' type. (ts)
+    onMount(() => {
+        const unsubscribe = agentGateway.subscribe((event) => {
+            logs = [event, ...logs].slice(0, 100);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgoraMarket.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/AgoraOmni.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/../../packages/age-equational/src/functions/shunt.ts:1:34
+Error: Cannot find module '@age-protocol/types/src/sovereign-types' or its corresponding type declarations. 
+import { RealityIntegrity } from "@age-protocol/types/src/sovereign-types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/../../packages/age-equational/src/functions/shunt.ts:13:5
+Error: 'xmrVolume' is declared but its value is never read. 
+    giltSpread: number,
+    xmrVolume: number
+): RealityIntegrity {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/../../packages/age-equational/src/classes/ShuntController.ts:1:42
+Error: Cannot find module '@age-protocol/types/src/sovereign-types' or its corresponding type declarations. 
+import { RealityIntegrity, Regime } from "@age-protocol/types/src/sovereign-types";
+import { evaluateRealityIntegrity, triggerArithmeticShutdown } from "../functions/shunt";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignPassport.svelte:22:36
+Warn: This reference only captures the initial value of `credential`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+
+    const formattedDate = new Date(credential.issuanceDate).toLocaleDateString(
+        undefined,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignPassport.svelte:31:21
+Warn: This reference only captures the initial value of `credential`. Did you mean to reference it inside a closure instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+
+    const shortId = credential.credentialSubject.id.split(":").pop() || "";
+</script>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignPassport.svelte:13:12
+Error: Cannot find module '$lib/services/credential-service' or its corresponding type declarations. (ts)
+        type SovereignCredential,
+    } from "$lib/services/credential-service";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BioVault.svelte:3:32
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { credentialService } from "$lib/services/credential-service";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BioVault.svelte:4:39
+Error: Cannot find module '$lib/services/credential-service' or its corresponding type declarations. (ts)
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { credentialService } from "$lib/services/credential-service";
+    import { neuralSensor } from "$lib/services/neural-sensor-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BioVault.svelte:5:34
+Error: Cannot find module '$lib/services/neural-sensor-service.svelte' or its corresponding type declarations. (ts)
+    import { credentialService } from "$lib/services/credential-service";
+    import { neuralSensor } from "$lib/services/neural-sensor-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BioVault.svelte:6:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { neuralSensor } from "$lib/services/neural-sensor-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BusinessOperations.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/BusinessOperations.svelte:9:47
+Error: Parameter 'j' implicitly has an 'any' type. (ts)
+    function startJob(id: string) {
+        const job = business.activeJobs.find((j) => j.id === id);
+        if (job) job.status = "RUNNING";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CanisterConsole.svelte:3:32
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CanisterConsole.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { Terminal, Activity, Globe, Lock } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CausalLoom.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CausalTracePanel.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ChordCortexFabric.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CircularGovernance.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:932:5
+Warn: Unused CSS selector ".search-icon"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .search-icon {
+        color: rgba(255, 255, 255, 0.2);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:31:12
+Error: Cannot find module '$lib/services/fastcode-engine.svelte' or its corresponding type declarations. (ts)
+        type CodeElement,
+    } from "$lib/services/fastcode-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:72:14
+Error: Parameter 'e' implicitly has an 'any' type. (ts)
+        const elem = elements.find(
+            (e) =>
+                e.id === impactTarget ||
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:533:58
+Error: Parameter 'e' implicitly has an 'any' type. (ts)
+                        </div>
+                        {#each [...new Set(elements.map((e) => e.language))] as lang}
+                            {@const langElements = elements.filter(
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:535:34
+Error: Parameter 'e' implicitly has an 'any' type. (ts)
+                            {@const langElements = elements.filter(
+                                (e) => e.language === lang,
+                            )}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CodeIntelligence.svelte:540:60
+Error: Argument of type 'unknown' is not assignable to parameter of type 'string'. (ts)
+                                    <span class="lang-emoji"
+                                        >{getLanguageEmoji(lang)}</span
+                                    >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CognitivePlayback.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { Brain, Play, Terminal } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CognitivePlayback.svelte:9:43
+Error: Parameter 'l' implicitly has an 'any' type. (ts)
+    let activeLogId = $state("");
+    const activeLog = $derived(logs.find((l) => l.id === activeLogId));
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ConciergePersonality.svelte:2:32
+Error: Cannot find module '$lib/services/llm-service.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { llmService } from "$lib/services/llm-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ConciergePersonality.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { llmService } from "$lib/services/llm-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/CrossCommonsTrust.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/DemandHeatmap.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade, fly } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/DesignPhilosophyPanel.svelte:12:41
+Error: Cannot find module '$lib/services/philosophy-engine.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { sovereignPhilosophy } from "$lib/services/philosophy-engine.svelte";
+    import { designEngineering } from "$lib/services/design-engineering-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/DesignPhilosophyPanel.svelte:13:39
+Error: Cannot find module '$lib/services/design-engineering-engine.svelte' or its corresponding type declarations. (ts)
+    import { sovereignPhilosophy } from "$lib/services/philosophy-engine.svelte";
+    import { designEngineering } from "$lib/services/design-engineering-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/DiplomacyForge.svelte:12:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/DiscoveryPortal.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/EconomicManifold.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { TrendingUp, ShieldCheck, Globe, Lock, Coins, Zap, Activity } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/EdgeScalerPanel.svelte:406:9
+Warn: Unknown property: 'corner-shape' (css)
+        border-radius: 12px;
+        corner-shape: var(--ss-sem-geom-card); /* Future-Proof CSS4 Geometry */
+        clip-path: polygon(
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/EdgeScalerPanel.svelte:19:41
+Error: Cannot find module '$lib/services/edge-scaler.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { sovereignEdgeScaler } from "$lib/services/edge-scaler.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/FediverseTheater.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/FinancialIntelligence.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ForensicYieldExplorer.svelte:8:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GlobalFX.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GovernanceBranching.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide, fly } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GovernanceBridge.svelte:3:32
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GovernanceBridge.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { Gavel, Send, ShieldAlert, RefreshCcw } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GovernanceCourt.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly, fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/GovernanceCourt.svelte:43:43
+Error: Parameter 'c' implicitly has an 'any' type. (ts)
+            <div class="case-list">
+                {#each courtCases.filter((c) => c.status === "PENDING") as caseItem}
+                    <div class="case-card" in:fly={{ y: 20 }}>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/HilbertComputeHUD.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/InstitutionalDataPanel.svelte:2:36
+Error: Cannot find module '$lib/stores/telemetry-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
+    import { warRoomStore } from "../../../../../../packages/age-warroom/src/store";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/InstitutionalIdentity.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade, fly } from "svelte/transition";
+    import { api } from "$lib/services/api";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/InstitutionalIdentity.svelte:5:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { api } from "$lib/services/api";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/IntentHeatmap.svelte:4:36
+Error: Cannot find module '$lib/stores/telemetry-store.svelte' or its corresponding type declarations. (ts)
+    import { HeatmapEngine } from "../../../../../../packages/age-intent/src/heatmap/HeatmapEngine";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/LastSupperDecryption.svelte:2:39
+Error: Cannot find module '$lib/registries/davinci-wisdom' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { DECODED_FRAGMENTS } from "$lib/registries/davinci-wisdom";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/LocalEconomyHUD.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MeshStressTest.svelte:9:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MeshStressTest.svelte:33:32
+Error: Parameter 'a' implicitly has an 'any' type. (ts)
+        latency.length > 0
+            ? (latency.reduce((a, b) => a + b, 0) / latency.length).toFixed(1)
+            : "0.0",
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MeshStressTest.svelte:33:35
+Error: Parameter 'b' implicitly has an 'any' type. (ts)
+        latency.length > 0
+            ? (latency.reduce((a, b) => a + b, 0) / latency.length).toFixed(1)
+            : "0.0",
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MetabolicWrapper.svelte:2:39
+Error: Cannot find module '$lib/services/design-engineering-engine.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { designEngineering } from "$lib/services/design-engineering-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MoleculePanel.svelte:27:12
+Error: Cannot find module '$lib/services/mol-engine.svelte' or its corresponding type declarations. (ts)
+        type MolInstance,
+    } from "$lib/services/mol-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MoleculePanel.svelte:53:38
+Error: Parameter 'f' implicitly has an 'any' type. (ts)
+            ? Object.fromEntries(
+                  schema.fields.map((f) => [
+                      f.name,
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MoralWallet.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/MultiversalEscalation.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { Share2, Zap, Activity, Archive } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/../../packages/age-navy/src/three/NavyMap.ts:1:24
+Error: Cannot find module 'three' or its corresponding type declarations. 
+import * as THREE from 'three';
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/NavyMap.svelte:4:36
+Error: Cannot find module '$lib/stores/telemetry-store.svelte' or its corresponding type declarations. (ts)
+    import { NavyMap } from "../../../../../../packages/age-navy/src/three/NavyMap";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:773:5
+Warn: Unused CSS selector ".opencode-panel"
+https://svelte.dev/e/css_unused_selector (svelte)
+<style>
+    .opencode-panel {
+        background: linear-gradient(
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:788:5
+Warn: Unused CSS selector ".panel-header"
+https://svelte.dev/e/css_unused_selector (svelte)
+
+    .panel-header {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:796:5
+Warn: Unused CSS selector ".header-left"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .header-left {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:801:5
+Warn: Unused CSS selector ".header-left h3"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .header-left h3 {
+        font-size: 13px;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:809:5
+Warn: Unused CSS selector ".badge"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .badge {
+        font-size: 8px;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:820:5
+Warn: Unused CSS selector ".header-right"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .header-right {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:825:5
+Warn: Unused CSS selector ".stat-pill"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .stat-pill {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:837:5
+Warn: Unused CSS selector ".stat-pill.hooks"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .stat-pill.hooks {
+        color: #a855f7;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:843:5
+Warn: Unused CSS selector ".route-preview"
+https://svelte.dev/e/css_unused_selector (svelte)
+    /* Route Preview */
+    .route-preview {
+        padding: 10px 16px;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:847:5
+Warn: Unused CSS selector ".route-input"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .route-input {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:856:5
+Warn: Unused CSS selector ".route-input :global(.route-icon)"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .route-input :global(.route-icon) {
+        color: rgba(255, 255, 255, 0.2);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:860:5
+Warn: Unused CSS selector ".route-input input"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .route-input input {
+        flex: 1;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:869:5
+Warn: Unused CSS selector ".route-input input::placeholder"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .route-input input::placeholder {
+        color: rgba(255, 255, 255, 0.15);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:872:5
+Warn: Unused CSS selector ".route-combo"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .route-combo {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:882:5
+Warn: Unused CSS selector ".combo-agent"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .combo-agent {
+        color: #a855f7;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:886:5
+Warn: Unused CSS selector ".combo-cat"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .combo-cat {
+        font-weight: 800;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:889:5
+Warn: Unused CSS selector ".combo-skill"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .combo-skill {
+        background: rgba(16, 185, 129, 0.1);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:896:5
+Warn: Unused CSS selector ".combo-no-skill"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .combo-no-skill {
+        color: rgba(255, 255, 255, 0.2);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:901:5
+Warn: Unused CSS selector ".tab-nav"
+https://svelte.dev/e/css_unused_selector (svelte)
+
+    .tab-nav {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:908:5
+Warn: Unused CSS selector ".tab-btn"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .tab-btn {
+        display: flex;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:925:5
+Warn: Unused CSS selector ".tab-btn:hover"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .tab-btn:hover {
+        color: rgba(255, 255, 255, 0.6);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:929:5
+Warn: Unused CSS selector ".tab-btn.active"
+https://svelte.dev/e/css_unused_selector (svelte)
+    }
+    .tab-btn.active {
+        color: #a855f7;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:32:12
+Error: Cannot find module '$lib/services/opencode-engine.svelte' or its corresponding type declarations. (ts)
+        type CategoryId,
+    } from "$lib/services/opencode-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:452:51
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+                                        >MCP: {skill.mcpServers
+                                            .map((m) => m.name)
+                                            .join(", ")}</span
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:475:59
+Error: 'hooks' is of type 'unknown'. (ts)
+                                <span class="tier-name">{tier}</span>
+                                <span class="tier-count">{hooks.length}</span>
+                            </div>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:478:40
+Error: Argument of type 'unknown' is not assignable to parameter of type 'ArrayLike<unknown> | Iterable<unknown> | null | undefined'. (ts)
+                            <div class="tier-hooks">
+                                {#each hooks as hook}
+                                    <div
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:481:58
+Error: 'hook' is of type 'unknown'. (ts)
+                                        class="hook-item"
+                                        class:disabled={!hook.enabled}
+                                    >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:484:47
+Error: 'hook' is of type 'unknown'. (ts)
+                                        <span class="hook-name"
+                                            >{hook.name}</span
+                                        >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:487:52
+Error: 'hook' is of type 'unknown'. (ts)
+                                        <div class="hook-events">
+                                            {#each hook.events as event}
+                                                <span class="event-pill"
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:494:48
+Error: 'hook' is of type 'unknown'. (ts)
+                                        <span class="hook-priority"
+                                            >P{hook.priority}</span
+                                        >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/OpenCodePanel.svelte:517:63
+Error: Parameter 'h' implicitly has an 'any' type. (ts)
+                                <span class="node-count"
+                                    >{engine.allHooks.filter((h) =>
+                                        h.events.includes(event as any),
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/PaymentTerminal.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/PhotonicMetabolism.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/PicoClawPanel.svelte:25:12
+Error: Cannot find module '$lib/services/picoclaw-engine.svelte' or its corresponding type declarations. (ts)
+        type EdgeNode,
+    } from "$lib/services/picoclaw-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/PolicyFabricator.svelte:16:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ResonanceCortex.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/RouteAgentPanel.svelte:23:12
+Error: Cannot find module '$lib/services/route-agent.svelte' or its corresponding type declarations. (ts)
+        TOKYO_SITES,
+    } from "$lib/services/route-agent.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SettlementLedger.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SettlementStream.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { slide } from "svelte/transition";
+    import { api } from "$lib/services/api";
+    import { RefreshCw, Clock, ArrowRightLeft, CheckCircle2, AlertCircle } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ShardMutation.svelte:3:32
+Error: Cannot find module '$lib/services/icp-service.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ShardMutation.svelte:4:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { icpService } from "$lib/services/icp-service.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SingularityEngine.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SomaticRhythm.svelte:5:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { Activity, Moon, Footprints, Info } from "lucide-svelte";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SonicIndicator.svelte:4:36
+Error: Cannot find module '$lib/stores/telemetry-store.svelte' or its corresponding type declarations. (ts)
+    import { createSonicSovereignty } from "../../../../../../packages/age-sensory/src/index";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SoulCommerce.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade, fly } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignBanking.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignCommunications.svelte:22:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignConcierge.svelte:705:5
+Warn: Unused CSS selector ".rotate-45"
+https://svelte.dev/e/css_unused_selector (svelte)
+
+    .rotate-45 {
+        transform: rotate(45deg);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignContextSidebar.svelte:3:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { Plus, Settings2, ShieldAlert } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignContextSidebar.svelte:5:25
+Error: Cannot find module '$lib/components/ui/Tooltip.svelte' or its corresponding type declarations. (ts)
+    import { Plus, Settings2, ShieldAlert } from "lucide-svelte";
+    import Tooltip from "$lib/components/ui/Tooltip.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignCouncil.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignFluxer.svelte:4:37
+Error: Cannot find module '$lib/services/fluxer-engine.svelte' or its corresponding type declarations. (ts)
+    import { fly } from "svelte/transition";
+    import { sovereignFluxer } from "$lib/services/fluxer-engine.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignForensics.svelte:4:27
+Error: Cannot find module '$lib/components/map/LivingMap.svelte' or its corresponding type declarations. (ts)
+    import { fade, fly } from "svelte/transition";
+    import LivingMap from "$lib/components/map/LivingMap.svelte";
+    import type { Snippet } from "svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignLedger.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignLogic.svelte:182:25
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+                    <div class="input-block">
+                        <label>Condition_Vector</label>
+                        <input
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignLogic.svelte:189:25
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+                    <div class="input-block">
+                        <label>Execution_Payload</label>
+                        <input
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignLogic.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly, slide } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignPresence.svelte:15:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignRegistry.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignResearch.svelte:16:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSecurityGate.svelte:14:38
+Error: Cannot find module '$lib/stores/auth.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { completeSecurity } from "$lib/stores/auth.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSecurityGate.svelte:15:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { completeSecurity } from "$lib/stores/auth.svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSidebar.svelte:2:45
+Error: Cannot find module '$lib/constants/navigation' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { coreTabs, ecosystemTabs } from "$lib/constants/navigation";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSpacebot.svelte:4:39
+Error: Cannot find module '$lib/services/opencode-engine.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide, scale, fly } from "svelte/transition";
+    import { sovereignOpenCode } from "$lib/services/opencode-engine.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignStitchWeaver.svelte:112:17
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+            <div class="w-full max-w-md">
+                <label
+                    class="block text-[10px] font-black text-white/40 uppercase tracking-widest mb-3 pl-2"
+                >
+                    Define Interface Parameters
+                </label>
+                <div class="relative group">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSuperApp.svelte:22:12
+Error: Cannot find module '$lib/services/sovereign-trading-engine.svelte' or its corresponding type declarations. (ts)
+        type OrderType,
+    } from "$lib/services/sovereign-trading-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSuperApp.svelte:54:37
+Error: Parameter 'm' implicitly has an 'any' type. (ts)
+    const selectedMarket = $derived(
+        tradingEngine.markets.find((m) => m.id === selectedMarketId)!,
+    );
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignSuperApp.svelte:744:30
+Error: Parameter 'a' implicitly has an 'any' type. (ts)
+                        >{tradingEngine.tradingAgents.filter(
+                            (a) => a.status === "ACTIVE",
+                        ).length} Active / {tradingEngine.tradingAgents.length} Total</span
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SovereignTokenomics.svelte:6:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { Coins, TrendingUp, Activity, Flame, Lock, ArrowUpRight, BarChart3, Zap, ShieldCheck } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SpatialVisionOverlay.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SpecPanel.svelte:25:12
+Error: Cannot find module '$lib/services/sdd-engine.svelte' or its corresponding type declarations. (ts)
+        type SovereignSpec,
+    } from "$lib/services/sdd-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SpectralBourse.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { BarChart3 } from "lucide-svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/StatusBackplane.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/StressLab.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SubstrateAtlas.svelte:268:9
+Warn: Unknown property: 'items-center' (css)
+        display: flex;
+        items-center: center;
+        gap: 1rem;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SubstrateAtlas.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SupplyChainProvenance.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SupplyChainProvenance.svelte:42:30
+Error: Parameter 's' implicitly has an 'any' type. (ts)
+                        >Mesh_Verified: {logistics.shipments.filter(
+                            (s) => s.mesh_verified,
+                        ).length}/{logistics.shipments.length}</span
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/SystemicWarRoom.svelte:7:32
+Error: Cannot find module '$lib/stores/vault-store.svelte' or its corresponding type declarations. (ts)
+    import { lifeboatWeights } from "../../../../../../packages/age-warroom/src/lifeboat/weights";
+    import { vaultStore } from "$lib/stores/vault-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/TasteAudit.svelte:12:39
+Error: Cannot find module '$lib/services/design-engineering-engine.svelte' or its corresponding type declarations. (ts)
+    // import { fade, fly, scale } from "svelte/transition";
+    import { designEngineering } from "$lib/services/design-engineering-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/TokenomicsOverview.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import { fade, fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ValidatorRegistry.svelte:2:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { manifold } from "$lib/stores/master-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/dashboard/ZVecPanel.svelte:26:12
+Error: Cannot find module '$lib/services/zvec-engine.svelte' or its corresponding type declarations. (ts)
+        type ZVecCollection,
+    } from "$lib/services/zvec-engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/CreateProposalModal.svelte:2:36
+Error: Cannot find module '$lib/stores/constants' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { PROPOSAL_TYPES } from "$lib/stores/constants";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/CreateProposalModal.svelte:93:44
+Error: 'type' is of type 'unknown'. (ts)
+                        {#each Object.values(PROPOSAL_TYPES) as type}
+                            <option value={type.id}>
+                                {type.icon}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/CreateProposalModal.svelte:94:34
+Error: 'type' is of type 'unknown'. (ts)
+                            <option value={type.id}>
+                                {type.icon}
+                                {type.label}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/CreateProposalModal.svelte:95:34
+Error: 'type' is of type 'unknown'. (ts)
+                                {type.icon}
+                                {type.label}
+                            </option>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/DelegateModal.svelte:22:31
+Warn: This reference only captures the initial value of `currentDelegate`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+
+    let delegateType = $state(currentDelegate ? "council" : "custom");
+    let selectedCouncilMember = $state(currentDelegate || "");
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/DelegateModal.svelte:23:40
+Warn: This reference only captures the initial value of `currentDelegate`. Did you mean to reference it inside a derived instead?
+https://svelte.dev/e/state_referenced_locally (svelte)
+    let delegateType = $state(currentDelegate ? "council" : "custom");
+    let selectedCouncilMember = $state(currentDelegate || "");
+    let customAddress = $state("");
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/governance/ProposalCard.svelte:2:53
+Error: Cannot find module '$lib/stores/constants' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/AchievementWall.svelte:2:38
+Error: Cannot find module '$lib/types' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import type { Achievement } from "$lib/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/InsightPanel.svelte:2:34
+Error: Cannot find module '$lib/types' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import type { Insight } from "$lib/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/MemoryCard.svelte:127:9
+Warn: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+    {#if isExpanded}
+        <div class="memory-expanded" onclick={(e) => e.stopPropagation()}>
+            {#if memory.reflections && memory.reflections.length > 0}
+                <div class="reflections-section">
+                    <h4 class="reflections-title">Reflections</h4>
+                    {#each memory.reflections as reflection}
+                        <div class="reflection-item">
+                            <span class="reflection-icon">💭</span>
+                            <div>
+                                <p class="reflection-content">
+                                    {reflection.content}
+                                </p>
+                                <span class="reflection-date">
+                                    {new Intl.DateTimeFormat("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    }).format(new Date(reflection.timestamp))}
+                                </span>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+
+            <div class="add-reflection">
+                <input
+                    type="text"
+                    class="reflection-input"
+                    placeholder="Add a reflection..."
+                    bind:value={reflectionText}
+                    onkeydown={(e) =>
+                        e.key === "Enter" && handleAddReflection()}
+                />
+                <button
+                    class="add-reflection-btn"
+                    onclick={handleAddReflection}
+                    disabled={!reflectionText.trim()}
+                >
+                    Add
+                </button>
+            </div>
+        </div>
+    {/if}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/MemoryCard.svelte:127:9
+Warn: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+    {#if isExpanded}
+        <div class="memory-expanded" onclick={(e) => e.stopPropagation()}>
+            {#if memory.reflections && memory.reflections.length > 0}
+                <div class="reflections-section">
+                    <h4 class="reflections-title">Reflections</h4>
+                    {#each memory.reflections as reflection}
+                        <div class="reflection-item">
+                            <span class="reflection-icon">💭</span>
+                            <div>
+                                <p class="reflection-content">
+                                    {reflection.content}
+                                </p>
+                                <span class="reflection-date">
+                                    {new Intl.DateTimeFormat("en-US", {
+                                        month: "short",
+                                        day: "numeric",
+                                        hour: "2-digit",
+                                        minute: "2-digit",
+                                    }).format(new Date(reflection.timestamp))}
+                                </span>
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+
+            <div class="add-reflection">
+                <input
+                    type="text"
+                    class="reflection-input"
+                    placeholder="Add a reflection..."
+                    bind:value={reflectionText}
+                    onkeydown={(e) =>
+                        e.key === "Enter" && handleAddReflection()}
+                />
+                <button
+                    class="add-reflection-btn"
+                    onclick={handleAddReflection}
+                    disabled={!reflectionText.trim()}
+                >
+                    Add
+                </button>
+            </div>
+        </div>
+    {/if}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/MemoryCard.svelte:2:34
+Error: Cannot find module '$lib/stores/hearth-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { MEMORY_TYPES } from "$lib/stores/hearth-store.svelte";
+    interface Memory {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/hearth/MemoryForm.svelte:3:34
+Error: Cannot find module '$lib/stores/constants' or its corresponding type declarations. (ts)
+    import { createEventDispatcher } from "svelte";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/infrastructure/NodeOnboarding.svelte:4:33
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    import { fade, slide } from "svelte/transition";
+    import { hearthStore } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/TopBar.svelte:16:47
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold as manifoldStore } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/VerticalNav.svelte:5:31
+Error: Cannot find module '$lib/stores/tool-store.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import { toolStore } from "$lib/stores/tool-store.svelte";
+    import {
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/VerticalNav.svelte:28:38
+Error: Cannot find module '$lib/services/simulation-engine.svelte' or its corresponding type declarations. (ts)
+
+    import { simulationEngine } from "$lib/services/simulation-engine.svelte";
+    import ResonanceGauge from "$lib/components/ui/ResonanceGauge.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/VerticalNav.svelte:29:32
+Error: Cannot find module '$lib/components/ui/ResonanceGauge.svelte' or its corresponding type declarations. (ts)
+    import { simulationEngine } from "$lib/services/simulation-engine.svelte";
+    import ResonanceGauge from "$lib/components/ui/ResonanceGauge.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/AppLayout.svelte:3:33
+Error: Cannot find module '$lib/components/command/FloatingCommand.svelte' or its corresponding type declarations. (ts)
+    import UnifiedWorkspace from "./UnifiedWorkspace.svelte";
+    import FloatingCommand from "$lib/components/command/FloatingCommand.svelte";
+    import VerticalNav from "./VerticalNav.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/layout/AppLayout.svelte:5:27
+Error: Cannot find module '$lib/components/tools/ToolPanel.svelte' or its corresponding type declarations. (ts)
+    import VerticalNav from "./VerticalNav.svelte";
+    import ToolPanel from "$lib/components/tools/ToolPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/map/LivingMap.svelte:34:31
+Error: Cannot find module '$lib/nai/engine.svelte' or its corresponding type declarations. (ts)
+
+    import { naiEngine } from "$lib/nai/engine.svelte";
+    import type { AmbientComponent } from "$lib/nai/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/map/LivingMap.svelte:35:43
+Error: Cannot find module '$lib/nai/types' or its corresponding type declarations. (ts)
+    import { naiEngine } from "$lib/nai/engine.svelte";
+    import type { AmbientComponent } from "$lib/nai/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/marketplace/MarketplaceBrowser.svelte:4:25
+Error: Cannot find module '$lib/services/api' or its corresponding type declarations. (ts)
+    import { fly, fade } from "svelte/transition";
+    import { api } from "$lib/services/api";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/onboarding/WelcomeStep.svelte:159:9
+Warn: Also define the standard property 'background-clip' for compatibility (css)
+        background: linear-gradient(135deg, #9370db, #ff6b6b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/shared/ZKShield.svelte:20:1
+Warn: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+
+<div
+    class="zk-shield-wrapper"
+    on:click={triggerVerification}
+    role="button"
+    tabindex="0"
+>
+    <div class="content" class:blurred={isProtected}>
+        <slot></slot>
+    </div>
+
+    {#if isProtected}
+        <div class="shield-overlay" class:verifying={isVerifying}>
+            {#if isVerifying}
+                <div class="pulse-indicator"></div>
+            {:else}
+                <span class="icon">🔒 ZK-Shielded</span>
+            {/if}
+        </div>
+    {/if}
+</div>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/MultiSigTool.svelte:125:5
+Warn: Unused CSS selector ".signatories-list label"
+https://svelte.dev/e/css_unused_selector (svelte)
+
+    .signatories-list label {
+        font-size: 0.75rem;
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/RecoveryTool.svelte:24:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+    <div class="guardians-list">
+        <label>Trusted Guardians</label>
+        {#each guardians as guardian, i}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/RecoveryTool.svelte:43:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+    <div class="input-group">
+        <label>Grace Period (Before execution)</label>
+        <div class="days-row">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/TimeLockTool.svelte:18:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="input-group flex-2">
+            <label>Amount</label>
+            <input type="number" bind:value={amount} />
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/TimeLockTool.svelte:22:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="input-group flex-1">
+            <label>Asset</label>
+            <select bind:value={asset}>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/TimeLockTool.svelte:32:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+    <div class="input-group">
+        <label>Unlock Date (UTC)</label>
+        <input type="datetime-local" bind:value={unlockDate} />
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ZkProofTool.svelte:179:5
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+  <div class="backend-selector">
+    <label>Prover Backend</label>
+    <div class="backend-grid">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ZkProofTool.svelte:219:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+      <div class="batch-count" in:slide>
+        <label>Batch Size</label>
+        <input type="range" min="2" max="16" bind:value={batchCount} />
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ZkProofTool.svelte:228:5
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+  <div class="input-group">
+    <label>Payload to Prove</label>
+    <textarea
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ZkProofTool.svelte:256:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+      <div class="result-header">
+        <label>✓ Proof Generated — Ready for On-Chain Verification</label>
+        <span
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ZkProofTool.svelte:315:9
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+      <div class="batch-header">
+        <label>📦 Batch Verification — Recursive SNARK Aggregation</label>
+        <span
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/tools/ToolPanel.svelte:2:31
+Error: Cannot find module '$lib/stores/tool-store.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import { toolStore } from "$lib/stores/tool-store.svelte";
+    import CalculatorTool from "./CalculatorTool.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/ui/InlineEditable.svelte:71:5
+Warn: `<span>` with a dblclick handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+{:else}
+    <span
+        class="inline-display"
+        on:dblclick={startEditing}
+        title="Double-click to edit"
+    >
+        {value || placeholder || "—"}
+        <span class="edit-icon">✎</span>
+    </span>
+{/if}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/vault/ReceiveModal.svelte:38:13
+Warn: A form label must be associated with a control
+https://svelte.dev/e/a11y_label_has_associated_control (svelte)
+        <div class="address-section">
+            <label class="address-label">Your {asset} Address</label>
+            <div class="address-box">
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/workspace/TemplateSelector.svelte:45:13
+Warn: Visible, non-interactive elements with a click event must be accompanied by a keyboard event handler. Consider whether an interactive element such as `<button type="button">` or `<a>` might be more appropriate
+https://svelte.dev/e/a11y_click_events_have_key_events (svelte)
+        {#each templates as template}
+            <div class="template-card" on:click={() => loadTemplate(template)}>
+                <h4>{template.name}</h4>
+                <p>{template.description}</p>
+                <div class="template-meta">
+                    <span>Used {template.useCount} times</span>
+                    <span
+                        >{new Date(
+                            template.lastUsed,
+                        ).toLocaleDateString()}</span
+                    >
+                </div>
+            </div>
+        {/each}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/workspace/TemplateSelector.svelte:45:13
+Warn: `<div>` with a click handler must have an ARIA role
+https://svelte.dev/e/a11y_no_static_element_interactions (svelte)
+        {#each templates as template}
+            <div class="template-card" on:click={() => loadTemplate(template)}>
+                <h4>{template.name}</h4>
+                <p>{template.description}</p>
+                <div class="template-meta">
+                    <span>Used {template.useCount} times</span>
+                    <span
+                        >{new Date(
+                            template.lastUsed,
+                        ).toLocaleDateString()}</span
+                    >
+                </div>
+            </div>
+        {/each}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/lib/components/workspace/TemplateSelector.svelte:3:42
+Error: Cannot find module '$lib/services/workspace-persistence' or its corresponding type declarations. (ts)
+    import { onMount } from "svelte";
+    import { workspacePersistence } from "$lib/services/workspace-persistence";
+    import { fly } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:5:31
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+	import { QueryClient, QueryClientProvider } from "@tanstack/svelte-query";
+	import { systemHealth } from "$lib/stores/master-store.svelte";
+	import AppLayout from "$lib/components/layout/AppLayout.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:6:24
+Error: Cannot find module '$lib/components/layout/AppLayout.svelte' or its corresponding type declarations. (ts)
+	import { systemHealth } from "$lib/stores/master-store.svelte";
+	import AppLayout from "$lib/components/layout/AppLayout.svelte";
+	import VisualOverlay from "$lib/components/VisualOverlay.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:7:28
+Error: Cannot find module '$lib/components/VisualOverlay.svelte' or its corresponding type declarations. (ts)
+	import AppLayout from "$lib/components/layout/AppLayout.svelte";
+	import VisualOverlay from "$lib/components/VisualOverlay.svelte";
+	import SonicIndicator from "$lib/components/dashboard/SonicIndicator.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:8:29
+Error: Cannot find module '$lib/components/dashboard/SonicIndicator.svelte' or its corresponding type declarations. (ts)
+	import VisualOverlay from "$lib/components/VisualOverlay.svelte";
+	import SonicIndicator from "$lib/components/dashboard/SonicIndicator.svelte";
+	import MetabolicWrapper from "$lib/components/dashboard/MetabolicWrapper.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:9:31
+Error: Cannot find module '$lib/components/dashboard/MetabolicWrapper.svelte' or its corresponding type declarations. (ts)
+	import SonicIndicator from "$lib/components/dashboard/SonicIndicator.svelte";
+	import MetabolicWrapper from "$lib/components/dashboard/MetabolicWrapper.svelte";
+	import Tooltip from "$lib/components/ui/Tooltip.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:10:22
+Error: Cannot find module '$lib/components/ui/Tooltip.svelte' or its corresponding type declarations. (ts)
+	import MetabolicWrapper from "$lib/components/dashboard/MetabolicWrapper.svelte";
+	import Tooltip from "$lib/components/ui/Tooltip.svelte";
+	import { tooltipStore } from "$lib/stores/tooltip-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+layout.svelte:11:31
+Error: Cannot find module '$lib/stores/tooltip-store.svelte' or its corresponding type declarations. (ts)
+	import Tooltip from "$lib/components/ui/Tooltip.svelte";
+	import { tooltipStore } from "$lib/stores/tooltip-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:5:24
+Error: Cannot find module '$lib/components/map/LivingMap.svelte' or its corresponding type declarations. (ts)
+	import { fade, fly } from "svelte/transition";
+	import LivingMap from "$lib/components/map/LivingMap.svelte";
+	import GlassCard from "$lib/components/ui/GlassCard.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:6:24
+Error: Cannot find module '$lib/components/ui/GlassCard.svelte' or its corresponding type declarations. (ts)
+	import LivingMap from "$lib/components/map/LivingMap.svelte";
+	import GlassCard from "$lib/components/ui/GlassCard.svelte";
+	import Onboarding from "$lib/components/Onboarding.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:7:25
+Error: Cannot find module '$lib/components/Onboarding.svelte' or its corresponding type declarations. (ts)
+	import GlassCard from "$lib/components/ui/GlassCard.svelte";
+	import Onboarding from "$lib/components/Onboarding.svelte";
+	import Security from "$lib/components/Security.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:8:23
+Error: Cannot find module '$lib/components/Security.svelte' or its corresponding type declarations. (ts)
+	import Onboarding from "$lib/components/Onboarding.svelte";
+	import Security from "$lib/components/Security.svelte";
+	import Tutorial from "$lib/components/Tutorial.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:9:23
+Error: Cannot find module '$lib/components/Tutorial.svelte' or its corresponding type declarations. (ts)
+	import Security from "$lib/components/Security.svelte";
+	import Tutorial from "$lib/components/Tutorial.svelte";
+	import Vault from "$lib/components/Vault.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:10:20
+Error: Cannot find module '$lib/components/Vault.svelte' or its corresponding type declarations. (ts)
+	import Tutorial from "$lib/components/Tutorial.svelte";
+	import Vault from "$lib/components/Vault.svelte";
+	import Market from "$lib/components/Market.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:11:21
+Error: Cannot find module '$lib/components/Market.svelte' or its corresponding type declarations. (ts)
+	import Vault from "$lib/components/Vault.svelte";
+	import Market from "$lib/components/Market.svelte";
+	import Profile from "$lib/components/Profile.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:12:22
+Error: Cannot find module '$lib/components/Profile.svelte' or its corresponding type declarations. (ts)
+	import Market from "$lib/components/Market.svelte";
+	import Profile from "$lib/components/Profile.svelte";
+	import Governance from "$lib/components/Governance.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:13:25
+Error: Cannot find module '$lib/components/Governance.svelte' or its corresponding type declarations. (ts)
+	import Profile from "$lib/components/Profile.svelte";
+	import Governance from "$lib/components/Governance.svelte";
+	import Services from "$lib/components/Services.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:14:23
+Error: Cannot find module '$lib/components/Services.svelte' or its corresponding type declarations. (ts)
+	import Governance from "$lib/components/Governance.svelte";
+	import Services from "$lib/components/Services.svelte";
+	import { intersect } from "$lib/actions/intersect";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:15:28
+Error: Cannot find module '$lib/actions/intersect' or its corresponding type declarations. (ts)
+	import Services from "$lib/components/Services.svelte";
+	import { intersect } from "$lib/actions/intersect";
+	import { authState } from "$lib/stores/auth.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:16:28
+Error: Cannot find module '$lib/stores/auth.svelte' or its corresponding type declarations. (ts)
+	import { intersect } from "$lib/actions/intersect";
+	import { authState } from "$lib/stores/auth.svelte";
+	import { naiEngine } from "$lib/nai/engine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:17:28
+Error: Cannot find module '$lib/nai/engine.svelte' or its corresponding type declarations. (ts)
+	import { authState } from "$lib/stores/auth.svelte";
+	import { naiEngine } from "$lib/nai/engine.svelte";
+	import type { AmbientComponent } from "$lib/nai/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/+page.svelte:18:40
+Error: Cannot find module '$lib/nai/types' or its corresponding type declarations. (ts)
+	import { naiEngine } from "$lib/nai/engine.svelte";
+	import type { AmbientComponent } from "$lib/nai/types";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/audit-studio/+page.svelte:2:36
+Error: Cannot find module '$lib/components/dashboard/AgenticAuditStudio.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import AgenticAuditStudio from "$lib/components/dashboard/AgenticAuditStudio.svelte";
+</script>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:4:32
+Error: Cannot find module '$lib/stores/vault-store.svelte' or its corresponding type declarations. (ts)
+    import { goto } from "$app/navigation";
+    import { vaultStore } from "$lib/stores/vault-store.svelte";
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:5:33
+Error: Cannot find module '$lib/stores/bridge-store.svelte' or its corresponding type declarations. (ts)
+    import { vaultStore } from "$lib/stores/vault-store.svelte";
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
+    import { web3Service } from "$lib/services/web3-service.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:6:33
+Error: Cannot find module '$lib/services/web3-service.svelte' or its corresponding type declarations. (ts)
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:7:38
+Error: Cannot find module '$lib/types/blockchain' or its corresponding type declarations. (ts)
+    import { web3Service } from "$lib/services/web3-service.svelte";
+    import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
+    import { fly, fade } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:10:33
+Error: Cannot find module '$lib/components/bridge/WalletConnector.svelte' or its corresponding type declarations. (ts)
+    import { quintOut } from "svelte/easing";
+    import WalletConnector from "$lib/components/bridge/WalletConnector.svelte";
+    import { hexToRgb } from "$lib/utils/color";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:11:30
+Error: Cannot find module '$lib/utils/color' or its corresponding type declarations. (ts)
+    import WalletConnector from "$lib/components/bridge/WalletConnector.svelte";
+    import { hexToRgb } from "$lib/utils/color";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:318:50
+Error: 'chain' is of type 'unknown'. (ts)
+                        {#each Object.entries(chains) as [key, chain]}
+                            <option value={key}>{chain.name}</option>
+                        {/each}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/bridge/+page.svelte:357:50
+Error: 'chain' is of type 'unknown'. (ts)
+                        {#each Object.entries(chains) as [key, chain]}
+                            <option value={key}>{chain.name}</option>
+                        {/each}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:6:12
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+        vaultStore,
+    } from "$lib/stores/master-store.svelte";
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:7:53
+Error: Cannot find module '$lib/stores/constants' or its corresponding type declarations. (ts)
+    } from "$lib/stores/master-store.svelte";
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
+    import ProposalCard from "$lib/components/governance/ProposalCard.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:8:30
+Error: Cannot find module '$lib/components/governance/ProposalCard.svelte' or its corresponding type declarations. (ts)
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
+    import ProposalCard from "$lib/components/governance/ProposalCard.svelte";
+    import CreateProposalModal from "$lib/components/governance/CreateProposalModal.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:9:37
+Error: Cannot find module '$lib/components/governance/CreateProposalModal.svelte' or its corresponding type declarations. (ts)
+    import ProposalCard from "$lib/components/governance/ProposalCard.svelte";
+    import CreateProposalModal from "$lib/components/governance/CreateProposalModal.svelte";
+    import DelegateModal from "$lib/components/governance/DelegateModal.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:10:31
+Error: Cannot find module '$lib/components/governance/DelegateModal.svelte' or its corresponding type declarations. (ts)
+    import CreateProposalModal from "$lib/components/governance/CreateProposalModal.svelte";
+    import DelegateModal from "$lib/components/governance/DelegateModal.svelte";
+    import CouncilMembers from "$lib/components/governance/CouncilMembers.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:11:32
+Error: Cannot find module '$lib/components/governance/CouncilMembers.svelte' or its corresponding type declarations. (ts)
+    import DelegateModal from "$lib/components/governance/DelegateModal.svelte";
+    import CouncilMembers from "$lib/components/governance/CouncilMembers.svelte";
+    import GovernanceStats from "$lib/components/governance/GovernanceStats.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:12:33
+Error: Cannot find module '$lib/components/governance/GovernanceStats.svelte' or its corresponding type declarations. (ts)
+    import CouncilMembers from "$lib/components/governance/CouncilMembers.svelte";
+    import GovernanceStats from "$lib/components/governance/GovernanceStats.svelte";
+    import ActivityFeed from "$lib/components/governance/ActivityFeed.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:13:30
+Error: Cannot find module '$lib/components/governance/ActivityFeed.svelte' or its corresponding type declarations. (ts)
+    import GovernanceStats from "$lib/components/governance/GovernanceStats.svelte";
+    import ActivityFeed from "$lib/components/governance/ActivityFeed.svelte";
+    import { fade, fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:41:49
+Error: Parameter 'proposal' implicitly has an 'any' type. (ts)
+    let filteredProposals = $derived(
+        governanceStore.state.proposals.filter((proposal) => {
+            const status = governanceStore.getProposalStatus(proposal);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:163:44
+Error: 'type' is of type 'unknown'. (ts)
+                        {#each Object.values(PROPOSAL_TYPES) as type}
+                            <option value={type.id}>
+                                {type.icon}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:164:34
+Error: 'type' is of type 'unknown'. (ts)
+                            <option value={type.id}>
+                                {type.icon}
+                                {type.label}
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:165:34
+Error: 'type' is of type 'unknown'. (ts)
+                                {type.icon}
+                                {type.label}
+                            </option>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:347:32
+Error: Parameter 'proposal' implicitly has an 'any' type. (ts)
+                    onClose={() => (showCreateModal = false)}
+                    onCreate={(proposal) => {
+                        governanceStore.createProposal(proposal);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/council/+page.svelte:374:34
+Error: Parameter 'delegateId' implicitly has an 'any' type. (ts)
+                    onClose={() => (showDelegateModal = false)}
+                    onDelegate={(delegateId) => {
+                        governanceStore.delegateVotes(delegateId);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:4:30
+Error: Cannot find module '$lib/components/blocks/WorkspaceCanvas.svelte' or its corresponding type declarations. (ts)
+	import { onMount } from "svelte";
+	import WorkspaceCanvas from "$lib/components/blocks/WorkspaceCanvas.svelte";
+	import CommandPalette from "$lib/components/dashboard/CommandPalette.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:5:29
+Error: Cannot find module '$lib/components/dashboard/CommandPalette.svelte' or its corresponding type declarations. (ts)
+	import WorkspaceCanvas from "$lib/components/blocks/WorkspaceCanvas.svelte";
+	import CommandPalette from "$lib/components/dashboard/CommandPalette.svelte";
+	import StatusBackplane from "$lib/components/dashboard/StatusBackplane.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:6:30
+Error: Cannot find module '$lib/components/dashboard/StatusBackplane.svelte' or its corresponding type declarations. (ts)
+	import CommandPalette from "$lib/components/dashboard/CommandPalette.svelte";
+	import StatusBackplane from "$lib/components/dashboard/StatusBackplane.svelte";
+	import CausalLoom from "$lib/components/dashboard/CausalLoom.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:7:25
+Error: Cannot find module '$lib/components/dashboard/CausalLoom.svelte' or its corresponding type declarations. (ts)
+	import StatusBackplane from "$lib/components/dashboard/StatusBackplane.svelte";
+	import CausalLoom from "$lib/components/dashboard/CausalLoom.svelte";
+	import GlobalFX from "$lib/components/dashboard/GlobalFX.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:8:23
+Error: Cannot find module '$lib/components/dashboard/GlobalFX.svelte' or its corresponding type declarations. (ts)
+	import CausalLoom from "$lib/components/dashboard/CausalLoom.svelte";
+	import GlobalFX from "$lib/components/dashboard/GlobalFX.svelte";
+	import SpatialVisionOverlay from "$lib/components/dashboard/SpatialVisionOverlay.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:9:35
+Error: Cannot find module '$lib/components/dashboard/SpatialVisionOverlay.svelte' or its corresponding type declarations. (ts)
+	import GlobalFX from "$lib/components/dashboard/GlobalFX.svelte";
+	import SpatialVisionOverlay from "$lib/components/dashboard/SpatialVisionOverlay.svelte";
+	import ModulePicker from "$lib/components/dashboard/ModulePicker.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:10:27
+Error: Cannot find module '$lib/components/dashboard/ModulePicker.svelte' or its corresponding type declarations. (ts)
+	import SpatialVisionOverlay from "$lib/components/dashboard/SpatialVisionOverlay.svelte";
+	import ModulePicker from "$lib/components/dashboard/ModulePicker.svelte";
+	import ResonanceGauge from "$lib/components/ui/ResonanceGauge.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:11:29
+Error: Cannot find module '$lib/components/ui/ResonanceGauge.svelte' or its corresponding type declarations. (ts)
+	import ModulePicker from "$lib/components/dashboard/ModulePicker.svelte";
+	import ResonanceGauge from "$lib/components/ui/ResonanceGauge.svelte";
+	import PhotonicMetabolism from "$lib/components/dashboard/PhotonicMetabolism.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:12:33
+Error: Cannot find module '$lib/components/dashboard/PhotonicMetabolism.svelte' or its corresponding type declarations. (ts)
+	import ResonanceGauge from "$lib/components/ui/ResonanceGauge.svelte";
+	import PhotonicMetabolism from "$lib/components/dashboard/PhotonicMetabolism.svelte";
+	import CrossCommonsTrust from "$lib/components/dashboard/CrossCommonsTrust.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:13:32
+Error: Cannot find module '$lib/components/dashboard/CrossCommonsTrust.svelte' or its corresponding type declarations. (ts)
+	import PhotonicMetabolism from "$lib/components/dashboard/PhotonicMetabolism.svelte";
+	import CrossCommonsTrust from "$lib/components/dashboard/CrossCommonsTrust.svelte";
+	import { browser } from "$app/environment";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:15:44
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+	import { browser } from "$app/environment";
+	import { manifold as manifoldStore } from "$lib/stores/master-store.svelte";
+	import { defaultWorkspaceColumns } from "./workspace-defaults";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:19:34
+Error: Cannot find module '$lib/components/dashboard/GovernanceBranching.svelte' or its corresponding type declarations. (ts)
+	// Dashboard Modules
+	import GovernanceBranching from "$lib/components/dashboard/GovernanceBranching.svelte";
+	import AdjointAuditor from "$lib/components/dashboard/AdjointAuditor.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:20:29
+Error: Cannot find module '$lib/components/dashboard/AdjointAuditor.svelte' or its corresponding type declarations. (ts)
+	import GovernanceBranching from "$lib/components/dashboard/GovernanceBranching.svelte";
+	import AdjointAuditor from "$lib/components/dashboard/AdjointAuditor.svelte";
+	import EconomicManifold from "$lib/components/dashboard/EconomicManifold.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:21:31
+Error: Cannot find module '$lib/components/dashboard/EconomicManifold.svelte' or its corresponding type declarations. (ts)
+	import AdjointAuditor from "$lib/components/dashboard/AdjointAuditor.svelte";
+	import EconomicManifold from "$lib/components/dashboard/EconomicManifold.svelte";
+	import SovereignBanking from "$lib/components/dashboard/SovereignBanking.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:22:31
+Error: Cannot find module '$lib/components/dashboard/SovereignBanking.svelte' or its corresponding type declarations. (ts)
+	import EconomicManifold from "$lib/components/dashboard/EconomicManifold.svelte";
+	import SovereignBanking from "$lib/components/dashboard/SovereignBanking.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:24:36
+Error: Cannot find module '$lib/components/dashboard/SupplyChainProvenance.svelte' or its corresponding type declarations. (ts)
+
+	import SupplyChainProvenance from "$lib/components/dashboard/SupplyChainProvenance.svelte";
+	import InventoryMatrix from "$lib/components/dashboard/InventoryMatrix.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:25:30
+Error: Cannot find module '$lib/components/dashboard/InventoryMatrix.svelte' or its corresponding type declarations. (ts)
+	import SupplyChainProvenance from "$lib/components/dashboard/SupplyChainProvenance.svelte";
+	import InventoryMatrix from "$lib/components/dashboard/InventoryMatrix.svelte";
+	import AdVortex from "$lib/components/dashboard/AdVortex.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:26:23
+Error: Cannot find module '$lib/components/dashboard/AdVortex.svelte' or its corresponding type declarations. (ts)
+	import InventoryMatrix from "$lib/components/dashboard/InventoryMatrix.svelte";
+	import AdVortex from "$lib/components/dashboard/AdVortex.svelte";
+	import DemandHeatmap from "$lib/components/dashboard/DemandHeatmap.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:27:28
+Error: Cannot find module '$lib/components/dashboard/DemandHeatmap.svelte' or its corresponding type declarations. (ts)
+	import AdVortex from "$lib/components/dashboard/AdVortex.svelte";
+	import DemandHeatmap from "$lib/components/dashboard/DemandHeatmap.svelte";
+	import CausalTracePanel from "$lib/components/dashboard/CausalTracePanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:28:31
+Error: Cannot find module '$lib/components/dashboard/CausalTracePanel.svelte' or its corresponding type declarations. (ts)
+	import DemandHeatmap from "$lib/components/dashboard/DemandHeatmap.svelte";
+	import CausalTracePanel from "$lib/components/dashboard/CausalTracePanel.svelte";
+	import DiscoveryPortal from "$lib/components/dashboard/DiscoveryPortal.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:29:30
+Error: Cannot find module '$lib/components/dashboard/DiscoveryPortal.svelte' or its corresponding type declarations. (ts)
+	import CausalTracePanel from "$lib/components/dashboard/CausalTracePanel.svelte";
+	import DiscoveryPortal from "$lib/components/dashboard/DiscoveryPortal.svelte";
+	import AgoraMarket from "$lib/components/dashboard/AgoraMarket.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:30:26
+Error: Cannot find module '$lib/components/dashboard/AgoraMarket.svelte' or its corresponding type declarations. (ts)
+	import DiscoveryPortal from "$lib/components/dashboard/DiscoveryPortal.svelte";
+	import AgoraMarket from "$lib/components/dashboard/AgoraMarket.svelte";
+	import ChordCortexFabric from "$lib/components/dashboard/ChordCortexFabric.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:31:32
+Error: Cannot find module '$lib/components/dashboard/ChordCortexFabric.svelte' or its corresponding type declarations. (ts)
+	import AgoraMarket from "$lib/components/dashboard/AgoraMarket.svelte";
+	import ChordCortexFabric from "$lib/components/dashboard/ChordCortexFabric.svelte";
+	import GovernanceCourt from "$lib/components/dashboard/GovernanceCourt.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:32:30
+Error: Cannot find module '$lib/components/dashboard/GovernanceCourt.svelte' or its corresponding type declarations. (ts)
+	import ChordCortexFabric from "$lib/components/dashboard/ChordCortexFabric.svelte";
+	import GovernanceCourt from "$lib/components/dashboard/GovernanceCourt.svelte";
+	import SubstrateAtlas from "$lib/components/dashboard/SubstrateAtlas.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:33:29
+Error: Cannot find module '$lib/components/dashboard/SubstrateAtlas.svelte' or its corresponding type declarations. (ts)
+	import GovernanceCourt from "$lib/components/dashboard/GovernanceCourt.svelte";
+	import SubstrateAtlas from "$lib/components/dashboard/SubstrateAtlas.svelte";
+	import MultiversalEscalation from "$lib/components/dashboard/MultiversalEscalation.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:34:36
+Error: Cannot find module '$lib/components/dashboard/MultiversalEscalation.svelte' or its corresponding type declarations. (ts)
+	import SubstrateAtlas from "$lib/components/dashboard/SubstrateAtlas.svelte";
+	import MultiversalEscalation from "$lib/components/dashboard/MultiversalEscalation.svelte";
+	import StressLab from "$lib/components/dashboard/StressLab.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:35:24
+Error: Cannot find module '$lib/components/dashboard/StressLab.svelte' or its corresponding type declarations. (ts)
+	import MultiversalEscalation from "$lib/components/dashboard/MultiversalEscalation.svelte";
+	import StressLab from "$lib/components/dashboard/StressLab.svelte";
+	import CognitivePlayback from "$lib/components/dashboard/CognitivePlayback.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:36:32
+Error: Cannot find module '$lib/components/dashboard/CognitivePlayback.svelte' or its corresponding type declarations. (ts)
+	import StressLab from "$lib/components/dashboard/StressLab.svelte";
+	import CognitivePlayback from "$lib/components/dashboard/CognitivePlayback.svelte";
+	import SingularityEngine from "$lib/components/dashboard/SingularityEngine.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:37:32
+Error: Cannot find module '$lib/components/dashboard/SingularityEngine.svelte' or its corresponding type declarations. (ts)
+	import CognitivePlayback from "$lib/components/dashboard/CognitivePlayback.svelte";
+	import SingularityEngine from "$lib/components/dashboard/SingularityEngine.svelte";
+	import SpectralBourse from "$lib/components/dashboard/SpectralBourse.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:38:29
+Error: Cannot find module '$lib/components/dashboard/SpectralBourse.svelte' or its corresponding type declarations. (ts)
+	import SingularityEngine from "$lib/components/dashboard/SingularityEngine.svelte";
+	import SpectralBourse from "$lib/components/dashboard/SpectralBourse.svelte";
+	import HilbertComputeHUD from "$lib/components/dashboard/HilbertComputeHUD.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:39:32
+Error: Cannot find module '$lib/components/dashboard/HilbertComputeHUD.svelte' or its corresponding type declarations. (ts)
+	import SpectralBourse from "$lib/components/dashboard/SpectralBourse.svelte";
+	import HilbertComputeHUD from "$lib/components/dashboard/HilbertComputeHUD.svelte";
+	import InstitutionalIdentity from "$lib/components/dashboard/InstitutionalIdentity.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:40:36
+Error: Cannot find module '$lib/components/dashboard/InstitutionalIdentity.svelte' or its corresponding type declarations. (ts)
+	import HilbertComputeHUD from "$lib/components/dashboard/HilbertComputeHUD.svelte";
+	import InstitutionalIdentity from "$lib/components/dashboard/InstitutionalIdentity.svelte";
+	import SettlementStream from "$lib/components/dashboard/SettlementStream.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:41:31
+Error: Cannot find module '$lib/components/dashboard/SettlementStream.svelte' or its corresponding type declarations. (ts)
+	import InstitutionalIdentity from "$lib/components/dashboard/InstitutionalIdentity.svelte";
+	import SettlementStream from "$lib/components/dashboard/SettlementStream.svelte";
+	import ConciergePersonality from "$lib/components/dashboard/ConciergePersonality.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:42:35
+Error: Cannot find module '$lib/components/dashboard/ConciergePersonality.svelte' or its corresponding type declarations. (ts)
+	import SettlementStream from "$lib/components/dashboard/SettlementStream.svelte";
+	import ConciergePersonality from "$lib/components/dashboard/ConciergePersonality.svelte";
+	import SovereignLogic from "$lib/components/dashboard/SovereignLogic.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:43:29
+Error: Cannot find module '$lib/components/dashboard/SovereignLogic.svelte' or its corresponding type declarations. (ts)
+	import ConciergePersonality from "$lib/components/dashboard/ConciergePersonality.svelte";
+	import SovereignLogic from "$lib/components/dashboard/SovereignLogic.svelte";
+	import SovereignRegistry from "$lib/components/dashboard/SovereignRegistry.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:44:32
+Error: Cannot find module '$lib/components/dashboard/SovereignRegistry.svelte' or its corresponding type declarations. (ts)
+	import SovereignLogic from "$lib/components/dashboard/SovereignLogic.svelte";
+	import SovereignRegistry from "$lib/components/dashboard/SovereignRegistry.svelte";
+	import AgoraOmni from "$lib/components/dashboard/AgoraOmni.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:45:24
+Error: Cannot find module '$lib/components/dashboard/AgoraOmni.svelte' or its corresponding type declarations. (ts)
+	import SovereignRegistry from "$lib/components/dashboard/SovereignRegistry.svelte";
+	import AgoraOmni from "$lib/components/dashboard/AgoraOmni.svelte";
+	import FinancialIntelligence from "$lib/components/dashboard/FinancialIntelligence.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:46:36
+Error: Cannot find module '$lib/components/dashboard/FinancialIntelligence.svelte' or its corresponding type declarations. (ts)
+	import AgoraOmni from "$lib/components/dashboard/AgoraOmni.svelte";
+	import FinancialIntelligence from "$lib/components/dashboard/FinancialIntelligence.svelte";
+	import MoralWallet from "$lib/components/dashboard/MoralWallet.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:47:26
+Error: Cannot find module '$lib/components/dashboard/MoralWallet.svelte' or its corresponding type declarations. (ts)
+	import FinancialIntelligence from "$lib/components/dashboard/FinancialIntelligence.svelte";
+	import MoralWallet from "$lib/components/dashboard/MoralWallet.svelte";
+	import SovereignLedger from "$lib/components/dashboard/SovereignLedger.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:48:30
+Error: Cannot find module '$lib/components/dashboard/SovereignLedger.svelte' or its corresponding type declarations. (ts)
+	import MoralWallet from "$lib/components/dashboard/MoralWallet.svelte";
+	import SovereignLedger from "$lib/components/dashboard/SovereignLedger.svelte";
+	import SovereignTokenomics from "$lib/components/dashboard/SovereignTokenomics.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:49:34
+Error: Cannot find module '$lib/components/dashboard/SovereignTokenomics.svelte' or its corresponding type declarations. (ts)
+	import SovereignLedger from "$lib/components/dashboard/SovereignLedger.svelte";
+	import SovereignTokenomics from "$lib/components/dashboard/SovereignTokenomics.svelte";
+	import ValidatorRegistry from "$lib/components/dashboard/ValidatorRegistry.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:50:32
+Error: Cannot find module '$lib/components/dashboard/ValidatorRegistry.svelte' or its corresponding type declarations. (ts)
+	import SovereignTokenomics from "$lib/components/dashboard/SovereignTokenomics.svelte";
+	import ValidatorRegistry from "$lib/components/dashboard/ValidatorRegistry.svelte";
+	import FediverseTheater from "$lib/components/dashboard/FediverseTheater.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:51:31
+Error: Cannot find module '$lib/components/dashboard/FediverseTheater.svelte' or its corresponding type declarations. (ts)
+	import ValidatorRegistry from "$lib/components/dashboard/ValidatorRegistry.svelte";
+	import FediverseTheater from "$lib/components/dashboard/FediverseTheater.svelte";
+	import LocalEconomyHUD from "$lib/components/dashboard/LocalEconomyHUD.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:52:30
+Error: Cannot find module '$lib/components/dashboard/LocalEconomyHUD.svelte' or its corresponding type declarations. (ts)
+	import FediverseTheater from "$lib/components/dashboard/FediverseTheater.svelte";
+	import LocalEconomyHUD from "$lib/components/dashboard/LocalEconomyHUD.svelte";
+	import CircularGovernance from "$lib/components/dashboard/CircularGovernance.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:53:33
+Error: Cannot find module '$lib/components/dashboard/CircularGovernance.svelte' or its corresponding type declarations. (ts)
+	import LocalEconomyHUD from "$lib/components/dashboard/LocalEconomyHUD.svelte";
+	import CircularGovernance from "$lib/components/dashboard/CircularGovernance.svelte";
+	import ForensicYieldExplorer from "$lib/components/dashboard/ForensicYieldExplorer.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:54:36
+Error: Cannot find module '$lib/components/dashboard/ForensicYieldExplorer.svelte' or its corresponding type declarations. (ts)
+	import CircularGovernance from "$lib/components/dashboard/CircularGovernance.svelte";
+	import ForensicYieldExplorer from "$lib/components/dashboard/ForensicYieldExplorer.svelte";
+	import CanisterConsole from "$lib/components/dashboard/CanisterConsole.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:55:30
+Error: Cannot find module '$lib/components/dashboard/CanisterConsole.svelte' or its corresponding type declarations. (ts)
+	import ForensicYieldExplorer from "$lib/components/dashboard/ForensicYieldExplorer.svelte";
+	import CanisterConsole from "$lib/components/dashboard/CanisterConsole.svelte";
+	import BioVault from "$lib/components/dashboard/BioVault.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:56:23
+Error: Cannot find module '$lib/components/dashboard/BioVault.svelte' or its corresponding type declarations. (ts)
+	import CanisterConsole from "$lib/components/dashboard/CanisterConsole.svelte";
+	import BioVault from "$lib/components/dashboard/BioVault.svelte";
+	import GovernanceBridge from "$lib/components/dashboard/GovernanceBridge.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:57:31
+Error: Cannot find module '$lib/components/dashboard/GovernanceBridge.svelte' or its corresponding type declarations. (ts)
+	import BioVault from "$lib/components/dashboard/BioVault.svelte";
+	import GovernanceBridge from "$lib/components/dashboard/GovernanceBridge.svelte";
+	import ResonanceCortex from "$lib/components/dashboard/ResonanceCortex.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:58:30
+Error: Cannot find module '$lib/components/dashboard/ResonanceCortex.svelte' or its corresponding type declarations. (ts)
+	import GovernanceBridge from "$lib/components/dashboard/GovernanceBridge.svelte";
+	import ResonanceCortex from "$lib/components/dashboard/ResonanceCortex.svelte";
+	import ShardMutation from "$lib/components/dashboard/ShardMutation.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:59:28
+Error: Cannot find module '$lib/components/dashboard/ShardMutation.svelte' or its corresponding type declarations. (ts)
+	import ResonanceCortex from "$lib/components/dashboard/ResonanceCortex.svelte";
+	import ShardMutation from "$lib/components/dashboard/ShardMutation.svelte";
+	import AIForge from "$lib/components/dashboard/AIForge.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:60:22
+Error: Cannot find module '$lib/components/dashboard/AIForge.svelte' or its corresponding type declarations. (ts)
+	import ShardMutation from "$lib/components/dashboard/ShardMutation.svelte";
+	import AIForge from "$lib/components/dashboard/AIForge.svelte";
+	import MeshStressTest from "$lib/components/dashboard/MeshStressTest.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:61:29
+Error: Cannot find module '$lib/components/dashboard/MeshStressTest.svelte' or its corresponding type declarations. (ts)
+	import AIForge from "$lib/components/dashboard/AIForge.svelte";
+	import MeshStressTest from "$lib/components/dashboard/MeshStressTest.svelte";
+	import SovereignSuperApp from "$lib/components/dashboard/SovereignSuperApp.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:62:32
+Error: Cannot find module '$lib/components/dashboard/SovereignSuperApp.svelte' or its corresponding type declarations. (ts)
+	import MeshStressTest from "$lib/components/dashboard/MeshStressTest.svelte";
+	import SovereignSuperApp from "$lib/components/dashboard/SovereignSuperApp.svelte";
+	import CodeIntelligence from "$lib/components/dashboard/CodeIntelligence.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:63:31
+Error: Cannot find module '$lib/components/dashboard/CodeIntelligence.svelte' or its corresponding type declarations. (ts)
+	import SovereignSuperApp from "$lib/components/dashboard/SovereignSuperApp.svelte";
+	import CodeIntelligence from "$lib/components/dashboard/CodeIntelligence.svelte";
+	import OpenCodePanel from "$lib/components/dashboard/OpenCodePanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:64:28
+Error: Cannot find module '$lib/components/dashboard/OpenCodePanel.svelte' or its corresponding type declarations. (ts)
+	import CodeIntelligence from "$lib/components/dashboard/CodeIntelligence.svelte";
+	import OpenCodePanel from "$lib/components/dashboard/OpenCodePanel.svelte";
+	import MoleculePanel from "$lib/components/dashboard/MoleculePanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:65:28
+Error: Cannot find module '$lib/components/dashboard/MoleculePanel.svelte' or its corresponding type declarations. (ts)
+	import OpenCodePanel from "$lib/components/dashboard/OpenCodePanel.svelte";
+	import MoleculePanel from "$lib/components/dashboard/MoleculePanel.svelte";
+	import PicoClawPanel from "$lib/components/dashboard/PicoClawPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:66:28
+Error: Cannot find module '$lib/components/dashboard/PicoClawPanel.svelte' or its corresponding type declarations. (ts)
+	import MoleculePanel from "$lib/components/dashboard/MoleculePanel.svelte";
+	import PicoClawPanel from "$lib/components/dashboard/PicoClawPanel.svelte";
+	import ZVecPanel from "$lib/components/dashboard/ZVecPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:67:24
+Error: Cannot find module '$lib/components/dashboard/ZVecPanel.svelte' or its corresponding type declarations. (ts)
+	import PicoClawPanel from "$lib/components/dashboard/PicoClawPanel.svelte";
+	import ZVecPanel from "$lib/components/dashboard/ZVecPanel.svelte";
+	import SpecPanel from "$lib/components/dashboard/SpecPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:68:24
+Error: Cannot find module '$lib/components/dashboard/SpecPanel.svelte' or its corresponding type declarations. (ts)
+	import ZVecPanel from "$lib/components/dashboard/ZVecPanel.svelte";
+	import SpecPanel from "$lib/components/dashboard/SpecPanel.svelte";
+	import EdgeScalerPanel from "$lib/components/dashboard/EdgeScalerPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:69:30
+Error: Cannot find module '$lib/components/dashboard/EdgeScalerPanel.svelte' or its corresponding type declarations. (ts)
+	import SpecPanel from "$lib/components/dashboard/SpecPanel.svelte";
+	import EdgeScalerPanel from "$lib/components/dashboard/EdgeScalerPanel.svelte";
+	import RouteAgentPanel from "$lib/components/dashboard/RouteAgentPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:70:30
+Error: Cannot find module '$lib/components/dashboard/RouteAgentPanel.svelte' or its corresponding type declarations. (ts)
+	import EdgeScalerPanel from "$lib/components/dashboard/EdgeScalerPanel.svelte";
+	import RouteAgentPanel from "$lib/components/dashboard/RouteAgentPanel.svelte";
+	import DesignPhilosophyPanel from "$lib/components/dashboard/DesignPhilosophyPanel.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:71:36
+Error: Cannot find module '$lib/components/dashboard/DesignPhilosophyPanel.svelte' or its corresponding type declarations. (ts)
+	import RouteAgentPanel from "$lib/components/dashboard/RouteAgentPanel.svelte";
+	import DesignPhilosophyPanel from "$lib/components/dashboard/DesignPhilosophyPanel.svelte";
+	import SovereignStitchWeaver from "$lib/components/dashboard/SovereignStitchWeaver.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:72:36
+Error: Cannot find module '$lib/components/dashboard/SovereignStitchWeaver.svelte' or its corresponding type declarations. (ts)
+	import DesignPhilosophyPanel from "$lib/components/dashboard/DesignPhilosophyPanel.svelte";
+	import SovereignStitchWeaver from "$lib/components/dashboard/SovereignStitchWeaver.svelte";
+	import SovereignSpacebot from "$lib/components/dashboard/SovereignSpacebot.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:73:32
+Error: Cannot find module '$lib/components/dashboard/SovereignSpacebot.svelte' or its corresponding type declarations. (ts)
+	import SovereignStitchWeaver from "$lib/components/dashboard/SovereignStitchWeaver.svelte";
+	import SovereignSpacebot from "$lib/components/dashboard/SovereignSpacebot.svelte";
+	import SovereignFluxer from "$lib/components/dashboard/SovereignFluxer.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:74:30
+Error: Cannot find module '$lib/components/dashboard/SovereignFluxer.svelte' or its corresponding type declarations. (ts)
+	import SovereignSpacebot from "$lib/components/dashboard/SovereignSpacebot.svelte";
+	import SovereignFluxer from "$lib/components/dashboard/SovereignFluxer.svelte";
+	import LastSupperDecryption from "$lib/components/dashboard/LastSupperDecryption.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:75:35
+Error: Cannot find module '$lib/components/dashboard/LastSupperDecryption.svelte' or its corresponding type declarations. (ts)
+	import SovereignFluxer from "$lib/components/dashboard/SovereignFluxer.svelte";
+	import LastSupperDecryption from "$lib/components/dashboard/LastSupperDecryption.svelte";
+	import AetherContainment from "$lib/components/dashboard/AetherContainment.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:76:32
+Error: Cannot find module '$lib/components/dashboard/AetherContainment.svelte' or its corresponding type declarations. (ts)
+	import LastSupperDecryption from "$lib/components/dashboard/LastSupperDecryption.svelte";
+	import AetherContainment from "$lib/components/dashboard/AetherContainment.svelte";
+	import DesignSubstrate from "$lib/components/dashboard/DesignSubstrate.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:77:30
+Error: Cannot find module '$lib/components/dashboard/DesignSubstrate.svelte' or its corresponding type declarations. (ts)
+	import AetherContainment from "$lib/components/dashboard/AetherContainment.svelte";
+	import DesignSubstrate from "$lib/components/dashboard/DesignSubstrate.svelte";
+	import TypographicSpec from "$lib/components/dashboard/TypographicSpec.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:78:30
+Error: Cannot find module '$lib/components/dashboard/TypographicSpec.svelte' or its corresponding type declarations. (ts)
+	import DesignSubstrate from "$lib/components/dashboard/DesignSubstrate.svelte";
+	import TypographicSpec from "$lib/components/dashboard/TypographicSpec.svelte";
+	import SovereignMobileAudit from "$lib/components/dashboard/SovereignMobileAudit.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:79:35
+Error: Cannot find module '$lib/components/dashboard/SovereignMobileAudit.svelte' or its corresponding type declarations. (ts)
+	import TypographicSpec from "$lib/components/dashboard/TypographicSpec.svelte";
+	import SovereignMobileAudit from "$lib/components/dashboard/SovereignMobileAudit.svelte";
+	import LayoutBlueprint from "$lib/components/dashboard/LayoutBlueprint.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:80:30
+Error: Cannot find module '$lib/components/dashboard/LayoutBlueprint.svelte' or its corresponding type declarations. (ts)
+	import SovereignMobileAudit from "$lib/components/dashboard/SovereignMobileAudit.svelte";
+	import LayoutBlueprint from "$lib/components/dashboard/LayoutBlueprint.svelte";
+	import RedisSovereignty from "$lib/components/dashboard/RedisSovereignty.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:81:31
+Error: Cannot find module '$lib/components/dashboard/RedisSovereignty.svelte' or its corresponding type declarations. (ts)
+	import LayoutBlueprint from "$lib/components/dashboard/LayoutBlueprint.svelte";
+	import RedisSovereignty from "$lib/components/dashboard/RedisSovereignty.svelte";
+	import TasteAudit from "$lib/components/dashboard/TasteAudit.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:82:25
+Error: Cannot find module '$lib/components/dashboard/TasteAudit.svelte' or its corresponding type declarations. (ts)
+	import RedisSovereignty from "$lib/components/dashboard/RedisSovereignty.svelte";
+	import TasteAudit from "$lib/components/dashboard/TasteAudit.svelte";
+	import VintageSoulAudit from "$lib/components/dashboard/VintageSoulAudit.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:83:31
+Error: Cannot find module '$lib/components/dashboard/VintageSoulAudit.svelte' or its corresponding type declarations. (ts)
+	import TasteAudit from "$lib/components/dashboard/TasteAudit.svelte";
+	import VintageSoulAudit from "$lib/components/dashboard/VintageSoulAudit.svelte";
+	import KineticAudit from "$lib/components/dashboard/KineticAudit.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:84:27
+Error: Cannot find module '$lib/components/dashboard/KineticAudit.svelte' or its corresponding type declarations. (ts)
+	import VintageSoulAudit from "$lib/components/dashboard/VintageSoulAudit.svelte";
+	import KineticAudit from "$lib/components/dashboard/KineticAudit.svelte";
+	import SovereignStorage from "$lib/components/dashboard/SovereignStorage.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:85:31
+Error: Cannot find module '$lib/components/dashboard/SovereignStorage.svelte' or its corresponding type declarations. (ts)
+	import KineticAudit from "$lib/components/dashboard/KineticAudit.svelte";
+	import SovereignStorage from "$lib/components/dashboard/SovereignStorage.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/dashboard/+page.svelte:224:29
+Error: Parameter 'cols' implicitly has an 'any' type. (ts)
+				<SpatialVisionOverlay />
+				<CausalLoom onRestore={(cols) => (workspaceColumns = cols)} />
+			</div>
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/hearth/+page.svelte:5:36
+Error: Cannot find module '$lib/registries/davinci-wisdom' or its corresponding type declarations. (ts)
+    import { quintOut } from "svelte/easing";
+    import { DAVINCI_QUOTES } from "$lib/registries/davinci-wisdom";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/marketplace/+page.svelte:2:36
+Error: Cannot find module '$lib/components/marketplace/MarketplaceBrowser.svelte' or its corresponding type declarations. (ts)
+<script lang="ts">
+    import MarketplaceBrowser from "$lib/components/marketplace/MarketplaceBrowser.svelte";
+    import { workspacePersistence } from "$lib/services/workspace-persistence";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/marketplace/+page.svelte:3:42
+Error: Cannot find module '$lib/services/workspace-persistence' or its corresponding type declarations. (ts)
+    import MarketplaceBrowser from "$lib/components/marketplace/MarketplaceBrowser.svelte";
+    import { workspacePersistence } from "$lib/services/workspace-persistence";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:11:12
+Error: Cannot find module '$lib/stores/onboarding-store.svelte' or its corresponding type declarations. (ts)
+        completeOnboarding,
+    } from "$lib/stores/onboarding-store.svelte";
+    import { sovereignStore } from "$lib/stores/master-store.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:12:36
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "$lib/stores/onboarding-store.svelte";
+    import { sovereignStore } from "$lib/stores/master-store.svelte";
+    import WelcomeStep from "$lib/components/onboarding/WelcomeStep.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:13:29
+Error: Cannot find module '$lib/components/onboarding/WelcomeStep.svelte' or its corresponding type declarations. (ts)
+    import { sovereignStore } from "$lib/stores/master-store.svelte";
+    import WelcomeStep from "$lib/components/onboarding/WelcomeStep.svelte";
+    import IdentityStep from "$lib/components/onboarding/IdentityStep.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:14:30
+Error: Cannot find module '$lib/components/onboarding/IdentityStep.svelte' or its corresponding type declarations. (ts)
+    import WelcomeStep from "$lib/components/onboarding/WelcomeStep.svelte";
+    import IdentityStep from "$lib/components/onboarding/IdentityStep.svelte";
+    import SealStep from "$lib/components/onboarding/SealStep.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:15:26
+Error: Cannot find module '$lib/components/onboarding/SealStep.svelte' or its corresponding type declarations. (ts)
+    import IdentityStep from "$lib/components/onboarding/IdentityStep.svelte";
+    import SealStep from "$lib/components/onboarding/SealStep.svelte";
+    import { fade, fly, scale } from "svelte/transition";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:74:55
+Error: Parameter 'err' implicitly has an 'any' type. (ts)
+        // 🏛️ SOVEREIGN BRIDGE: Register on backend
+        sovereignStore.registerIdentity(state).catch((err) => {
+            console.error(
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:134:27
+Error: 'step' is of type 'unknown'. (ts)
+                    <span class="step-label"
+                        >{step.charAt(0).toUpperCase() + step.slice(1)}</span
+                    >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:134:58
+Error: 'step' is of type 'unknown'. (ts)
+                    <span class="step-label"
+                        >{step.charAt(0).toUpperCase() + step.slice(1)}</span
+                    >
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/onboarding/+page.svelte:159:31
+Error: Parameter 'data' implicitly has an 'any' type. (ts)
+                    data={onboardingStore.state.data}
+                    on:next={(data) => {
+                        updateData(data.detail);
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/systemic-redispatch/+page.svelte:4:34
+Error: Cannot find module '$lib/components/dashboard/SeizureDashboard.svelte' or its corresponding type declarations. (ts)
+    import { fade } from "svelte/transition";
+    import SeizureDashboard from "$lib/components/dashboard/SeizureDashboard.svelte";
+    import March31Countdown from "$lib/components/dashboard/March31Countdown.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/systemic-redispatch/+page.svelte:5:34
+Error: Cannot find module '$lib/components/dashboard/March31Countdown.svelte' or its corresponding type declarations. (ts)
+    import SeizureDashboard from "$lib/components/dashboard/SeizureDashboard.svelte";
+    import March31Countdown from "$lib/components/dashboard/March31Countdown.svelte";
+    import ArithmeticVitals from "$lib/components/dashboard/ArithmeticVitals.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/systemic-redispatch/+page.svelte:6:34
+Error: Cannot find module '$lib/components/dashboard/ArithmeticVitals.svelte' or its corresponding type declarations. (ts)
+    import March31Countdown from "$lib/components/dashboard/March31Countdown.svelte";
+    import ArithmeticVitals from "$lib/components/dashboard/ArithmeticVitals.svelte";
+
+/home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web/src/routes/vault/+page.svelte:14:30
+Error: Cannot find module '$lib/stores/master-store.svelte' or its corresponding type declarations. (ts)
+    } from "lucide-svelte";
+    import { manifold } from "$lib/stores/master-store.svelte";
+
+====================================
+svelte-check found 445 errors and 58 warnings in 160 files
+npm error Lifecycle script `check` failed with error:
+npm error code 1
+npm error path /home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web
+npm error workspace sovereign-web@0.0.1
+npm error location /home/gt-07/Downloads/AGE PROTOCOL/apps/sovereign-web
+npm error command failed
+npm error command sh -c svelte-kit sync && svelte-check --tsconfig ./tsconfig.json
