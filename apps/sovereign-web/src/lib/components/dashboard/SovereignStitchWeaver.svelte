@@ -126,7 +126,7 @@
                         bind:value={intentQuery}
                         placeholder="e.g. Generate a secure crypto treasury dashboard..."
                         class="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-cyan-400/50 outline-none rounded-2xl py-4 pl-12 pr-4 text-sm font-medium text-white placeholder:text-white/20 transition-all"
-                        onkeydown={(e) => e.key === "Enter" && startWeaving()}
+                        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && startWeaving()}
                     />
                     <button
                         onclick={startWeaving}

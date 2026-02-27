@@ -2,6 +2,7 @@
     import { createEventDispatcher } from "svelte";
     import { onMount } from "svelte";
 
+
     export let data;
 
     const dispatch = createEventDispatcher();
@@ -10,6 +11,7 @@
     let sealComplete = false;
     let acceptedTerms = false;
     let acceptedProtocol = false;
+
     let sealAnimation = "";
 
     const SEAL_PHRASES = [
@@ -48,6 +50,7 @@
                     setTimeout(() => {
                         dispatch("complete", {
                             ...data,
+
                             did: generatedDID,
                             verificationLevel: 1,
                             acceptedTerms,

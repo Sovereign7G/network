@@ -1,13 +1,14 @@
 <script lang="ts">
     import {
         Lightbulb,
+
         ArrowRight,
         Shield,
         Zap,
         TrendingUp,
         User,
     } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+//     import { fade, fly } from "svelte/transition";
 
     const strategies = [
         {

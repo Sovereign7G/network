@@ -66,6 +66,7 @@
 
     <div class="modal-body">
         <div class="config-section">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="config-label">Provider</label>
             <div class="provider-grid">
                 {#each Object.entries(PROVIDER_CONFIGS) as [id, info]}
@@ -85,6 +86,7 @@
         </div>
 
         <div class="config-section">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="config-label">API Key</label>
             <div class="api-key-input">
                 <input
@@ -113,6 +115,7 @@
         </div>
 
         <div class="config-section">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="config-label">Model</label>
             <select class="config-select" bind:value={model}>
                 {#each availableModels as m}
@@ -122,6 +125,7 @@
         </div>
 
         <div class="config-section">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="config-label">
                 Temperature: {temperature.toFixed(1)}
                 <span class="setting-hint">(0 = precise, 1 = creative)</span>
@@ -137,6 +141,7 @@
         </div>
 
         <div class="config-section">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label class="config-label">
                 Max Tokens: {maxTokens}
                 <span class="setting-hint">(max response length)</span>

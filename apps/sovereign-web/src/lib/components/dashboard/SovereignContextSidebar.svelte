@@ -42,7 +42,7 @@
         style="anchor-name: --anchor-logo"
         onmouseenter={() => showTooltip("--anchor-logo", "Sovereign Core")}
         onmouseleave={hideTooltip}
-        onkeydown={(e) =>
+        onkeydown={(e: KeyboardEvent) =>
             e.key === "Enter" && showTooltip("--anchor-logo", "Sovereign Core")}
     >
         <div

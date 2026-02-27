@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
-    import { onMount } from "svelte";
+//     import { onMount } from "svelte";
 
     const stories = [
         {

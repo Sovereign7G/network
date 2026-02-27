@@ -51,6 +51,7 @@
         <span id="signatories-title" class="group-label"
             >Signatory Addresses</span
         >
+
         {#each signatories as sig, i}
             <input
                 type="text"

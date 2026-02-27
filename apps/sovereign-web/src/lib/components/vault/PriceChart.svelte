@@ -1,11 +1,11 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    export let data = [];
+    export let data: any[] = [];
     export let color = "#9370DB";
 
-    let canvas;
-    let ctx;
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
     let tooltip = { show: false, x: 0, y: 0, price: 0, date: "" };
 
     onMount(() => {
@@ -106,10 +106,12 @@
         });
     }
 
+
     function handleMouseMove(event) {
         if (!ctx || !data || data.length === 0) return;
         const rect = canvas.getBoundingClientRect();
         const scaleX = canvas.width / rect.width;
+
         const scaleY = canvas.height / rect.height;
 
         const mouseX = (event.clientX - rect.left) * scaleX;
@@ -120,6 +122,7 @@
         // Find closest data point
         let minDist = Infinity;
         let closestIndex = -1;
+
 
         data.forEach((point, i) => {
             const x = padding + (i * (width - 2 * padding)) / (data.length - 1);

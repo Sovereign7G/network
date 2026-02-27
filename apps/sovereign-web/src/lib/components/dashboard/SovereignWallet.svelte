@@ -12,7 +12,7 @@
         TrendingUp,
     } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
-    import DonutChart from "./DonutChart.svelte";
+//     import DonutChart from "./DonutChart.svelte";
 
     let showBalance = $state(true);
 

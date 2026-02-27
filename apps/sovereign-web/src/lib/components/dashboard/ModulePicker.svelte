@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fade, fly } from "svelte/transition";
+//     import { fade, fly } from "svelte/transition";
     import {
         Search,
         X,
@@ -267,13 +267,13 @@
         class="manifest-overlay"
         transitionfade={{ duration: 300 }}
         onclick={() => (isOpen = false)}
-        onkeydown={(e) => e.key === "Escape" && (isOpen = false)}
+        onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (isOpen = false)}
         role="button"
         tabindex="0"
     >
         <div
             class="manifest-manifold"
-            onclick={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
             role="presentation"
             transitionfly={{ y: 40, duration: 600 }}
         >

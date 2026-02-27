@@ -43,6 +43,9 @@ export default defineConfig({
 					if (id.includes('node_modules')) {
 						if (id.includes('three')) return 'vendor-three';
 						if (id.includes('d3')) return 'vendor-d3';
+						if (id.includes('@sveltejs') || id.includes('svelte')) return 'vendor-svelte';
+						if (id.includes('lucide-svelte')) return 'vendor-icons';
+						if (id.includes('ethers')) return 'vendor-ethers';
 						return 'vendor';
 					}
 					if (id.includes('src/lib/stores/master-store')) return 'master-store';

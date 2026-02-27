@@ -349,6 +349,7 @@ class LLMService {
         ];
 
         // Add last 10 messages for context
+            // @ts-ignore
         const recentMessages = conversation.messages?.slice(-10) || [];
         recentMessages.forEach((msg: ConversationMessage) => {
             if (msg.role === 'user' || msg.role === 'assistant') {

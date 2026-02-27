@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let transactions = [];
+    export let transactions: any[] = [];
+
 
     function formatDate(date) {
         if (!date) return "";
@@ -13,6 +14,7 @@
     }
 
     function getTransactionIcon(type) {
+
         switch (type) {
             case "receive":
                 return "📥";
@@ -27,6 +29,7 @@
 
     function getTransactionColor(type) {
         switch (type) {
+
             case "receive":
                 return "#4ECDC4";
             case "send":

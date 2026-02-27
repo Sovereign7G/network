@@ -34,6 +34,7 @@
 <div
     class="flex flex-col h-full bg-black/60 rounded-[2.5rem] border-2 border-white/5 backdrop-blur-3xl overflow-hidden p-6 gap-6 shadow-2xl relative"
 >
+
     {#if glow.quarantine}
         <div
             class="absolute inset-0 z-50 bg-rose-500/10 backdrop-blur-sm border-4 border-rose-500 flex flex-col items-center justify-center p-8 text-center animate-pulse"
@@ -100,6 +101,7 @@
                 >
                 <span class="text-[9px] font-black text-white"
                     >{(glow.coherence * 100).toFixed(1)}%</span
+
                 >
             </div>
             <div class="h-1 bg-white/10 rounded-full overflow-hidden">
@@ -107,6 +109,7 @@
                     class="h-full bg-cyan-400 shadow-[0_0_10px_#22d3ee]"
                     style:width="{glow.coherence * 100}%"
                 ></div>
+
             </div>
         </div>
         <div class="bg-white/5 p-3 rounded-2xl border border-white/5">
@@ -118,6 +121,7 @@
                     >{(glow.chaos * 100).toFixed(1)}%</span
                 >
             </div>
+
             <div class="h-1 bg-white/10 rounded-full overflow-hidden">
                 <div
                     class="h-full bg-rose-500 shadow-[0_0_10px_#f43f5e]"
@@ -127,6 +131,7 @@
                     )}%"
                 ></div>
             </div>
+
         </div>
     </div>
 

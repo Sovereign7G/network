@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+//     import { onMount } from "svelte";
+
 
     let workspace;
     let nodes = [
@@ -17,6 +18,7 @@
     function handleDrag(e, node) {
         if (!draggingNode) return;
 
+
         // grid snapping
         const grid = 20;
         const x =
@@ -25,6 +27,7 @@
             ) * grid;
         const y =
             Math.round(
+
                 (e.clientY - workspace.getBoundingClientRect().top) / grid,
             ) * grid;
 
@@ -56,13 +59,14 @@
             class="node {node.active ? 'active-glow' : ''}"
             style="transform: translate({node.x}px, {node.y}px)"
             onmousedown={() => (draggingNode = node)}
-            onmousemove={(e) => {
+            onmousemove={(e: MouseEvent) => {
                 if (draggingNode?.id === node.id) handleDrag(e, node);
             }}
             onmouseup={() => (draggingNode = null)}
             role="button"
             tabindex="0"
         >
+
             {node.label}
         </div>
     {/each}

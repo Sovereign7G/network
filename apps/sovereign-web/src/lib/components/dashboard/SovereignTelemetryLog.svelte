@@ -1,11 +1,14 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade, fly, slide } from "svelte/transition";
+
     import {
         Activity,
+
         Shield,
         Zap,
         Terminal,
+
         Layers,
         Info,
     } from "lucide-svelte";

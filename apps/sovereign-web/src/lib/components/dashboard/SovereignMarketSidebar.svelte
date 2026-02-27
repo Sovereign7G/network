@@ -9,9 +9,11 @@
         List,
         Bot,
         Eye,
+
         Wrench,
         Sparkles,
         Zap,
+
     } from "lucide-svelte";
     import { scale } from "svelte/transition";
     import SovereignWellbeing from "./SovereignWellbeing.svelte";
@@ -22,6 +24,7 @@
     }
 
     let { marketplaceItems, onSelect }: Props = $props();
+
 
     let showMyQR = $state(false);
     let envelopeStatus = $state<"IDLE" | "GIFTING" | "SENT">("IDLE");
@@ -271,6 +274,7 @@
         <div class="space-y-6">
             {#each Array(2) as _, i}
                 <div class="space-y-2">
+
                     <div class="flex items-start gap-3">
                         <span class="text-neon-cyan font-black text-xs">Q:</span
                         >

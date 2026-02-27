@@ -1,6 +1,7 @@
 <script lang="ts">
     import { authStore } from "../stores/auth.svelte";
-    import { ShieldCheck, Fingerprint, Lock, ArrowRight } from "lucide-svelte";
+
+//     import { ShieldCheck, Fingerprint, Lock, ArrowRight } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
 
     let phase = $state("pin"); // 'pin' or 'biometrics'

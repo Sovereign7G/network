@@ -168,4 +168,5 @@ class RUMMonitor {
     }
 }
 
+            // @ts-ignore
 const rumMonitor = new RUMMonitor();

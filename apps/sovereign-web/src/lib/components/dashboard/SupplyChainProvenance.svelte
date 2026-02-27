@@ -39,6 +39,7 @@
                     <span
                         class="text-[9px] font-black text-white/30 uppercase tracking-widest"
                         >Mesh_Verified: {logistics.shipments.filter(
+
                             (s) => s.mesh_verified,
                         ).length}/{logistics.shipments.length}</span
                     >

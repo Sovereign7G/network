@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let achievements = [];
+    export let achievements: any[] = [];
 </script>
 
 <div class="achievement-wall">

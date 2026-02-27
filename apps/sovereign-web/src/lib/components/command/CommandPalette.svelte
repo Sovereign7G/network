@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { onMount, onDestroy } from "svelte";
-    import { fly, fade } from "svelte/transition";
+//     import { onMount, onDestroy } from "svelte";
+//     import { fly, fade } from "svelte/transition";
     import { quintOut } from "svelte/easing";
     import { goto } from "$app/navigation";
 
@@ -149,6 +149,7 @@
         searchTerm = "";
         selectedIndex = 0;
         if (onclose) onclose();
+
     }
 
     function executeCommand(cmd: (typeof commands)[0]) {
@@ -171,7 +172,7 @@
     >
         <div
             class="command-palette"
-            onclick={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
             transitionfly={{ y: -20, duration: 200, easing: quintOut }}
         >
             <div class="command-header">

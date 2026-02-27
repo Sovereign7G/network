@@ -74,7 +74,7 @@
     <button
         class="summary-card"
         onclick={() => (selectedLayer = null)}
-        onkeydown={(e) => e.key === "Enter" && (selectedLayer = null)}
+        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && (selectedLayer = null)}
         aria-label="Reset layer selection"
     >
         <div class="yield-display">
@@ -90,7 +90,7 @@
                 class="layer-card"
                 style="--layer-color: {component.color}"
                 onclick={() => unfold(component)}
-                onkeydown={(e) => e.key === "Enter" && unfold(component)}
+                onkeydown={(e: KeyboardEvent) => e.key === "Enter" && unfold(component)}
                 aria-label="Select {component.name} layer"
                 aria-expanded={selectedLayer === component}
             >

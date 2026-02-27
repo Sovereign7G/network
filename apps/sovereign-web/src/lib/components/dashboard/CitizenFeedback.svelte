@@ -1,14 +1,17 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade, fly, slide } from "svelte/transition";
+
     import {
         MessageSquare,
+
         User,
         Heart,
         Share2,
         Globe,
         Shield,
         Zap,
+
     } from "lucide-svelte";
 
     const personalities = [

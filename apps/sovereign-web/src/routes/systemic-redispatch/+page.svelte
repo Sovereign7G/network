@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade, fly } from "svelte/transition";
-    import SeizureDashboard from "$lib/components/dashboard/SeizureDashboard.svelte";
+//     import SeizureDashboard from "$lib/components/dashboard/SeizureDashboard.svelte";
     import March31Countdown from "$lib/components/dashboard/March31Countdown.svelte";
     import ArithmeticVitals from "$lib/components/dashboard/ArithmeticVitals.svelte";
 

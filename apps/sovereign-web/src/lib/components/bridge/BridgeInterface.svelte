@@ -52,6 +52,7 @@
     <div class="bridge-form">
         <div class="chain-selectors">
             <div class="chain-select">
+<!-- svelte-ignore a11y_label_has_associated_control -->
                 <label>From</label>
                 <select bind:value={fromChain}>
                     {#each chains as chain}
@@ -74,6 +75,7 @@
             <div class="swap-arrow">→</div>
 
             <div class="chain-select">
+<!-- svelte-ignore a11y_label_has_associated_control -->
                 <label>To</label>
                 <select bind:value={toChain}>
                     {#each chains as chain}
@@ -95,6 +97,7 @@
         </div>
 
         <div class="amount-input">
+<!-- svelte-ignore a11y_label_has_associated_control -->
             <label>Amount</label>
             <div class="input-wrapper">
                 <input

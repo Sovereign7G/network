@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
+//     import { fly } from "svelte/transition";
     import type { Snippet } from "svelte";
     import BlockAnnotation from "./BlockAnnotation.svelte";
 
@@ -64,7 +64,7 @@
     ondragstart={handleDragStart}
     ondragend={handleDragEnd}
     ondblclick={handleDoubleClick}
-    onkeydown={(e) => {
+    onkeydown={(e: KeyboardEvent) => {
         if (e.key === "Enter" && !isEditing) handleDoubleClick();
     }}
     role="button"
@@ -75,8 +75,8 @@
     <!-- Block Toolbar for Annotations -->
     <div
         class="block-toolbar"
-        onclick={(e) => e.stopPropagation()}
-        onkeydown={(e) => e.stopPropagation()}
+        onclick={(e: MouseEvent) => e.stopPropagation()}
+        onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
         role="toolbar"
         aria-label="Block tools"
         tabindex="0"

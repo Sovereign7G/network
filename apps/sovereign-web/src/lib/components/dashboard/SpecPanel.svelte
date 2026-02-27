@@ -21,6 +21,7 @@
     } from "lucide-svelte";
     import {
         sovereignSDD,
+
         type SovereignSpec,
     } from "$lib/services/sdd-engine.svelte";
 
@@ -158,7 +159,7 @@
                                         </div>
                                         <button
                                             class="validate-btn"
-                                            onclick={(e) => {
+                                            onclick={(e: MouseEvent) => {
                                                 e.stopPropagation();
                                                 triggerValidation();
                                             }}

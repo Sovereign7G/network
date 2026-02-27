@@ -111,7 +111,7 @@
         </div>
 
         <form
-            onsubmit={(e) => {
+            onsubmit={(e: Event) => {
                 e.preventDefault();
                 handleSend();
             }}
@@ -197,6 +197,7 @@
                     onFlush={handleFlush}
                     bind:this={flushTrigger}
                 >
+
                     <svelte:fragment slot="trigger" let:startPress>
                         <button
                             type="submit"

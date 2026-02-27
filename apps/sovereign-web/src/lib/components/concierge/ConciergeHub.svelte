@@ -29,6 +29,7 @@
     let undoTimeout: ReturnType<typeof setTimeout> | null = null;
 
     const visibleSuggestions = $derived(
+
         suggestionEngine.suggestions.filter((s) => !s.dismissed),
     );
 
@@ -48,6 +49,7 @@
 
     function handleDismiss(id: string) {
         const sugg = suggestionEngine.suggestions.find((s) => s.id === id);
+
         if (sugg) {
             lastDismissed = { ...sugg };
             suggestionEngine.dismiss(id);
@@ -64,11 +66,13 @@
             suggestionId: suggestion.id,
             type: suggestion.type,
             action: "acted",
+
             timestamp: Date.now(),
             source: suggestion.context.source,
         });
         suggestion.action?.handler();
     }
+
 
     function undoDismiss() {
         if (lastDismissed) {
@@ -108,7 +112,7 @@
         onclick={toggleCollapse}
         role="button"
         tabindex="0"
-        onkeydown={(e) => e.key === "Enter" && toggleCollapse()}
+        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && toggleCollapse()}
     >
         <div class="ai-orb">
             <BrainCircuit size={20} class="text-amber-400" />
@@ -131,7 +135,7 @@
             </div>
             <button
                 class="ml-auto text-white/20 hover:text-white"
-                onclick={(e) => {
+                onclick={(e: MouseEvent) => {
                     e.stopPropagation();
                     toggleCollapse();
                 }}

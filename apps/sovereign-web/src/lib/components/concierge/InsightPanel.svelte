@@ -1,8 +1,9 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
 
-    export let insights = [];
+    export let insights: any[] = [];
     const dispatch = createEventDispatcher();
+
 
     function getInsightIcon(type) {
         switch (type) {
@@ -20,6 +21,7 @@
     }
 
     function getConfidenceColor(confidence) {
+
         if (confidence >= 0.8) return "#4CAF50";
         if (confidence >= 0.5) return "#FFD700";
         return "#FF6B6B";
@@ -27,6 +29,7 @@
 
     function formatTime(timestamp) {
         if (!timestamp) return "Just now";
+
         const now = new Date();
         const date = new Date(timestamp);
         const diff = now - date;

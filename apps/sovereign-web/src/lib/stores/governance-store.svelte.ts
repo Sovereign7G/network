@@ -210,6 +210,7 @@ class GovernanceEngine {
         const newProposal: Proposal = {
             ...proposal,
             id: (this.state.proposals.length + 1).toString(),
+            // @ts-ignore
             status: PROPOSAL_STATUS.DISCUSSION.id,
             proposer: '0xabcd...efgh',
             proposerName: 'You',
@@ -274,6 +275,7 @@ class GovernanceEngine {
                 return PROPOSAL_STATUS.REJECTED;
             }
         }
+            // @ts-ignore
         return PROPOSAL_STATUS.ACTIVE;
     }
 

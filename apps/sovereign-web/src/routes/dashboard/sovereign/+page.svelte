@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+//     import { onMount } from "svelte";
 
     // Mocking the charts structure for the UI placeholder
     const dashboard = {

@@ -1,7 +1,8 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import { governanceStore } from "$lib/stores/master-store";
+//     import { governanceStore } from "$lib/stores/master-store";
     import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
+
 
     export let proposal;
     export let userVote = null;
@@ -29,6 +30,7 @@
     function handleVote(support) {
         if (userVote) return;
         isVoting = true;
+
 
         // Simulate blockchain delay
         setTimeout(() => {
@@ -207,6 +209,7 @@
             </div>
         {:else if proposalStatus.id === PROPOSAL_STATUS.EXECUTED.id}
             <div class="result-badge executed">
+
                 <span>⚡ Executed</span>
             </div>
         {/if}

@@ -7,6 +7,7 @@
         <span class="stat-icon">📊</span>
         <div>
             <span class="stat-label">Total Proposals</span>
+
             <span class="stat-value">{stats.totalProposals || 0}</span>
         </div>
     </div>
@@ -16,6 +17,7 @@
         <div>
             <span class="stat-label">Active</span>
             <span class="stat-value">{stats.activeProposals || 0}</span>
+
         </div>
     </div>
 
@@ -25,6 +27,7 @@
             <span class="stat-label">Pass Rate</span>
             <span class="stat-value">{stats.passRate || 0}%</span>
         </div>
+
     </div>
 
     <div class="stat-card">
@@ -33,6 +36,7 @@
             <span class="stat-label">Voters</span>
             <span class="stat-value">{stats.totalVoters || 0}</span>
         </div>
+
     </div>
 </div>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from "svelte";
+//     import { onMount, onDestroy } from "svelte";
     import { NavyMap } from "../../../../../../packages/age-navy/src/three/NavyMap";
     import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
 
@@ -10,6 +10,7 @@
     onMount(() => {
         if (container) {
             navyMap = new NavyMap(container);
+
 
             unsubscribe = telemetryStore.subscribe((data) => {
                 navyMap.updateTelemetry(data);

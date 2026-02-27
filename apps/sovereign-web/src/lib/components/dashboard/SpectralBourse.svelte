@@ -1,6 +1,7 @@
 <script lang="ts">
     import { manifold } from "$lib/stores/master-store.svelte";
     import { BarChart3 } from "lucide-svelte";
+
     import type { OrderSide } from "$lib/types";
 
     const bourse = $derived(manifold.spectralBourse);

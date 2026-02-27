@@ -411,10 +411,10 @@
                         bind:this={canvas}
                         width="400"
                         height="200"
-                        onmousemove={(e) => {
+                        onmousemove={(e: MouseEvent) => {
                             if (e.buttons) handleDraw(e);
                         }}
-                        ontouchmove={(e) => {
+                        ontouchmove={(e: Event) => {
                             e.preventDefault();
                             handleDraw(e);
                         }}

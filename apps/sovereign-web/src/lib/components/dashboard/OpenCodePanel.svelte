@@ -259,7 +259,7 @@
                                 selectedAgent === agent.role
                                     ? null
                                     : agent.role)}
-                        onkeydown={(e) =>
+                        onkeydown={(e: KeyboardEvent) =>
                             e.key === "Enter" &&
                             (selectedAgent =
                                 selectedAgent === agent.role

@@ -50,6 +50,7 @@
     function simulateSerialization(schema: MolSchema) {
         const dummyData = schema.fields
             ? Object.fromEntries(
+
                   schema.fields.map((f) => [
                       f.name,
                       f.type === "mol-u32" ? 100 : "0x...",
@@ -125,7 +126,7 @@
                             class:selected={selectedSchemaId === schema.id}
                             in:fly={{ y: 20, delay: i * 50 }}
                             onclick={() => (selectedSchemaId = schema.id)}
-                            onkeydown={(e) => {
+                            onkeydown={(e: KeyboardEvent) => {
                                 if (e.key === "Enter" || e.key === " ") {
                                     selectedSchemaId = schema.id;
                                 }
@@ -159,7 +160,7 @@
                                     </div>
                                     <button
                                         class="serialize-btn"
-                                        onclick={(e) => {
+                                        onclick={(e: MouseEvent) => {
                                             e.stopPropagation();
                                             simulateSerialization(schema);
                                         }}

@@ -6,6 +6,7 @@
         ShieldCheck,
         Fingerprint,
         FileText,
+
         Calendar,
         Upload,
         Check,
@@ -17,6 +18,7 @@
     import { fade, fly, slide, scale } from "svelte/transition";
 
     let step = $state(1);
+
     let formData = $state({
         fullName: "",
         email: "",

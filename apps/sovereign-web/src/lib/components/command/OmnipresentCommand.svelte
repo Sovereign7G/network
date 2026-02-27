@@ -3,12 +3,13 @@
     import { goto } from "$app/navigation";
     import { writable } from "svelte/store";
 
+
     const vaultStore = writable({ balance: 1845920.0 });
 
     export let open = false;
 
     let input = "";
-    let results = [];
+    let results: any[] = [];
     let selectedIndex = 0;
 
     onMount(() => {
@@ -120,6 +121,7 @@
         ].filter((r) => r.destination.includes(val.toLowerCase()));
     }
 
+
     function executeSend(amount, asset, recipient) {
         // Auto-resolve address, check balance, show inline confirmation
         alert(`Mock Send: Sent ${amount} ${asset} to ${recipient}`);
@@ -129,7 +131,7 @@
 
 {#if open}
     <div class="command-overlay" onclick={() => (open = false)}>
-        <div class="command-palette" onclick={(e) => e.stopPropagation()}>
+        <div class="command-palette" onclick={(e: MouseEvent) => e.stopPropagation()}>
             <div class="command-input-area">
                 <span class="prompt">⌘</span>
                 <input

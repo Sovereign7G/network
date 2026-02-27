@@ -6,6 +6,7 @@
     const business = $derived(manifold.businessState);
 
     function startJob(id: string) {
+
         const job = business.activeJobs.find((j) => j.id === id);
         if (job) job.status = "RUNNING";
     }

@@ -2,10 +2,11 @@
     import { createEventDispatcher } from "svelte";
 
     export let currentDelegate = null;
-    export let councilMembers = [];
+    export let councilMembers: any[] = [];
     export let votingPower = 0;
 
     const dispatch = createEventDispatcher();
+
 
     let delegateAddress = currentDelegate || "";
     let customAddress = "";

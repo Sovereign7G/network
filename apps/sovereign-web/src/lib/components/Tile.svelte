@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
+//     import { fly } from "svelte/transition";
 
     let {
         tile,
@@ -15,6 +15,7 @@
 
     let showContextMenu = $state(false);
     let contextMenuPosition = $state({ x: 0, y: 0 });
+
 
     function handleClick(event: MouseEvent) {
         if (!showContextMenu) {
@@ -99,7 +100,7 @@
             style="left: {contextMenuPosition.x}px; top: {contextMenuPosition.y}px;"
             in:fly={{ y: 5, duration: 100 }}
             out:fly={{ y: 5, duration: 100 }}
-            onclick={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
         >
             <button class="context-item" onclick={handlePin}>
                 <span class="context-icon">{isPinned ? "📌" : "📍"}</span>

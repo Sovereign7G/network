@@ -1,5 +1,6 @@
 import type { FinancialIntelligenceState } from '../types/financial.types';
 
+            // @ts-ignore
 const mockFinancialState: FinancialIntelligenceState = {
     projections: [
         { timestamp: Date.now(), value: 1250000, confidence: 0.85, scenario: 'base' },

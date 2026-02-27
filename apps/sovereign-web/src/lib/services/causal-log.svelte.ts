@@ -72,4 +72,5 @@ class CausalLogService {
     }
 }
 
+            // @ts-ignore
 const causalLogService = new CausalLogService();

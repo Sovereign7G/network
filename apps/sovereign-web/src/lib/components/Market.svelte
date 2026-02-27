@@ -287,7 +287,7 @@
                             role="button"
                             tabindex="0"
                             onclick={() => (selectedListing = listing)}
-                            onkeydown={(e) =>
+                            onkeydown={(e: KeyboardEvent) =>
                                 e.key === "Enter" &&
                                 (selectedListing = listing)}
                             class="premium-scale liquid-glass p-8 flex flex-col justify-between min-h-[280px] hover:border-amber-400/40 transition-all cursor-pointer group"

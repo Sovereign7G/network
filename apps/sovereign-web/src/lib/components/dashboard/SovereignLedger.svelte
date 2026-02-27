@@ -5,6 +5,7 @@
         ChevronDown,
         ArrowUpRight,
         ArrowDownLeft,
+
         CheckCircle2,
         Clock,
         ShieldCheck,
@@ -13,6 +14,7 @@
     import { fade, fly, slide } from "svelte/transition";
 
     type Transaction = {
+
         id: string;
         date: string;
         amount: number;
@@ -70,6 +72,7 @@
     let filterType = $state("ALL");
 
     const statusStyles = {
+
         VERIFIED: "text-[#24AE7C] bg-[#24AE7C]/10 border-[#24AE7C]/20",
         ANCHORING: "text-neon-cyan bg-neon-cyan/10 border-neon-cyan/20",
         CAUSAL_TRACE: "text-amber-400 bg-amber-400/10 border-amber-400/20",

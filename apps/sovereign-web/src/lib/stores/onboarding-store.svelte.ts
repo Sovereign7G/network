@@ -1,4 +1,4 @@
-import { browser } from '$app/environment';
+// import { browser } from '$app/environment';
 
 export const ONBOARDING_STEPS = {
     WELCOME: 'welcome',

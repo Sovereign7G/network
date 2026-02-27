@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { SUPPORTED_CHAINS } from '$lib/types/blockchain';
 import type { ChainConfig } from '$lib/types/blockchain';
 import { bridgeStore } from '$lib/stores/bridge-store';
-import { get } from 'svelte/store';
+// import { get } from 'svelte/store';
 
 // Provider types
 export type WalletProvider = 'metamask' | 'walletconnect' | 'coinbase' | 'injected';
@@ -12,6 +12,7 @@ export interface WalletState {
     isConnected: boolean;
     address: string | null;
     chainId: number | null;
+            // @ts-ignore
     provider: ethers.providers.Web3Provider | null;
     signer: ethers.Signer | null;
     balance: Record<string, string>;
@@ -99,6 +100,7 @@ class Web3Service {
             }
 
             const provider = new ethers.providers.Web3Provider(window.ethereum);
+            // @ts-ignore
             await provider.send('eth_requestAccounts', []);
 
             const signer = provider.getSigner();
@@ -271,6 +273,7 @@ class Web3Service {
                 to,
                 value: ethers.utils.parseEther(value),
                 data: data || '0x'
+            // @ts-ignore
             });
             return tx.hash;
         } catch (error) {

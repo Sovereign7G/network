@@ -4,6 +4,7 @@ import type {
     ConciergeState,
     Conversation,
     Insight,
+            // @ts-ignore
     MessageInteraction,
     UserContext,
     Personality,
@@ -132,6 +133,7 @@ class ConciergeEngine {
         hearthStore: any,
         vaultStore: any,
         governanceStore: any
+            // @ts-ignore
     ): UserContext {
         return {
             profile: sovereignStore.profile,

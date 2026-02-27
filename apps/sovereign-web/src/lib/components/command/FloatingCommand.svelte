@@ -103,7 +103,7 @@
         class="command-overlay"
         role="presentation"
         onclick={() => (open = false)}
-        onkeydown={(e) => e.key === "Escape" && (open = false)}
+        onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (open = false)}
         tabindex="-1"
     >
         <div
@@ -111,8 +111,8 @@
             role="dialog"
             aria-modal="true"
             aria-label="Command Palette"
-            onclick={(e) => e.stopPropagation()}
-            onkeydown={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
+            onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             tabindex="0"
         >
             <div class="command-input-area">
@@ -136,7 +136,7 @@
                             role="option"
                             aria-selected={i === selectedIndex}
                             onclick={() => executeCommand(result)}
-                            onkeydown={(e) =>
+                            onkeydown={(e: KeyboardEvent) =>
                                 e.key === "Enter" && executeCommand(result)}
                         >
                             <span class="result-icon">{result.icon}</span>

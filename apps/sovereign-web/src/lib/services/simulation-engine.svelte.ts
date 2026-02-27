@@ -93,6 +93,7 @@ class SimulationEngine {
         //    Each lane gets independent jitter to simulate real network load.
         // ──────────────────────────────────────────────────────────────────
         if (manifold.kernelState?.lanes) {
+            // @ts-ignore
             manifold.kernelState.lanes.forEach(l => {
                 l.traffic = Math.max(0, Math.min(100, l.traffic + (Math.random() - 0.5) * 15));
             });

@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { manifold } from "$lib/stores/master-store.svelte";
+//     import { manifold } from "$lib/stores/master-store.svelte";
     import { fly } from "svelte/transition";
     import { Sparkles, Plus, Search, Layers } from "lucide-svelte";
 
@@ -53,7 +53,7 @@
             bind:value={query}
             placeholder="Search Protocol Mesh..."
             class="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-4 py-2 text-[10px] font-bold text-white placeholder:text-white/10 outline-none focus:border-cyan-400/40 transition-all"
-            onkeydown={(e) => e.key === "Enter" && searchDiscover()}
+            onkeydown={(e: KeyboardEvent) => e.key === "Enter" && searchDiscover()}
         />
     </div>
 

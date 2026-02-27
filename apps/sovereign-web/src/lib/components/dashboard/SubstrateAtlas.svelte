@@ -2,6 +2,7 @@
     import { manifold } from "$lib/stores/master-store.svelte";
     import { fade, fly } from "svelte/transition";
     import { MapPin, Zap, Layers, Activity, Crosshair } from "lucide-svelte";
+
     import type { PointStatus } from "$lib/types";
 
     // 🗺️ SUBSTRATE ATLAS: Global Industrial Choke Points

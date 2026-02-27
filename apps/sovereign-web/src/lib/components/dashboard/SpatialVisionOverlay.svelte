@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { manifold } from "$lib/stores/master-store.svelte";
+//     import { manifold } from "$lib/stores/master-store.svelte";
     import { fade } from "svelte/transition";
     import { Layers, Eye, Move3d, Target, Activity } from "lucide-svelte";
     import { onMount } from "svelte";

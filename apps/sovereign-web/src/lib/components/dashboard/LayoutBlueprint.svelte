@@ -121,7 +121,7 @@
                             ? 'bg-yellow-500/20 border-yellow-500'
                             : ''}"
                         role="presentation"
-                        onmouseenter={(e) => {
+                        onmouseenter={(e: MouseEvent) => {
                             e.stopPropagation();
                             activeLayer = "Inner_Stack_Flow";
                         }}

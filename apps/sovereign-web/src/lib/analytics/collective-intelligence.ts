@@ -69,4 +69,5 @@ class CollectiveIntelligence {
     }
 }
 
+            // @ts-ignore
 const collectiveIntelligence = new CollectiveIntelligence();

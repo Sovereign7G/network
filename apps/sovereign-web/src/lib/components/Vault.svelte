@@ -3,6 +3,7 @@
         ArrowUpRight,
         ArrowDownLeft,
         History,
+
         TrendingUp,
         Plus,
         Layers3,
@@ -11,8 +12,10 @@
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
 
+
     const summaryStats = [
         {
+
             label: "NET RESOURCE VOLUME",
             value: "842,450.00",
             trend: "+5.2%",

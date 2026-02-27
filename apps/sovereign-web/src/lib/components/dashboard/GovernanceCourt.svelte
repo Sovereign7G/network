@@ -40,6 +40,7 @@
             </header>
 
             <div class="case-list">
+
                 {#each courtCases.filter((c) => c.status === "PENDING") as caseItem}
                     <div class="case-card" in:fly={{ y: 20 }}>
                         <div class="case-meta">

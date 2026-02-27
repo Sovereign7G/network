@@ -5,6 +5,7 @@
         MicOff,
         Video,
         VideoOff,
+
         MoreHorizontal,
         Activity,
         ShieldCheck,
@@ -12,6 +13,7 @@
         Layers,
     } from "lucide-svelte";
     import { fade, fly, scale } from "svelte/transition";
+
 
     type ShardParticipant = {
         id: string;
@@ -58,6 +60,7 @@
     ]);
 
     let activeSpeakerId = $state("alpha-01");
+
 
     // Simulate "Speaking" changes
     setInterval(() => {

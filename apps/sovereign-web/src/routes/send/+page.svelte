@@ -3,6 +3,7 @@
     // Mock vault store to prevent import errors if it doesn't exist
     // Replace with actual import if it exists properly
     const vaultStore = {
+
         sendTransaction: async (data: any) => {
             return new Promise((resolve) => setTimeout(resolve, 1000));
         },

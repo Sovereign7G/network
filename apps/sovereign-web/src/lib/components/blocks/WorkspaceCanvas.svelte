@@ -69,7 +69,7 @@
                 role="status"
                 aria-label="Empty column drop zone"
                 ondragover={handleDragOver}
-                ondrop={(e) => {
+                ondrop={(e: DragEvent) => {
                     e.preventDefault();
                     handleDrop(i);
                 }}
@@ -77,12 +77,12 @@
                 {#each column.blocks as block, bIdx (block.id)}
                     <div
                         animate:flip={{ duration: flipDurationMs }}
-                        ondragover={(e) => {
+                        ondragover={(e: DragEvent) => {
                             e.preventDefault();
                             e.stopPropagation();
                             e.dataTransfer!.dropEffect = "move";
                         }}
-                        ondrop={(e) => {
+                        ondrop={(e: DragEvent) => {
                             e.preventDefault();
                             e.stopPropagation();
                             handleDrop(i, bIdx);

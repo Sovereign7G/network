@@ -47,10 +47,11 @@
     ];
 
     // Canvas context
-    let canvas;
-    let ctx;
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
+
     let animationFrame;
-    let particles = [];
+    let particles: any[] = [];
 
     onMount(() => {
         initCanvas();
@@ -78,11 +79,12 @@
         return () => {
             clearInterval(interval);
             cancelAnimationFrame(animationFrame);
+
         };
     });
 
     function initCanvas() {
-        canvas = document.getElementById("telemetry-canvas");
+        canvas = document.getElementById('telemetry-canvas') as HTMLCanvasElement | null;
         if (!canvas) return;
 
         ctx = canvas.getContext("2d");

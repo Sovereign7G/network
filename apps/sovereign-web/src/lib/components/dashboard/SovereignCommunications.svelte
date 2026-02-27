@@ -387,7 +387,7 @@
                     <input
                         type="text"
                         bind:value={newMessage}
-                        onkeydown={(e) => e.key === "Enter" && sendMessage()}
+                        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && sendMessage()}
                         placeholder="Encrypted transmission..."
                         class="w-full bg-black/60 border border-white/10 rounded-2xl py-4 pl-6 pr-24 text-[11px] text-white placeholder:text-white/20 focus:outline-none focus:border-indigo-500/50 transition-all font-medium"
                     />
@@ -420,7 +420,7 @@
             <div
                 class="absolute inset-0 bg-black/80 backdrop-blur-md"
                 onclick={() => (isJoinModalOpen = false)}
-                onkeydown={(e) =>
+                onkeydown={(e: KeyboardEvent) =>
                     e.key === "Escape" && (isJoinModalOpen = false)}
                 role="button"
                 tabindex="0"

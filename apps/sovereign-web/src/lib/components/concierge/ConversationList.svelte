@@ -73,7 +73,7 @@
                 <button
                     class="delete-btn"
                     class:confirm={conv.id === deletingId}
-                    onclick={(e) => handleDelete(conv.id, e)}
+                    onclick={(e: MouseEvent) => handleDelete(conv.id, e)}
                     aria-label="Delete conversation"
                 >
                     {deletingId === conv.id ? "✓" : "✕"}

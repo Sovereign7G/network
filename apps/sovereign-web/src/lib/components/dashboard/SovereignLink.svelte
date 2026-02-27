@@ -2,10 +2,12 @@
     import {
         Link2,
         ShieldCheck,
+
         Globe,
         Lock,
         AlertCircle,
         ExternalLink,
+
         Check,
     } from "lucide-svelte";
     import { fade, fly, scale } from "svelte/transition";

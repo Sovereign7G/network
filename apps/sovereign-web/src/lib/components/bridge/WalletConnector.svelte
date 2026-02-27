@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, onDestroy } from "svelte";
+//     import { onMount, onDestroy } from "svelte";
     import { web3Service } from "$lib/services/web3-service";
     import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
     import type { WalletState } from "$lib/services/web3-service";

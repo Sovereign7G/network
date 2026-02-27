@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Briefcase, Zap } from "lucide-svelte";
-    import { fade, fly } from "svelte/transition";
+//     import { fade, fly } from "svelte/transition";
 
     const roles = [
         { title: "Backplane Architect", yield: "12% NAI", match: 0.98 },

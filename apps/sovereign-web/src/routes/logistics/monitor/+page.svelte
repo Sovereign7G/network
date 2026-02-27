@@ -28,6 +28,7 @@
             courier: "maria_l",
         },
     ];
+
     let mapMarkers: any[] = [];
 
     onMount(() => {

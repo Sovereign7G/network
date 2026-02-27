@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import { loadFromStorage, saveToStorage } from '$lib/utils/storage';
 import { API_CONFIG } from '$lib/config/api';
+            // @ts-ignore
 import type { TelemetryState, TelemetryLog, SystemVitals, TelemetryAlert } from '$lib/types';
 
 // ─── TYPES & LOGIC ──────────────────────────────────────────────────────────

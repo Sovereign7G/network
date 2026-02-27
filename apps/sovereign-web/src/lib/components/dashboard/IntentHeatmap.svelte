@@ -10,6 +10,7 @@
         if (canvas) {
             engine = new HeatmapEngine(canvas);
 
+
             const unsubscribe = telemetryStore.subscribe((data: any) => {
                 // Trigger a spark for each transaction or alert
                 if (data.alerts && data.alerts.length > 0) {

@@ -32,6 +32,7 @@
         governanceStore.getUserVotingPower(
             governanceStore.state,
             hearthStore.state?.totalResonance || 0,
+
             vaultStore.state?.totalValue || 0,
         ),
     );
@@ -340,7 +341,7 @@
             <div
                 class="modal-content"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
             >
                 <CreateProposalModal
                     onClose={() => (showCreateModal = false)}
@@ -364,7 +365,7 @@
             <div
                 class="modal-content"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
             >
                 <DelegateModal
                     currentDelegate={governanceStore.state.userDelegates}
@@ -372,6 +373,7 @@
                     {votingPower}
                     onClose={() => (showDelegateModal = false)}
                     onDelegate={(delegateId) => {
+
                         governanceStore.delegateVotes(delegateId);
                         showDelegateModal = false;
                     }}

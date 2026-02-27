@@ -169,15 +169,15 @@
 {#if isOpen}
     <div
         class="intent-overlay"
-        transitionfade={{ duration: 150 }}
+        in:fade={{ duration: 150 }}
         onclick={toggle}
-        onkeydown={(e) => e.key === "Escape" && toggle()}
+        onkeydown={(e: KeyboardEvent) => e.key === "Escape" && toggle()}
         role="button"
         tabindex="0"
     >
         <div
             class="intent-modal-container"
-            onclick={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
             role="presentation"
         >
             <div class="intent-modal" in:fly={{ y: -10, duration: 400 }}>

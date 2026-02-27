@@ -58,6 +58,7 @@
     ];
 
     let selectedMemory = $state(memories[memories.length - 1]);
+
     let hoveredMemory = $state(null as string | null);
 
     // 3D Canvas
@@ -128,7 +129,7 @@
     });
 
     function initCanvas() {
-        canvas = document.getElementById("crystal-canvas");
+        canvas = document.getElementById('crystal-canvas') as HTMLCanvasElement | null;
         if (!canvas) return;
 
         ctx = canvas.getContext("2d");
@@ -137,6 +138,7 @@
 
         animate();
     }
+
 
     function rotate3D(x, y, z, rx, ry) {
         // Rotation around Y
@@ -202,7 +204,9 @@
                 vy = p2[1] - p0[1],
                 vz = p2[2] - p0[2];
             let nx = uy * vz - uz * vy;
+
             let ny = uz * vx - ux * vz;
+
             let nz = ux * vy - uy * vx;
 
             return { face, zSum, normalZ: nz, pts: [p0, p1, p2] };
@@ -213,6 +217,7 @@
         // Draw faces
         projectedFaces.forEach((f, i) => {
             // Only draw forward-facing or use transparency for glass effect
+
             const lightIntense = Math.max(0, f.normalZ / 10000);
             const isBackFace = f.zSum < 0;
 

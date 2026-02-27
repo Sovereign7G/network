@@ -32,6 +32,7 @@
     };
 
     const advancedMode = $derived(
+
         sovereignStore.state.preferences.advancedMode,
     );
     let activeTab = $state("voting");

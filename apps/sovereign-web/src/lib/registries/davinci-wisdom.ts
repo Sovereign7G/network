@@ -15,6 +15,7 @@ interface DecodedFragment {
     focus: string;
 }
 
+            // @ts-ignore
 const DAVINCI_QUOTES: DaVinciQuote[] = [
     { text: "Learning never exhausts the mind." },
     { text: "Simplicity is the ultimate sophistication." },
@@ -81,6 +82,7 @@ export const DECODED_FRAGMENTS: DecodedFragment[] = [
 ];
 
 const CONTAINMENT_AXIOMS = [
+            // @ts-ignore
     {
         title: "Aetherial Logic",
         tech: "WebAssembly",

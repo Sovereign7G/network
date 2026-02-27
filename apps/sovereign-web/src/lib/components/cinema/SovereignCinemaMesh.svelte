@@ -3,9 +3,11 @@
         Camera,
         Shield,
         Layers,
+
         Music,
         Verified,
         AlertCircle,
+
         ChevronRight,
         Play,
     } from "lucide-svelte";

@@ -1,6 +1,7 @@
 <script lang="ts">
     import { fade, slide } from "svelte/transition";
 
+
     let { blockId, comments = $bindable([]), onClose } = $props();
 
     let newComment = $state("");

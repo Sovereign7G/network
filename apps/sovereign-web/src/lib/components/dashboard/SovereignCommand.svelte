@@ -4,9 +4,11 @@
         Lock,
         Fingerprint,
         Eye,
+
         Zap,
         Activity,
         Key,
+
         ShieldCheck,
         Terminal,
         History,
@@ -14,10 +16,13 @@
     import { fade, fly } from "svelte/transition";
 
     let authPinActive = $state(true);
+
     let signPinActive = $state(true);
     let biometricStatus = $state("VERIFIED");
 
+
     const auditLogs = [
+
         {
             time: "10:24:55",
             subject: "REVENUE SERVICE",

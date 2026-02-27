@@ -7,8 +7,8 @@
         vested: 15,
     };
 
-    let canvas;
-    let ctx;
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
 
     const COLORS = {
         liquid: "#4ECDC4",
@@ -50,6 +50,7 @@
             ctx.moveTo(centerX, centerY);
             ctx.arc(centerX, centerY, radius, startAngle, endAngle);
             ctx.closePath();
+
             ctx.fillStyle = COLORS[key] || "#999";
             ctx.fill();
 
@@ -84,6 +85,7 @@
                 <span
                     class="legend-color"
                     style="background: {COLORS[key] || '#999'};"
+
                 ></span>
                 <span class="legend-label"
                     >{key.charAt(0).toUpperCase() + key.slice(1)}</span

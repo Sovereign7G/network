@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { fade, scale } from "svelte/transition";
+//     import { fade, scale } from "svelte/transition";
+
     export let text: string = "";
     export let x: number = 0;
     export let y: number = 0;

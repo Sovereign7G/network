@@ -5,6 +5,7 @@
         Wallet,
         Globe,
         ShieldAlert,
+
         Settings,
         Activity,
         Users,

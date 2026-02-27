@@ -167,14 +167,14 @@
                                     <div class="exp-actions">
                                         <button
                                             class="action-btn"
-                                            onclick={(e) => {
+                                            onclick={(e: MouseEvent) => {
                                                 e.stopPropagation();
                                                 activeTab = "query";
                                             }}>Query</button
                                         >
                                         <button
                                             class="action-btn danger"
-                                            onclick={(e) => {
+                                            onclick={(e: MouseEvent) => {
                                                 e.stopPropagation();
                                                 sovereignZVec.deleteCollection(
                                                     col.id,

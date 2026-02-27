@@ -1,6 +1,6 @@
 <script lang="ts">
     import { Shield, Vote, Flame, Zap } from "lucide-svelte";
-    import { fade } from "svelte/transition";
+//     import { fade } from "svelte/transition";
 
     interface Props {
         governanceMetrics: {

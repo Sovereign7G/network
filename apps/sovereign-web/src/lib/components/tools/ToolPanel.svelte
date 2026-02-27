@@ -20,7 +20,7 @@
         class="tool-panel-overlay"
         role="presentation"
         onclick={closePanel}
-        onkeydown={(e) => e.key === "Escape" && closePanel()}
+        onkeydown={(e: KeyboardEvent) => e.key === "Escape" && closePanel()}
         tabindex="-1"
         transition:fade={{ duration: 200 }}
     >
@@ -29,8 +29,8 @@
             role="dialog"
             aria-modal="true"
             aria-labelledby="tool-panel-title"
-            onclick={(e) => e.stopPropagation()}
-            onkeydown={(e) => e.stopPropagation()}
+            onclick={(e: MouseEvent) => e.stopPropagation()}
+            onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             tabindex="0"
             transition:fly={{ x: -20, duration: 200 }}
         >

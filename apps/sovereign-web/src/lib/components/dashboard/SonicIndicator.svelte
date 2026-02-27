@@ -11,6 +11,7 @@
     const sonic = createSonicSovereignty();
 
     onMount(() => {
+
         const unsubscribe = telemetryStore.subscribe((t) => {
             // Assuming telemetryStore might need these fields added
             resonance = (t as any).resonance || 0;

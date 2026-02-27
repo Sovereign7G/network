@@ -3,6 +3,7 @@
     import {
         Shield,
         Zap,
+
         Globe,
         ArrowRight,
         Fingerprint,

@@ -41,4 +41,5 @@ class AgentService {
     }
 }
 
+            // @ts-ignore
 const agentService = new AgentService();

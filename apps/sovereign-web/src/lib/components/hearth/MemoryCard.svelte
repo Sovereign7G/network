@@ -56,7 +56,7 @@
     onclick={() => {
         if (onclick) onclick();
     }}
-    onkeydown={(e) => {
+    onkeydown={(e: KeyboardEvent) => {
         if (e.key === "Enter") {
             isExpanded = !isExpanded;
             if (onclick) onclick();
@@ -86,7 +86,7 @@
             <button
                 class="delete-btn"
                 class:confirm={showDeleteConfirm}
-                onclick={(e) => {
+                onclick={(e: MouseEvent) => {
                     e.stopPropagation();
                     handleDelete();
                 }}
@@ -117,10 +117,12 @@
         <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
         <div
             class="memory-expanded"
-            onclick={(e) => e.stopPropagation()}
-            role="region"
+            onclick={(e: MouseEvent) => e.stopPropagation()}
+            onkeydown={(e: KeyboardEvent) =>
+                e.key === "Enter" && e.stopPropagation()}
+            role="button"
             aria-label="Expanded memory view"
-            tabindex="-1"
+            tabindex="0"
         >
             {#if memory.reflections && memory.reflections.length > 0}
                 <div class="reflections-section">
@@ -152,7 +154,7 @@
                     class="reflection-input"
                     placeholder="Add a reflection..."
                     bind:value={reflectionText}
-                    onkeydown={(e) =>
+                    onkeydown={(e: KeyboardEvent) =>
                         e.key === "Enter" && handleAddReflection()}
                 />
                 <button

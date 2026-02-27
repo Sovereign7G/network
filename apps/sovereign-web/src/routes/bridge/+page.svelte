@@ -9,7 +9,7 @@
     };
 
     import { fly, fade } from "svelte/transition";
-    import { quintOut, cubicInOut } from "svelte/easing";
+//     import { quintOut, cubicInOut } from "svelte/easing";
 
     // Chain configuration
     const chains = {
@@ -54,8 +54,9 @@
     let hoveredChain = $state(null as string | null);
 
     // For the living topology visualization
-    let canvasCtx;
-    let particles = [];
+
+    let canvas: HTMLCanvasElement | null = null;
+    let particles: any[] = [];
     let animationFrame;
 
     onMount(() => {
@@ -78,7 +79,7 @@
     }
 
     function initCanvas() {
-        const canvas = document.getElementById("chain-topology");
+        const canvas = document.getElementById('chain-topology') as HTMLCanvasElement | null;
         if (!canvas) return;
 
         canvasCtx = canvas.getContext("2d");
@@ -89,6 +90,7 @@
             if (!canvasCtx) return;
 
             canvasCtx.clearRect(0, 0, canvas.width, canvas.height);
+
 
             // Draw connections between chains
             canvasCtx.strokeStyle = "rgba(255, 255, 255, 0.1)";
@@ -112,18 +114,23 @@
                             chainPositions[from].y,
                         );
                         canvasCtx.lineTo(
+
                             chainPositions[to].x,
                             chainPositions[to].y,
                         );
+
                         canvasCtx.strokeStyle = "rgba(255, 255, 255, 0.05)";
                         canvasCtx.stroke();
                     }
                 });
             });
 
+
             // Draw active transfer if processing
+
             if (isProcessing && fromChain && toChain) {
                 const start = chainPositions[fromChain];
+
                 const end = chainPositions[toChain];
 
                 // Animated orb traveling along path
@@ -134,6 +141,7 @@
                 canvasCtx.lineTo(end.x, end.y);
                 canvasCtx.strokeStyle = chains[fromChain].color;
                 canvasCtx.lineWidth = 2;
+
                 canvasCtx.stroke();
 
                 // Orb
@@ -154,7 +162,9 @@
                 const isSelected = chain === fromChain || chain === toChain;
                 const isHovered = chain === hoveredChain;
 
+
                 canvasCtx.beginPath();
+
                 canvasCtx.arc(
                     pos.x,
                     pos.y,
@@ -166,9 +176,12 @@
                 // Gradient fill
                 const gradient = canvasCtx.createRadialGradient(
                     pos.x - 5,
+
                     pos.y - 5,
                     5,
+
                     pos.x,
+
                     pos.y,
                     30,
                 );
@@ -189,25 +202,36 @@
 
                 // TPS indicator
                 canvasCtx.font = "10px Inter";
+
                 canvasCtx.fillStyle = "rgba(255,255,255,0.5)";
                 canvasCtx.fillText(
                     `${chains[chain].tps} TPS`,
+
                     pos.x,
+
                     pos.y + 35,
+
                 );
+
             });
 
             animationFrame = requestAnimationFrame(animate);
+
         }
 
+
         animate();
+
     }
 
     // Somatic weight - press and hold for execution
     let holdProgress = $state(0);
+
     let holdInterval: any;
 
+
     function startHold() {
+
         if (!amount || !fromChain || !toChain) return;
 
         holdProgress = 0;
@@ -297,8 +321,10 @@
             </div>
 
             <div class="bridge-arrow">
+
                 <span class="arrow-icon">→</span>
                 <span class="arrow-glow"></span>
+
             </div>
 
             <div
@@ -311,6 +337,7 @@
                 <label for="to-chain-select">To</label>
                 <div
                     class="chain-display"
+
                     style="border-color: {chains[toChain].color}"
                 >
                     <span class="chain-icon">{chains[toChain].icon}</span>
@@ -331,12 +358,14 @@
             </div>
         </div>
 
+
         <!-- Asset Input with Weight -->
         <div class="asset-section">
+
             <div class="asset-label">
                 <span>Amount</span>
                 <span class="balance-hint"
-                    >Available: ${$vaultStore?.balance || "0"}</span
+                    >Available: ${vaultStore.state?.balance || "0"}</span
                 >
             </div>
 
@@ -358,6 +387,7 @@
                     aria-label="Select Asset"
                 >
                     <option value="USDC">USDC</option>
+
                     <option value="AGE">AGE</option>
                     <option value="SYND">SYND</option>
                 </select>

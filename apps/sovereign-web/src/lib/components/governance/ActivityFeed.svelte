@@ -1,5 +1,6 @@
 <script lang="ts">
-    export let activities = [];
+    export let activities: any[] = [];
+
 
     function getActivityIcon(type) {
         switch (type) {
@@ -15,6 +16,7 @@
     }
 
     function formatTime(timestamp) {
+
         const now = new Date();
         const diff = now - timestamp;
 

@@ -69,6 +69,7 @@
             </button>
         </div>
         <div class="flex-1 overflow-y-auto p-2 space-y-1">
+
             {#each sophia.history.filter((m) => m.role === "user") as item}
                 <button
                     onclick={() => (guidance = item.content)}

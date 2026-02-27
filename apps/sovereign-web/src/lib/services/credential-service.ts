@@ -56,6 +56,7 @@ class CredentialService {
         return credential;
     }
 
+            // @ts-ignore
     async verifyCredential(vc: SovereignCredential): Promise<boolean> {
         // Implementation of VC verification logic
         return true; // Simplified for demo

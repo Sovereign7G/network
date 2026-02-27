@@ -21,9 +21,9 @@ interface AuditReport {
     reasoningTrace: string[]; // Step-by-step reasoning for the score
 }
 
-// Use a lazy getter to break circular dependency with master-store
-async function getManifold() {
-    const { manifold } = await import('../stores/master-store.svelte');
+import { manifold } from '../stores/master-store.svelte';
+
+function getManifold() {
     return manifold;
 }
 
@@ -134,13 +134,13 @@ class SovereignAuditEngine {
         }
     }
 
-    async tick() {
+    tick() {
         // Late bind manifold to check resonance
-        const manifold = await getManifold();
-        const resonance = manifold.resonance;
+        const m = getManifold();
+        const resonance = m.resonance;
         if (resonance < 70) {
             this._anomalyCount++;
-            manifold.recordEvent('AUDIT_ANOMALY', `Low resonance (${resonance.toFixed(1)}) detected by Sovereign Steward.`);
+            m.recordEvent('AUDIT_ANOMALY', `Low resonance (${resonance.toFixed(1)}) detected by Sovereign Steward.`);
         }
     }
 }

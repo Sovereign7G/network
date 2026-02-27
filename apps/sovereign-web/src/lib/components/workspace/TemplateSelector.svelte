@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+//     import { onMount } from "svelte";
     import { workspacePersistence } from "$lib/services/workspace-persistence";
     import { fly } from "svelte/transition";
 
@@ -46,7 +46,7 @@
                 role="button"
                 tabindex="0"
                 onclick={() => loadTemplate(template)}
-                onkeydown={(e) => e.key === "Enter" && loadTemplate(template)}
+                onkeydown={(e: KeyboardEvent) => e.key === "Enter" && loadTemplate(template)}
                 aria-label={`Load template: ${template.name}`}
             >
                 <h4>{template.name}</h4>

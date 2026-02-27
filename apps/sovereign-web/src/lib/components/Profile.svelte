@@ -5,13 +5,16 @@
         Lock,
         Activity,
         Globe,
+
         QrCode,
         TrendingUp,
         Plus,
+
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
 
     const zkArtifacts = [
+
         {
             label: "PLANETARY PASSPORT",
             status: "ACTIVE",

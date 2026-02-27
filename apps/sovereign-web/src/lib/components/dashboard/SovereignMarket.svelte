@@ -2,6 +2,7 @@
     import {
         ShoppingBag,
         MapPin,
+
         Zap,
         Navigation,
         CreditCard,

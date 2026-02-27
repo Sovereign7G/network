@@ -197,7 +197,8 @@
                                 onclick={() => handleMemoryClick(memory)}
                                 ondelete={() =>
                                     hearthStore.deleteMemory(memory.id)}
-                                onreflect={(detail) =>
+                                onreflect={(e: Event) =>
+
                                     hearthStore.addReflection(
                                         memory.id,
                                         detail,

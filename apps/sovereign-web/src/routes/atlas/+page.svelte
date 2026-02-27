@@ -138,7 +138,7 @@
     });
 
     function initCanvas() {
-        canvas = document.getElementById("network-canvas") as HTMLCanvasElement;
+        canvas = document.getElementById('network-canvas') as HTMLCanvasElement | null as HTMLCanvasElement;
         if (!canvas) return;
 
         ctx = canvas.getContext("2d");
@@ -384,7 +384,7 @@
                     onmouseenter={() => (hoveredNode = node.id)}
                     onmouseleave={() => (hoveredNode = null)}
                     onclick={() => handleNodeClick(node.id)}
-                    onkeydown={(e) =>
+                    onkeydown={(e: KeyboardEvent) =>
                         e.key === "Enter" && handleNodeClick(node.id)}
                     title="Click to view details for {node.name}"
                     in:fly={{
@@ -425,7 +425,7 @@
                         <div class="node-actions">
                             <button
                                 class="node-action"
-                                onclick={(e) => {
+                                onclick={(e: MouseEvent) => {
                                     e.stopPropagation();
                                     goto(`/node/${node.id}`);
                                 }}
@@ -435,7 +435,7 @@
                             </button>
                             <button
                                 class="node-action"
-                                onclick={(e) => {
+                                onclick={(e: MouseEvent) => {
                                     e.stopPropagation();
                                     goto(`/node/${node.id}/logs`);
                                 }}

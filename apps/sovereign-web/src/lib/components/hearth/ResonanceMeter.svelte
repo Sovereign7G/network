@@ -23,6 +23,7 @@
     {#if nextTier}
         <div class="meter-footer">
             <span class="next-tier">
+
                 Next: {nextTier.title} ({nextTier.threshold - value} resonance needed)
             </span>
         </div>

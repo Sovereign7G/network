@@ -218,7 +218,7 @@
                     bind:value={currentMessage}
                     placeholder="Enter message for the DaVinci..."
                     class="w-full bg-slate-950/60 border border-white/10 rounded-2xl p-4 pr-16 focus:outline-none focus:border-indigo-500/50 focus:ring-4 focus:ring-indigo-500/5 transition-all text-sm text-white placeholder-slate-600 shadow-2xl"
-                    onkeydown={(e) => e.key === "Enter" && sendMessage()}
+                    onkeydown={(e: KeyboardEvent) => e.key === "Enter" && sendMessage()}
                 />
                 <button
                     onclick={sendMessage}

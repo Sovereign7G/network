@@ -13,6 +13,7 @@
     import { onMount, onDestroy } from "svelte";
     import {
         agentGateway,
+
         type AgentGatewayEvent,
         type GatewayJob,
         type GatewayMetrics,

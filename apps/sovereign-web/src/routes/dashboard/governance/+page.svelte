@@ -337,7 +337,7 @@
             tabindex="-1"
             in:fade
             onclick={() => (showCreateModal = false)}
-            onkeydown={(e) => e.key === "Escape" && (showCreateModal = false)}
+            onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (showCreateModal = false)}
         >
             <div
                 class="modal-content"
@@ -346,8 +346,8 @@
                 aria-modal="true"
                 aria-label="Create Proposal"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
-                onkeydown={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
+                onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             >
                 <CreateProposalModal
                     onClose={() => (showCreateModal = false)}
@@ -367,7 +367,7 @@
             tabindex="-1"
             in:fade
             onclick={() => (showDelegateModal = false)}
-            onkeydown={(e) => e.key === "Escape" && (showDelegateModal = false)}
+            onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (showDelegateModal = false)}
         >
             <div
                 class="modal-content"
@@ -376,15 +376,16 @@
                 aria-modal="true"
                 aria-label="Delegate Votes"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
-                onkeydown={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
+                onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             >
                 <DelegateModal
                     currentDelegate={governanceStore.state.userDelegates}
                     councilMembers={governanceStore.state.councilMembers}
                     {votingPower}
                     onclose={() => (showDelegateModal = false)}
-                    ondelegate={(event) => {
+
+                    ondelegate={(e: Event) => {
                         governanceStore.delegateVotes(event.detail);
                         showDelegateModal = false;
                     }}

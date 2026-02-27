@@ -29,10 +29,10 @@
 
     function updateContext() {
         userContext = conciergeStore.generateUserContext(
-            $sovereignStore,
+            sovereignStore.state,
             hearthStore.state,
-            $vaultStore,
-            $governanceStore,
+            vaultStore.state,
+            governanceStore.state,
         );
     }
 
@@ -77,7 +77,7 @@
             <PersonalitySelector
                 currentPersonality={conciergeStore.state.personality}
                 personalities={CONCIERGE_PERSONALITIES}
-                onchange={(e) => conciergeStore.setPersonality(e.detail)}
+                onchange={(e: Event) => conciergeStore.setPersonality(e.detail)}
             />
         </div>
     </div>
@@ -109,9 +109,9 @@
                     <ConversationList
                         conversations={conciergeStore.state.conversations}
                         currentId={conciergeStore.state.currentConversationId}
-                        onselect={(e) =>
+                        onselect={(e: Event) =>
                             conciergeStore.switchConversation(e.detail)}
-                        ondelete={(e) =>
+                        ondelete={(e: Event) =>
                             conciergeStore.deleteConversation(e.detail)}
                     />
                 </div>
@@ -129,9 +129,9 @@
 
                     <InsightPanel
                         insights={conciergeStore.state.insights}
-                        ondismiss={(e) =>
+                        ondismiss={(e: Event) =>
                             conciergeStore.dismissInsight(e.detail)}
-                        onexecute={(e) =>
+                        onexecute={(e: Event) =>
                             conciergeStore.executeInsightAction(e.detail)}
                     />
                 </div>

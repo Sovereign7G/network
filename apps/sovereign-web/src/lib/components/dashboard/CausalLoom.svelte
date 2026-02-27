@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { manifold } from "$lib/stores/master-store.svelte";
+//     import { manifold } from "$lib/stores/master-store.svelte";
     import { fly, scale } from "svelte/transition";
     import { History, Play, Rewind, FastForward, Clock } from "lucide-svelte";
 

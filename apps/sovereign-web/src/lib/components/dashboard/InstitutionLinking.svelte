@@ -1,14 +1,17 @@
 <script lang="ts">
     import {
         Building2,
+
         Link2,
         CheckCircle2,
         ChevronRight,
+
         Plus,
         ExternalLink,
     } from "lucide-svelte";
     import { fade, slide } from "svelte/transition";
     import { Info } from "lucide-svelte";
+
 
     let { showWisdom } = $props();
 

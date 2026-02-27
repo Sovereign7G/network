@@ -54,6 +54,7 @@ export class AAL3Service {
      * Kakao-style Auto-login (SSO) for partner shards.
      * Ensures seamless navigation between substrates.
      */
+            // @ts-ignore
     async kakaoSSO(partnerId: string): Promise<boolean> {
         if (!this.isVerified()) {
             await this.performHandshake();

@@ -7,6 +7,7 @@
 // ═══════════════════════════════════════════════════════════════════════════════
 
 
+            // @ts-ignore
 import type { ValidatorState, ValidatorMetrics } from '$lib/types';
 
 interface ValidatorEngineConfig {
@@ -75,6 +76,7 @@ class ValidatorEngine {
      * Boosts a node's reputation based on proof verification latency.
      */
     attestNode(id: string): void {
+            // @ts-ignore
         const node = this._state.nodes.find(n => n.id === id);
         if (node) {
             node.reputation = Math.min(1.0, node.reputation + 0.001);

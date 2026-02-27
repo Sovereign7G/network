@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let members = [];
+    export let members: any[] = [];
 </script>
 
 <div class="council-members">
@@ -12,6 +12,7 @@
                     <span class="avatar-placeholder">
                         {member.name
                             .split(" ")
+
                             .map((n) => n[0])
                             .join("")}
                     </span>

@@ -7,6 +7,7 @@
 
     onMount(() => {
         // Track mouse for overlay effects
+
         const handleMouseMove = (e) => {
             mousePosition = { x: e.clientX, y: e.clientY };
         };

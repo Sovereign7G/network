@@ -6,7 +6,7 @@
     const vaultStore = writable({ balance: 1845920.0 });
 
     // Kintsugi marks - permanent scars from recovered failures
-    let kintsugiMarks = [];
+    let kintsugiMarks: any[] = [];
 
     onMount(() => {
         // We handle localStorage in onMount so it safely runs on the client.
@@ -43,7 +43,8 @@
         currency: "USD",
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-    }).format($vaultStore?.balance || 0);
+
+    }).format(vaultStore.state?.balance || 0);
 </script>
 
 <div class="vault-cathedral">

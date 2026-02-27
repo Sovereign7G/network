@@ -5,14 +5,17 @@
         Send,
         Bot,
         User,
+
         Sparkles,
         Info,
         ShieldCheck,
+
         HelpCircle,
         Smile,
         Image as ImageIcon,
         Mic,
         Plus,
+
         Phone,
         Video,
     } from "lucide-svelte";
@@ -33,6 +36,7 @@
         kakaoBrown: "#3C1E1E",
         bubbleUser: "#FAE100",
         bubbleBot: "#ffffff",
+
         softPeach: "#FFD1DC",
         softYellow: "#FFF9C4",
     };
@@ -73,6 +77,7 @@
             {
                 role: "assistant",
                 content:
+
                     type === "PAYMENT"
                         ? "AstroTransfer Summary: 125 AGE sent to Alpha_Shard."
                         : "Reservation Confirmed: Shard-Hailing at 14:00Z.",
@@ -385,7 +390,7 @@
                         type="text"
                         placeholder="Express your protocol intent..."
                         bind:value={message}
-                        onkeydown={(e) => e.key === "Enter" && sendMessage()}
+                        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && sendMessage()}
                         class="w-full bg-black/5 border-none rounded-2xl py-3.5 pl-5 pr-12 text-[12px] focus:outline-none focus:ring-2 focus:ring-[#FAE100]/50 transition-all font-medium text-[#3C1E1E]"
                     />
                     <button

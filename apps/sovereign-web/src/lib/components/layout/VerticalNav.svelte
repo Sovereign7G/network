@@ -214,7 +214,7 @@
             class="section-header"
             id="tools-header"
             onclick={() => (showTools = !showTools)}
-            onkeydown={(e) => e.key === "Enter" && (showTools = !showTools)}
+            onkeydown={(e: KeyboardEvent) => e.key === "Enter" && (showTools = !showTools)}
             aria-expanded={showTools}
             aria-controls="tools-section"
         >
@@ -255,7 +255,7 @@
             class="section-header"
             id="capabilities-header"
             onclick={() => (showCapabilities = !showCapabilities)}
-            onkeydown={(e) =>
+            onkeydown={(e: KeyboardEvent) =>
                 e.key === "Enter" && (showCapabilities = !showCapabilities)}
             aria-expanded={showCapabilities}
             aria-controls="capabilities-section"

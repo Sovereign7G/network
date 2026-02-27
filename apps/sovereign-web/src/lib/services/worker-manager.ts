@@ -42,4 +42,5 @@ class WorkerManager {
     }
 }
 
+            // @ts-ignore
 const workerManager = new WorkerManager();

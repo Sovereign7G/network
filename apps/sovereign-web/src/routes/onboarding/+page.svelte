@@ -11,8 +11,9 @@
     import SealStep from "$lib/components/onboarding/SealStep.svelte";
     import { fade, fly, scale } from "svelte/transition";
 
+
     let mounted = false;
-    let particles = [];
+    let particles: any[] = [];
 
     onMount(() => {
         mounted = true;
@@ -44,6 +45,7 @@
     });
 
     function handleComplete(event) {
+
         const sovereignData = event.detail;
         console.log(
             "🎉 Onboarding complete! Creating sovereign:",
@@ -155,8 +157,9 @@
             >
                 <IdentityStep
                     data={onboardingStore.state.data}
-                    onnext={(data) => {
+                    onnext={(e: Event) => {
                         onboardingStore.updateData(data.detail);
+
                         onboardingStore.nextStep();
                     }}
                     onback={() => onboardingStore.previousStep()}

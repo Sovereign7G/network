@@ -94,7 +94,7 @@
                     bind:value={intent}
                     placeholder="Broadcast intent to the Space..."
                     class="w-full bg-slate-950 border border-white/10 rounded-lg p-3 pl-10 focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/20 transition-all text-sm"
-                    onkeydown={(e) => e.key === "Enter" && dispatchIntent()}
+                    onkeydown={(e: KeyboardEvent) => e.key === "Enter" && dispatchIntent()}
                 />
                 <LucideSend
                     size={16}

@@ -95,7 +95,7 @@
                                     route.id === selectedRouteId
                                         ? null
                                         : route.id)}
-                            onkeydown={(e) =>
+                            onkeydown={(e: KeyboardEvent) =>
                                 e.key === "Enter" &&
                                 (selectedRouteId =
                                     route.id === selectedRouteId
@@ -159,7 +159,7 @@
                                     {/each}
                                     <button
                                         class="delete-btn"
-                                        onclick={(e) => {
+                                        onclick={(e: MouseEvent) => {
                                             e.stopPropagation();
                                             sovereignRouteAgent.deleteRoute(
                                                 route.id,

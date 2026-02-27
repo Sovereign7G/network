@@ -5,6 +5,7 @@
     export let lastUpdated = "";
 
     let currentTime = new Date().toLocaleTimeString();
+
     let mounted = false;
 
     onMount(() => {

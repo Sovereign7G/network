@@ -1,5 +1,5 @@
 <script lang="ts">
-    export let insights = [];
+    export let insights: any[] = [];
 </script>
 
 <div class="insight-panel">

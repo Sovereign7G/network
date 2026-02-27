@@ -1,10 +1,10 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    export let data = [];
+    export let data: any[] = [];
 
-    let canvas;
-    let ctx;
+    let canvas: HTMLCanvasElement | null = null;
+    let ctx: CanvasRenderingContext2D | null = null;
 
     onMount(() => {
         if (canvas) {

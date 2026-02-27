@@ -1,10 +1,13 @@
 <script lang="ts">
     import {
+
         Grid,
         Smartphone,
         Utensils,
         ShoppingBag,
+
         Bike,
+
         Car,
         Plane,
         Train,
@@ -12,15 +15,19 @@
         Globe,
         ChevronRight,
         Star,
+
         Apple,
         Coffee,
         Ticket,
         Droplets,
+
         PhoneCall,
         Plus,
         Lock,
         Eye,
+
         MousePointer2,
+
         ShieldCheck,
         Building2,
         Vote,
@@ -233,7 +240,7 @@
                     role="button"
                     tabindex="0"
                     onclick={() => initiateSignature(e.label)}
-                    onkeydown={(evt) =>
+                    onkeydown={(e: KeyboardEvent) =>
                         evt.key === "Enter" && initiateSignature(e.label)}
                     aria-label={`Initiate signature for ${e.label}`}
                 >
@@ -244,6 +251,7 @@
                     </div>
                     <div class="relative z-10 flex flex-col h-full">
                         <div class="flex items-center gap-4 mb-8">
+
                             <div
                                 class="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center {e.color} border border-white/5"
                             >

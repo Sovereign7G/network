@@ -12,6 +12,7 @@
         if (saved) workspaceState = JSON.parse(saved);
     });
 
+
     function saveWorkspaceState() {
         localStorage.setItem("workspace-state", JSON.stringify(workspaceState));
     }

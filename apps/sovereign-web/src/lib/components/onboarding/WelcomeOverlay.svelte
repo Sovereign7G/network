@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fade, fly } from "svelte/transition";
+//     import { fade, fly } from "svelte/transition";
     import { backOut } from "svelte/easing";
     import { Fingerprint, Wallet, Vote, ChevronRight } from "lucide-svelte";
     import { sovereignStore } from "$lib/stores/sovereign-store.svelte";
@@ -7,6 +7,7 @@
     // Show if the user hasn't completed their first visit and has no active ID
     let showWelcome = $derived(
         !sovereignStore.state.onboarding.firstVisit && !sovereignStore.state.id,
+
     );
     let closing = $state(false);
 

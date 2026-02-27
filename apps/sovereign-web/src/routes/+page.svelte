@@ -2,35 +2,43 @@
 	import {
 		Shield,
 		Zap,
+
 		Activity,
 		Globe,
 		Cpu,
 		Camera,
+
 		ArrowRight,
+
 		ChevronDown,
 		User,
 		Vote,
+
 		Car,
 		DollarSign,
 		Layers,
+
 		Fingerprint,
+
 		ChevronRight,
 		Star,
 		Apple,
+
 		Coffee,
 		Ticket,
 		Droplets,
+
 		PhoneCall,
 		Plus,
 	} from "lucide-svelte";
-	import { onMount } from "svelte";
+// 	import { onMount } from "svelte";
 	import { fade, fly, slide } from "svelte/transition";
 	import LivingMap from "$lib/components/map/LivingMap.svelte";
-	import Onboarding from "$lib/components/Onboarding.svelte";
-	import Security from "$lib/components/Security.svelte";
+// 	import Onboarding from "$lib/components/Onboarding.svelte";
+// 	import Security from "$lib/components/Security.svelte";
 	import Tutorial from "$lib/components/Tutorial.svelte";
 	import Vault from "$lib/components/Vault.svelte";
-	import Market from "$lib/components/Market.svelte";
+// 	import Market from "$lib/components/Market.svelte";
 	import Profile from "$lib/components/Profile.svelte";
 	import Governance from "$lib/components/Governance.svelte";
 	import Services from "$lib/components/Services.svelte";
@@ -51,6 +59,7 @@
 			baseColor: "#06b6d4",
 		},
 	);
+
 
 	onMount(() => {
 		mounted = true;

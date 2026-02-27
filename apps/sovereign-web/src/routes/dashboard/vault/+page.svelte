@@ -281,7 +281,7 @@
             tabindex="-1"
             in:fade
             onclick={() => (showSendModal = false)}
-            onkeydown={(e) => e.key === "Escape" && (showSendModal = false)}
+            onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (showSendModal = false)}
         >
             <div
                 class="modal-content"
@@ -290,14 +290,14 @@
                 aria-modal="true"
                 aria-label="Send Modal"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
-                onkeydown={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
+                onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             >
                 <SendModal
                     asset={selectedAsset}
                     balance={selectedAssetBalance}
                     onclose={() => (showSendModal = false)}
-                    onsend={(e) => {
+                    onsend={(e: Event) => {
                         vaultStore.addTransaction(e.detail);
                         showSendModal = false;
                     }}
@@ -313,7 +313,7 @@
             tabindex="-1"
             in:fade
             onclick={() => (showReceiveModal = false)}
-            onkeydown={(e) => e.key === "Escape" && (showReceiveModal = false)}
+            onkeydown={(e: KeyboardEvent) => e.key === "Escape" && (showReceiveModal = false)}
         >
             <div
                 class="modal-content"
@@ -322,8 +322,8 @@
                 aria-modal="true"
                 aria-label="Receive Modal"
                 in:scale
-                onclick={(e) => e.stopPropagation()}
-                onkeydown={(e) => e.stopPropagation()}
+                onclick={(e: MouseEvent) => e.stopPropagation()}
+                onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
             >
                 <ReceiveModal
                     asset={selectedAsset}

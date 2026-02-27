@@ -52,6 +52,7 @@
     let lastBudget = $derived(engine.lastBudget);
     let lastScout = $derived(engine.lastScout);
     let graphStats = $derived(engine.graph?.stats ?? null);
+
     let elements = $derived(engine.elements);
 
     // ─── ACTIONS ────────────────────────────────────────────────────────────
@@ -69,6 +70,7 @@
     function handleImpactAnalysis() {
         if (!impactTarget) return;
         const elem = elements.find(
+
             (e) =>
                 e.id === impactTarget ||
                 e.name.toLowerCase().includes(impactTarget.toLowerCase()),
@@ -182,7 +184,7 @@
                         type="text"
                         bind:value={searchQuery}
                         placeholder="How does authentication work? / What would break if I change User model?"
-                        onkeydown={(e) => e.key === "Enter" && handleSearch()}
+                        onkeydown={(e: KeyboardEvent) => e.key === "Enter" && handleSearch()}
                     />
                     <button
                         class="search-btn"
@@ -284,7 +286,7 @@
                                     expandedResult === result.element.id
                                         ? null
                                         : result.element.id)}
-                            onkeydown={(e) =>
+                            onkeydown={(e: KeyboardEvent) =>
                                 e.key === "Enter" &&
                                 (expandedResult =
                                     expandedResult === result.element.id
@@ -530,8 +532,10 @@
                             <Code size={14} />
                             <span>Indexed Elements by Language</span>
                         </div>
+
                         {#each [...new Set(elements.map((e) => e.language))] as lang}
                             {@const langElements = elements.filter(
+
                                 (e) => e.language === lang,
                             )}
                             <div class="lang-group">
@@ -574,7 +578,7 @@
                         type="text"
                         bind:value={impactTarget}
                         placeholder="Enter element name (e.g., MasterStore, ConsensusEngine)..."
-                        onkeydown={(e) =>
+                        onkeydown={(e: KeyboardEvent) =>
                             e.key === "Enter" && handleImpactAnalysis()}
                     />
                     <button class="impact-btn" onclick={handleImpactAnalysis}>

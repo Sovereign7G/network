@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
-    let codeBurns = [];
+    let codeBurns: any[] = [];
     let totalLinesBurned = 0;
     let totalRewardsPaid = 0;
 
@@ -38,6 +38,7 @@
     async function proposeCodeBurn() {
         const repo = prompt("Repository: (e.g., age-mobile)");
         const linesDeleted = prompt("Lines deleted (net):");
+
         const description = prompt("Description of the simplification:");
 
         // Simulate creating a Council Proposal from the Negative Code Treasury

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { fade, fly, scale } from "svelte/transition";
-    import { bountyTheatre } from "../../../../../../packages/age-commerce/src/store/bounty-store";
+//     import { bountyTheatre } from "../../../../../../packages/age-commerce/src/store/bounty-store";
 
     let events: any[] = [];
 
