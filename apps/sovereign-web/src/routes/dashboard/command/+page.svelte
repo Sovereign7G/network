@@ -1,17 +1,24 @@
 <script lang="ts">
-    import { onMount, afterUpdate } from "svelte";
+    import { onMount } from "svelte";
     import GlassCard from "$lib/components/ui/GlassCard.svelte";
 
-    let terminalOutput = [
+    let terminalOutput = $state([
         { type: "system", text: "AGE PROTOCOL KERNEL v0.92.4-STABLE" },
         { type: "system", text: "INITIALIZING NEURAL COMMAND MANIFOLD..." },
         { type: "system", text: "IDENTITY VERIFIED: did:age:0x7a2...f33" },
         { type: "system", text: 'TYPE "help" FOR AVAILABLE COMMANDS' },
         { type: "system", text: "" },
-    ];
+    ]);
 
-    let currentInput = "";
+    let currentInput = $state("");
     let terminalContainer: HTMLElement;
+    let inputElement: HTMLInputElement;
+
+    $effect(() => {
+        if (inputElement) {
+            inputElement.focus();
+        }
+    });
 
     function handleCommand(e: KeyboardEvent) {
         if (e.key === "Enter" && currentInput.trim()) {
@@ -54,8 +61,10 @@
         ];
     }
 
-    afterUpdate(() => {
-        if (terminalContainer) {
+    $effect(() => {
+        // terminalOutput is a state variable (implicitly or explicitly)
+        // Whenever it changes, scroll to bottom
+        if (terminalContainer && terminalOutput) {
             terminalContainer.scrollTop = terminalContainer.scrollHeight;
         }
     });
@@ -90,10 +99,10 @@
                 <div class="input-line">
                     <span class="prompt">></span>
                     <input
+                        bind:this={inputElement}
                         type="text"
                         bind:value={currentInput}
-                        on:keydown={handleCommand}
-                        autofocus
+                        onkeydown={handleCommand}
                         placeholder="..."
                     />
                 </div>
@@ -107,6 +116,10 @@
         padding: 2rem;
         max-width: 1000px;
         margin: 0 auto;
+    }
+
+    .terminal-wrapper {
+        height: 600px;
     }
 
     .command-header {

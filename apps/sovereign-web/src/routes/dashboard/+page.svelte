@@ -3,14 +3,10 @@
 	import { fly } from "svelte/transition";
 	import WorkspaceCanvas from "$lib/components/blocks/WorkspaceCanvas.svelte";
 	import TemplateSelector from "$lib/components/workspace/TemplateSelector.svelte";
-	import {
-		vaultStore,
-		resonanceStore,
-		telemetryStore,
-	} from "$lib/stores/master-store";
+	import { vaultStore } from "$lib/stores/master-store";
 
 	// Initial workspace state - citizens will rearrange this
-	let workspaceColumns = [
+	const initialColumns: any[] = [
 		{
 			id: "col-wealth",
 			blocks: [
@@ -101,7 +97,9 @@
 		},
 	];
 
-	let isLoading = true;
+	let workspaceColumns = $state(initialColumns);
+
+	let isLoading = $state(true);
 
 	onMount(async () => {
 		try {
@@ -121,8 +119,9 @@
 		isLoading = false;
 	});
 
-	function handleWorkspaceChange(e: CustomEvent) {
-		const updatedColumns = e.detail;
+	function handleWorkspaceChange(
+		updatedColumns: { id: string; blocks: any[] }[],
+	) {
 		workspaceColumns = updatedColumns;
 		localStorage.setItem(
 			"sovereign-workspace",
@@ -160,57 +159,57 @@
 
 		<WorkspaceCanvas
 			bind:columns={workspaceColumns}
-			on:layoutChange={handleWorkspaceChange}
-		>
-			<svelte:fragment slot="tile" let:content>
-				<div class="wealth-tile">
-					<span class="tile-icon">{content.icon}</span>
-					<div class="tile-content">
-						<h3>{content.title}</h3>
-						<p class="tile-value">{content.value}</p>
-					</div>
-				</div>
-			</svelte:fragment>
+			onLayoutChange={handleWorkspaceChange}
+			tile={tileSnippet}
+			canvas={canvasSnippet}
+			table={tableSnippet}
+		/>
 
-			<svelte:fragment slot="canvas" let:content>
-				<div
-					class="canvas-container"
-					style="height: {content.height}px"
-				>
-					<!-- Canvas component would render here -->
-					<div class="canvas-placeholder">
-						<span class="canvas-icon">🗺️</span>
-						<span>{content.title}</span>
-					</div>
+		{#snippet tileSnippet(content: any)}
+			<div class="wealth-tile">
+				<span class="tile-icon">{content.icon}</span>
+				<div class="tile-content">
+					<h3>{content.title}</h3>
+					<p class="tile-value">{content.value}</p>
 				</div>
-			</svelte:fragment>
+			</div>
+		{/snippet}
 
-			<svelte:fragment slot="table" let:content>
-				<div class="table-container">
-					<h4>{content.title}</h4>
-					<table>
-						<thead>
+		{#snippet canvasSnippet(content: any)}
+			<div class="canvas-container" style="height: {content.height}px">
+				<!-- Canvas component would render here -->
+				<div class="canvas-placeholder">
+					<span class="canvas-icon">🗺️</span>
+					<span>{content.title}</span>
+				</div>
+			</div>
+		{/snippet}
+
+		{#snippet tableSnippet(content: any)}
+			<div class="table-container">
+				<h4>{content.title}</h4>
+				<table>
+					<thead>
+						<tr>
+							{#each content.headers || [] as header}
+								<th>{header}</th>
+							{/each}
+						</tr>
+					</thead>
+					<tbody>
+						{#each content.rows || [] as row}
 							<tr>
-								{#each content.headers || [] as header}
-									<th>{header}</th>
+								{#each row as cell}
+									<td>{cell}</td>
 								{/each}
 							</tr>
-						</thead>
-						<tbody>
-							{#each content.rows || [] as row}
-								<tr>
-									{#each row as cell}
-										<td>{cell}</td>
-									{/each}
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</svelte:fragment>
-		</WorkspaceCanvas>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/snippet}
 
-		<button class="add-column-btn" on:click={addNewColumn}>
+		<button class="add-column-btn" onclick={addNewColumn}>
 			<span class="btn-icon">+</span>
 			Add Column
 		</button>

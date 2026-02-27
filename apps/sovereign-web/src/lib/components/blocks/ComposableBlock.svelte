@@ -1,44 +1,58 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import { fly } from "svelte/transition";
-
-    export let type: "text" | "tile" | "chart" | "table" | "canvas" = "text";
-    export let content: any = {};
-    export let id = crypto.randomUUID();
-    export let isEditing = false;
-
-    const dispatch = createEventDispatcher();
-
-    let isDragging = false;
-    let dragOffset = { x: 0, y: 0 };
-
+    import type { Snippet } from "svelte";
     import BlockAnnotation from "./BlockAnnotation.svelte";
-    let showAnnotations = false;
 
-    function handleDragStart(e) {
+    let {
+        type = "text",
+        content = {},
+        id = crypto.randomUUID(),
+        isEditing = $bindable(false),
+        ondragstart,
+        ondragend,
+        oneditstart,
+        oneditend,
+        tile,
+        canvas,
+        chart,
+        table,
+    } = $props<{
+        type?: "text" | "tile" | "chart" | "table" | "canvas";
+        content?: any;
+        id?: string;
+        isEditing?: boolean;
+        ondragstart?: (data: any) => void;
+        ondragend?: (data: any) => void;
+        oneditstart?: (data: any) => void;
+        oneditend?: (data: any) => void;
+        tile?: Snippet<[any]>;
+        canvas?: Snippet<[any]>;
+        chart?: Snippet<[any]>;
+        table?: Snippet<[any]>;
+    }>();
+
+    let isDragging = $state(false);
+    let showAnnotations = $state(false);
+
+    function handleDragStart(e: DragEvent) {
         isDragging = true;
-        const rect = e.target.getBoundingClientRect();
-        dragOffset = {
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top,
-        };
-        e.dataTransfer.setData("text/plain", id);
-        dispatch("dragstart", { id, type, content });
+        e.dataTransfer?.setData("text/plain", id);
+        if (ondragstart) ondragstart({ id, type, content });
     }
 
     function handleDragEnd() {
         isDragging = false;
-        dispatch("dragend", { id });
+        if (ondragend) ondragend({ id });
     }
 
     function handleDoubleClick() {
         isEditing = true;
-        dispatch("editstart", { id });
+        if (oneditstart) oneditstart({ id });
     }
 
     function handleBlur() {
         isEditing = false;
-        dispatch("editend", { id, content });
+        if (oneditend) oneditend({ id, content });
     }
 </script>
 
@@ -47,16 +61,29 @@
     class:is-dragging={isDragging}
     class:is-editing={isEditing}
     draggable="true"
-    on:dragstart={handleDragStart}
-    on:dragend={handleDragEnd}
-    on:dblclick={handleDoubleClick}
-    transition:fly={{ y: 10, duration: 200 }}
+    ondragstart={handleDragStart}
+    ondragend={handleDragEnd}
+    ondblclick={handleDoubleClick}
+    onkeydown={(e) => {
+        if (e.key === "Enter" && !isEditing) handleDoubleClick();
+    }}
+    role="button"
+    tabindex="0"
+    aria-label="Composable block {type}"
+    transitionfly={{ y: 10, duration: 200 }}
 >
     <!-- Block Toolbar for Annotations -->
-    <div class="block-toolbar" on:click|stopPropagation>
+    <div
+        class="block-toolbar"
+        onclick={(e) => e.stopPropagation()}
+        onkeydown={(e) => e.stopPropagation()}
+        role="toolbar"
+        aria-label="Block tools"
+        tabindex="0"
+    >
         <button
             class="annotate-btn"
-            on:click={() => (showAnnotations = !showAnnotations)}
+            onclick={() => (showAnnotations = !showAnnotations)}
             title="Annotations"
         >
             💬
@@ -71,19 +98,18 @@
     {/if}
 
     {#if type === "tile"}
-        <slot name="tile" {content} />
+        {@render tile?.(content)}
     {:else if type === "canvas"}
-        <slot name="canvas" {content} />
+        {@render canvas?.(content)}
     {:else if type === "chart"}
-        <slot name="chart" {content} />
+        {@render chart?.(content)}
     {:else if type === "table"}
-        <slot name="table" {content} />
+        {@render table?.(content)}
     {:else if isEditing}
         <textarea
             bind:value={content.text}
             class="block-editor"
-            autofocus
-            on:blur={handleBlur}
+            onblur={handleBlur}
             placeholder="Type something..."
         ></textarea>
     {:else}

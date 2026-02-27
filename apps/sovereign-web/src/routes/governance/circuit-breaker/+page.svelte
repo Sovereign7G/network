@@ -66,20 +66,20 @@
 
         <div class="global-metrics">
             <div>
-                <label>Daily Limit</label>
+                <span class="label">Daily Limit</span>
                 <div class="value">
                     {globalStatus?.globalDailyLimit?.toString() || 0} AGE
                 </div>
             </div>
             <div>
-                <label>Spent Today</label>
+                <span class="label">Spent Today</span>
                 <div class="value">
                     {globalStatus?.globalSpentToday?.toString() || 0} AGE
                 </div>
             </div>
             <div>
-                <label>Remaining</label>
-                <div class="value">
+                <span class="label">Remaining</span>
+                <div id="cb-rem" class="value" role="group">
                     {(
                         (globalStatus?.globalDailyLimit || 0n) -
                         (globalStatus?.globalSpentToday || 0n)
@@ -89,11 +89,11 @@
         </div>
 
         <div class="council-actions">
-            <button on:click={setAllowance} class="secondary"
+            <button onclick={setAllowance} class="secondary"
                 >Set Allowance</button
             >
-            <button on:click={emergencyStop} class="danger">🔴 Stop</button>
-            <button on:click={restore} class="success">🟢 Restore</button>
+            <button onclick={emergencyStop} class="danger">🔴 Stop</button>
+            <button onclick={restore} class="success">🟢 Restore</button>
         </div>
     </div>
 
@@ -189,7 +189,7 @@
         text-align: center;
     }
 
-    .global-metrics label {
+    .global-metrics .label {
         font-size: 13px;
         opacity: 0.9;
         text-transform: uppercase;

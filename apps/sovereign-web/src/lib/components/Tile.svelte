@@ -1,23 +1,28 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import { fly } from "svelte/transition";
 
-    export let tile;
-    export let isPinned = false;
-    export let isHovered = false;
+    let {
+        tile,
+        isPinned = false,
+        isHovered = false,
+        onhover,
+        onleave,
+        onclick,
+        onpin,
+        onunpin,
+        onhide,
+    } = $props();
 
-    const dispatch = createEventDispatcher();
+    let showContextMenu = $state(false);
+    let contextMenuPosition = $state({ x: 0, y: 0 });
 
-    let showContextMenu = false;
-    let contextMenuPosition = { x: 0, y: 0 };
-
-    function handleClick(event) {
+    function handleClick(event: MouseEvent) {
         if (!showContextMenu) {
-            dispatch("click");
+            if (onclick) onclick();
         }
     }
 
-    function handleContextMenu(event) {
+    function handleContextMenu(event: MouseEvent) {
         event.preventDefault();
         contextMenuPosition = { x: event.clientX, y: event.clientY };
         showContextMenu = true;
@@ -29,12 +34,16 @@
     }
 
     function handlePin() {
-        dispatch(isPinned ? "unpin" : "pin");
+        if (isPinned) {
+            if (onunpin) onunpin();
+        } else {
+            if (onpin) onpin();
+        }
         showContextMenu = false;
     }
 
     function handleHide() {
-        dispatch("hide");
+        if (onhide) onhide();
         showContextMenu = false;
     }
 </script>
@@ -45,15 +54,15 @@
     class:pinned={isPinned}
     class:hovered={isHovered}
     style="--tile-color: {tile.color}"
-    on:click={handleClick}
-    on:mouseenter={() => dispatch("hover")}
-    on:mouseleave={() => dispatch("leave")}
-    on:contextmenu={handleContextMenu}
+    onclick={handleClick}
+    onmouseenter={() => onhover && onhover()}
+    onmouseleave={() => onleave && onleave()}
+    oncontextmenu={handleContextMenu}
     role="button"
     tabindex="0"
     aria-label="{tile.title} tile"
     aria-description={tile.description}
-    on:keydown={(e) => e.key === "Enter" && dispatch("click")}
+    onkeydown={(e: KeyboardEvent) => e.key === "Enter" && onclick && onclick()}
 >
     <!-- Animated background glow -->
     <div class="tile-glow"></div>
@@ -90,13 +99,13 @@
             style="left: {contextMenuPosition.x}px; top: {contextMenuPosition.y}px;"
             in:fly={{ y: 5, duration: 100 }}
             out:fly={{ y: 5, duration: 100 }}
-            on:click|stopPropagation
+            onclick={(e) => e.stopPropagation()}
         >
-            <button class="context-item" on:click={handlePin}>
+            <button class="context-item" onclick={handlePin}>
                 <span class="context-icon">{isPinned ? "📌" : "📍"}</span>
                 <span>{isPinned ? "Unpin tile" : "Pin tile"}</span>
             </button>
-            <button class="context-item" on:click={handleHide}>
+            <button class="context-item" onclick={handleHide}>
                 <span class="context-icon">👁️</span>
                 <span>Hide tile</span>
             </button>

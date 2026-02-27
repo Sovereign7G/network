@@ -36,8 +36,10 @@
 
     <div class="send-card glass">
         <div class="form-group">
-            <label>Recipient</label>
+            <label for="send-recipient">Recipient</label>
             <input
+                id="send-recipient"
+                aria-required="true"
                 type="text"
                 bind:value={recipient}
                 placeholder="Enter address or @username"
@@ -46,8 +48,10 @@
         </div>
 
         <div class="form-group">
-            <label>Amount</label>
+            <label for="send-amount">Amount</label>
             <input
+                id="send-amount"
+                aria-required="true"
                 type="number"
                 bind:value={amount}
                 placeholder="0.00"
@@ -56,8 +60,8 @@
         </div>
 
         <div class="form-group">
-            <label>Asset</label>
-            <select bind:value={asset} class="glass-select">
+            <label for="send-asset">Asset</label>
+            <select id="send-asset" bind:value={asset} class="glass-select">
                 <option value="USDC">USDC</option>
                 <option value="AGE">AGE</option>
                 <option value="SYND">SYND</option>
@@ -66,7 +70,7 @@
 
         <button
             class="send-button"
-            on:click={handleSend}
+            onclick={handleSend}
             disabled={loading || !amount || !recipient}
         >
             {loading ? "Sending..." : "Send"}

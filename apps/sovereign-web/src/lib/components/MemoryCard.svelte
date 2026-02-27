@@ -1,25 +1,26 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { MEMORY_TYPES } from "$lib/stores/hearth-store";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
 
-    export let memory;
+    let { memory, ondelete } = $props();
 
-    const dispatch = createEventDispatcher();
+    let showDeleteConfirm = $state(false);
 
-    const memoryType =
-        MEMORY_TYPES[memory.type.toUpperCase()] || MEMORY_TYPES.GRATITUDE;
-    const formattedDate = new Intl.DateTimeFormat("en-US", {
-        month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-    }).format(new Date(memory.timestamp));
-
-    let showDeleteConfirm = false;
+    const memoryType = $derived(
+        (MEMORY_TYPES as Record<string, any>)[memory.type.toUpperCase()] ||
+            MEMORY_TYPES.GRATITUDE,
+    );
+    const formattedDate = $derived(
+        new Intl.DateTimeFormat("en-US", {
+            month: "short",
+            day: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        }).format(new Date(memory.timestamp)),
+    );
 
     function handleDelete() {
         if (showDeleteConfirm) {
-            dispatch("delete");
+            if (ondelete) ondelete();
             showDeleteConfirm = false;
         } else {
             showDeleteConfirm = true;
@@ -46,7 +47,7 @@
             <span class="resonance-badge">+{memoryType.resonance}</span>
             <button
                 class="delete-btn"
-                on:click={handleDelete}
+                onclick={handleDelete}
                 aria-label="Delete memory"
                 class:confirm={showDeleteConfirm}
             >

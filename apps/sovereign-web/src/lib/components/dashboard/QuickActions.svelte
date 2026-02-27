@@ -14,7 +14,7 @@
         <button
             class="action-button"
             style="--action-color: {action.color}"
-            on:click={() => goto(action.path)}
+            onclick={() => goto(action.path)}
         >
             <span class="action-icon">{action.icon}</span>
             <span class="action-name">{action.name}</span>

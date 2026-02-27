@@ -4,7 +4,7 @@
     import VerticalNav from "./VerticalNav.svelte";
     import ToolPanel from "$lib/components/tools/ToolPanel.svelte";
 
-    export let resonance = 98;
+    
 
     let commandOpen = false;
     let navCollapsed = false;

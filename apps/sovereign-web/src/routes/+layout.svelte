@@ -35,7 +35,6 @@
 					vaultStore.loadVaultData(),
 					sovereignStore.loadSovereignData(),
 				]);
-				console.log("✅ Cathedral stores synced with backend");
 			} catch (error) {
 				console.error("❌ Failed to sync Cathedral stores:", error);
 			}

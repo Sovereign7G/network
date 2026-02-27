@@ -20,29 +20,35 @@
         <p>Configure Social Recovery guardians to protect against key loss.</p>
     </div>
 
-    <div class="guardians-list">
-        <label>Trusted Guardians</label>
+    <div class="guardians-list" role="group" aria-labelledby="guardians-title">
+        <span id="guardians-title" class="group-label">Trusted Guardians</span>
         {#each guardians as guardian, i}
             <div class="guardian-item">
                 <span>{guardian}</span>
                 <button
                     class="remove-btn"
-                    on:click={() =>
+                    onclick={() =>
                         (guardians = guardians.filter((_, idx) => idx !== i))}
                     >×</button
                 >
             </div>
         {/each}
         <div class="add-row">
-            <input type="text" bind:value={newGuardian} placeholder="0x..." />
-            <button class="add-btn" on:click={addGuardian}>Add</button>
+            <input
+                type="text"
+                bind:value={newGuardian}
+                placeholder="0x..."
+                aria-label="New guardian address"
+            />
+            <button class="add-btn" onclick={addGuardian}>Add</button>
         </div>
     </div>
 
     <div class="input-group">
-        <label>Grace Period (Before execution)</label>
+        <label for="recovery-grace">Grace Period (Before execution)</label>
         <div class="days-row">
             <input
+                id="recovery-grace"
                 type="number"
                 bind:value={gracePeriodDays}
                 min="1"
@@ -52,7 +58,7 @@
         </div>
     </div>
 
-    <button class="save-btn" on:click={saveConfig}>
+    <button class="save-btn" onclick={saveConfig}>
         Update Recovery Protocols
     </button>
 </div>
@@ -70,7 +76,7 @@
         color: rgba(255, 255, 255, 0.6);
     }
 
-    .guardians-list label,
+    .guardians-list .group-label,
     .input-group label {
         display: block;
         font-size: 0.75rem;

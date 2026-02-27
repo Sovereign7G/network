@@ -34,7 +34,7 @@
         <!-- svelte-ignore a11y-no-static-element-interactions -->
         <div
             class="logo-area"
-            on:click={() => navigate("/dashboard")}
+            onclick={() => navigate("/dashboard")}
             title="Go to Dashboard"
         >
             <span class="logo-icon">🏛️</span>
@@ -57,7 +57,7 @@
 
         <button
             class="command-button"
-            on:click={openCommand}
+            onclick={openCommand}
             title="Command Palette (⌘K)"
         >
             <span class="command-icon">⌘</span>
@@ -67,7 +67,7 @@
         <div class="user-menu-container">
             <button
                 class="user-button"
-                on:click={() => (showUserMenu = !showUserMenu)}
+                onclick={() => (showUserMenu = !showUserMenu)}
                 title="User Menu"
             >
                 <span class="user-icon">👤</span>
@@ -80,9 +80,9 @@
                     {#each userMenuItems as item}
                         <button
                             class="dropdown-item"
-                            on:click={() =>
+                            onclick={() =>
                                 item.action === "logout"
-                                    ? console.log("logout")
+                                    ?
                                     : navigate(item.path)}
                             title="{item.name} Page"
                         >

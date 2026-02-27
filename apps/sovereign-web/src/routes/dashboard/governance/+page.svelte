@@ -1,14 +1,10 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { goto } from "$app/navigation";
     import {
         governanceStore,
-        PROPOSAL_TYPES,
-        PROPOSAL_STATUS,
-        sovereignStore,
         hearthStore,
         vaultStore,
     } from "$lib/stores/master-store";
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
     import ProposalCard from "$lib/components/governance/ProposalCard.svelte";
     import CreateProposalModal from "$lib/components/governance/CreateProposalModal.svelte";
     import DelegateModal from "$lib/components/governance/DelegateModal.svelte";
@@ -17,12 +13,11 @@
     import ActivityFeed from "$lib/components/governance/ActivityFeed.svelte";
     import { fade, fly, scale } from "svelte/transition";
 
-    let mounted = false;
-    let showCreateModal = false;
-    let showDelegateModal = false;
-    let selectedFilter = "active";
-    let selectedType = "all";
-    let searchQuery = "";
+    let showCreateModal = $state(false);
+    let showDelegateModal = $state(false);
+    let selectedFilter = $state("active");
+    let selectedType = $state("all");
+    let searchQuery = $state("");
 
     const filters = [
         { id: "all", label: "All Proposals", icon: "📋" },
@@ -32,54 +27,58 @@
         { id: "executed", label: "Executed", icon: "⚡" },
     ];
 
-    onMount(() => {
-        mounted = true;
-        console.log("⚖️ Governance mounted");
-    });
-
     // Calculate user voting power
-    $: votingPower = $governanceStore.getUserVotingPower(
-        $governanceStore,
-        $hearthStore?.totalResonance || 0,
-        $vaultStore?.totalValue || 0,
+    let votingPower = $derived(
+        governanceStore.getUserVotingPower(
+            hearthStore.state?.totalResonance || 0,
+            vaultStore.state?.totalValue || 0,
+        ),
     );
 
     // Filter proposals
-    $: filteredProposals = $governanceStore.proposals.filter((proposal) => {
-        const status = $governanceStore.getProposalStatus(proposal);
+    let filteredProposals = $derived(
+        governanceStore.state.proposals.filter((proposal) => {
+            const status = governanceStore.getProposalStatus(proposal);
 
-        const matchesFilter =
-            selectedFilter === "all" || status.id === selectedFilter;
-        const matchesType =
-            selectedType === "all" || proposal.type === selectedType;
-        const matchesSearch =
-            searchQuery === "" ||
-            proposal.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            proposal.description
-                .toLowerCase()
-                .includes(searchQuery.toLowerCase());
+            const matchesFilter =
+                selectedFilter === "all" || status.id === selectedFilter;
+            const matchesType =
+                selectedType === "all" || proposal.type === selectedType;
+            const matchesSearch =
+                searchQuery === "" ||
+                proposal.title
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                proposal.description
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase());
 
-        return matchesFilter && matchesType && matchesSearch;
-    });
+            return matchesFilter && matchesType && matchesSearch;
+        }),
+    );
 
     // Sort proposals: active first, then by end date
-    $: sortedProposals = [...filteredProposals].sort((a, b) => {
-        const aStatus = $governanceStore.getProposalStatus(a);
-        const bStatus = $governanceStore.getProposalStatus(b);
+    let sortedProposals = $derived(
+        [...filteredProposals].sort((a, b) => {
+            const aStatus = governanceStore.getProposalStatus(a);
+            const bStatus = governanceStore.getProposalStatus(b);
 
-        if (
-            aStatus.id === PROPOSAL_STATUS.ACTIVE.id &&
-            bStatus.id !== PROPOSAL_STATUS.ACTIVE.id
-        )
-            return -1;
-        if (
-            aStatus.id !== PROPOSAL_STATUS.ACTIVE.id &&
-            bStatus.id === PROPOSAL_STATUS.ACTIVE.id
-        )
-            return 1;
+            if (
+                aStatus.id === PROPOSAL_STATUS.ACTIVE.id &&
+                bStatus.id !== PROPOSAL_STATUS.ACTIVE.id
+            )
+                return -1;
+            if (
+                aStatus.id !== PROPOSAL_STATUS.ACTIVE.id &&
+                bStatus.id === PROPOSAL_STATUS.ACTIVE.id
+            )
+                return 1;
 
-        return new Date(b.endTime) - new Date(a.endTime);
-    });
+            return (
+                new Date(b.endTime).getTime() - new Date(a.endTime).getTime()
+            );
+        }),
+    );
 </script>
 
 <svelte:head>
@@ -104,14 +103,14 @@
         <div class="header-actions">
             <button
                 class="action-button"
-                on:click={() => (showDelegateModal = true)}
+                onclick={() => (showDelegateModal = true)}
             >
                 <span class="action-icon">🤝</span>
                 <span>Delegate</span>
             </button>
             <button
                 class="action-button primary"
-                on:click={() => (showCreateModal = true)}
+                onclick={() => (showCreateModal = true)}
             >
                 <span class="action-icon">➕</span>
                 <span>Create Proposal</span>
@@ -121,7 +120,7 @@
 
     <!-- Stats Overview -->
     <div class="stats-row" in:fly={{ y: 20, duration: 500, delay: 100 }}>
-        <GovernanceStats stats={$governanceStore.governanceStats} />
+        <GovernanceStats stats={governanceStore.state.governanceStats} />
     </div>
 
     <!-- Main Grid -->
@@ -138,7 +137,7 @@
                         <button
                             class="filter-tab"
                             class:active={selectedFilter === filter.id}
-                            on:click={() => (selectedFilter = filter.id)}
+                            onclick={() => (selectedFilter = filter.id)}
                         >
                             <span class="tab-icon">{filter.icon}</span>
                             <span>{filter.label}</span>
@@ -177,7 +176,7 @@
                     <p>Try adjusting your filters or create a new proposal.</p>
                     <button
                         class="create-first-btn"
-                        on:click={() => (showCreateModal = true)}
+                        onclick={() => (showCreateModal = true)}
                     >
                         Create First Proposal
                     </button>
@@ -197,14 +196,14 @@
                         >
                             <ProposalCard
                                 {proposal}
-                                userVote={$governanceStore.userVotes[
+                                userVote={governanceStore.state.userVotes[
                                     proposal.id
                                 ]}
                                 {votingPower}
-                                status={$governanceStore.getProposalStatus(
+                                status={governanceStore.getProposalStatus(
                                     proposal,
                                 )}
-                                timeRemaining={$governanceStore.getTimeRemaining(
+                                timeRemaining={governanceStore.getTimeRemaining(
                                     new Date(proposal.endTime),
                                 )}
                             />
@@ -225,7 +224,9 @@
                     <span class="title-icon">👥</span>
                     Council Stewards
                 </h2>
-                <CouncilMembers members={$governanceStore.councilMembers} />
+                <CouncilMembers
+                    members={governanceStore.state.councilMembers}
+                />
             </div>
 
             <!-- Activity Feed -->
@@ -237,7 +238,7 @@
                     <span class="title-icon">📊</span>
                     Recent Activity
                 </h2>
-                <ActivityFeed activities={$governanceStore.activityFeed} />
+                <ActivityFeed activities={governanceStore.state.activityFeed} />
             </div>
 
             <!-- Quick Stats -->
@@ -255,11 +256,12 @@
                         <div class="health-bar">
                             <div
                                 class="health-fill"
-                                style="width: {$governanceStore.participationScore}%;"
+                                style="width: {governanceStore.state
+                                    .participationScore}%;"
                             ></div>
                         </div>
                         <span class="health-value"
-                            >{$governanceStore.participationScore}%</span
+                            >{governanceStore.state.participationScore}%</span
                         >
                     </div>
                     <div class="health-item">
@@ -267,18 +269,18 @@
                         <div class="health-bar">
                             <div
                                 class="health-fill"
-                                style="width: {($governanceStore.governanceStats
-                                    .totalDelegators /
-                                    $governanceStore.governanceStats
+                                style="width: {(governanceStore.state
+                                    .governanceStats.totalDelegators /
+                                    governanceStore.state.governanceStats
                                         .totalVoters) *
                                     100}%;"
                             ></div>
                         </div>
                         <span class="health-value">
                             {Math.round(
-                                ($governanceStore.governanceStats
+                                (governanceStore.state.governanceStats
                                     .totalDelegators /
-                                    $governanceStore.governanceStats
+                                    governanceStore.state.governanceStats
                                         .totalVoters) *
                                     100,
                             )}%
@@ -289,25 +291,27 @@
                         <div class="health-bar">
                             <div
                                 class="health-fill"
-                                style="width: {$governanceStore.governanceStats
-                                    .passRate}%;"
+                                style="width: {governanceStore.state
+                                    .governanceStats.passRate}%;"
                             ></div>
                         </div>
                         <span class="health-value"
-                            >{$governanceStore.governanceStats.passRate}%</span
+                            >{governanceStore.state.governanceStats
+                                .passRate}%</span
                         >
                     </div>
                 </div>
 
                 <div class="delegation-info">
-                    {#if $governanceStore.userDelegates}
+                    {#if governanceStore.state.userDelegates}
                         <div class="delegated-badge">
                             <span
-                                >Delegated to: {$governanceStore.userDelegates}</span
+                                >Delegated to: {governanceStore.state
+                                    .userDelegates}</span
                             >
                             <button
                                 class="change-delegate"
-                                on:click={() => (showDelegateModal = true)}
+                                onclick={() => (showDelegateModal = true)}
                             >
                                 Change
                             </button>
@@ -315,7 +319,7 @@
                     {:else}
                         <button
                             class="delegate-prompt"
-                            on:click={() => (showDelegateModal = true)}
+                            onclick={() => (showDelegateModal = true)}
                         >
                             Delegate your voting power →
                         </button>
@@ -329,13 +333,25 @@
     {#if showCreateModal}
         <div
             class="modal-overlay"
+            role="presentation"
+            tabindex="-1"
             in:fade
-            on:click={() => (showCreateModal = false)}
+            onclick={() => (showCreateModal = false)}
+            onkeydown={(e) => e.key === "Escape" && (showCreateModal = false)}
         >
-            <div class="modal-content" in:scale on:click|stopPropagation>
+            <div
+                class="modal-content"
+                role="dialog"
+                tabindex="-1"
+                aria-modal="true"
+                aria-label="Create Proposal"
+                in:scale
+                onclick={(e) => e.stopPropagation()}
+                onkeydown={(e) => e.stopPropagation()}
+            >
                 <CreateProposalModal
-                    on:close={() => (showCreateModal = false)}
-                    onCreate={(proposal) => {
+                    onClose={() => (showCreateModal = false)}
+                    onCreate={(proposal: any) => {
                         governanceStore.createProposal(proposal);
                         showCreateModal = false;
                     }}
@@ -347,16 +363,28 @@
     {#if showDelegateModal}
         <div
             class="modal-overlay"
+            role="presentation"
+            tabindex="-1"
             in:fade
-            on:click={() => (showDelegateModal = false)}
+            onclick={() => (showDelegateModal = false)}
+            onkeydown={(e) => e.key === "Escape" && (showDelegateModal = false)}
         >
-            <div class="modal-content" in:scale on:click|stopPropagation>
+            <div
+                class="modal-content"
+                role="dialog"
+                tabindex="-1"
+                aria-modal="true"
+                aria-label="Delegate Votes"
+                in:scale
+                onclick={(e) => e.stopPropagation()}
+                onkeydown={(e) => e.stopPropagation()}
+            >
                 <DelegateModal
-                    currentDelegate={$governanceStore.userDelegates}
-                    councilMembers={$governanceStore.councilMembers}
+                    currentDelegate={governanceStore.state.userDelegates}
+                    councilMembers={governanceStore.state.councilMembers}
                     {votingPower}
-                    on:close={() => (showDelegateModal = false)}
-                    on:delegate={(event) => {
+                    onclose={() => (showDelegateModal = false)}
+                    ondelegate={(event) => {
                         governanceStore.delegateVotes(event.detail);
                         showDelegateModal = false;
                     }}

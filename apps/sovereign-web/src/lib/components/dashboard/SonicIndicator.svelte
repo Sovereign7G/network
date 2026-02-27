@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { createSonicSovereignty } from "../../../../../../packages/age-sensory/src/index";
-    import { telemetryStore } from "$lib/stores/telemetry-store";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
 
     let resonance = 0;
     let latency = 0;

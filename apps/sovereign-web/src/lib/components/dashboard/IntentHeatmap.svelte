@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
     import { HeatmapEngine } from "../../../../../../packages/age-intent/src/heatmap/HeatmapEngine";
-    import { telemetryStore } from "$lib/stores/telemetry-store";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
 
     let canvas: HTMLCanvasElement;
     let engine: HeatmapEngine;

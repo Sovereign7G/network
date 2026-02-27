@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
     import { NavyMap } from "../../../../../../packages/age-navy/src/three/NavyMap";
-    import { telemetryStore } from "$lib/stores/telemetry-store";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
 
     let container: HTMLElement;
     let navyMap: NavyMap;

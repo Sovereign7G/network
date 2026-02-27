@@ -2,9 +2,9 @@
     import { goto } from "$app/navigation";
     import { page } from "$app/stores";
     import { fly } from "svelte/transition";
-    import { toolStore } from "$lib/stores/tool-store";
+    import { toolStore } from "$lib/stores/tool-store.svelte";
 
-    export let collapsed = false;
+    let { collapsed = false } = $props();
 
     // NAVIGATION SECTION - Core app routes (7 cards)
     const navItems = [
@@ -135,11 +135,10 @@
         },
     ];
 
-    let activeTool: any;
-    toolStore.subscribe((state) => (activeTool = state.activeTool));
+    let activeTool = $derived(toolStore.state.activeTool);
 
-    let showTools = true;
-    let showCapabilities = true;
+    let showTools = $state(true);
+    let showCapabilities = $state(true);
     let quickStats = { resonance: 98, tps: 1247, nodes: "389k" };
 
     function navigate(path: string) {
@@ -163,7 +162,7 @@
     <div class="nav-header">
         <button
             class="collapse-button"
-            on:click={() => (collapsed = !collapsed)}
+            onclick={() => (collapsed = !collapsed)}
         >
             {collapsed ? "→" : "←"}
         </button>
@@ -178,7 +177,7 @@
                     class="nav-item"
                     title={collapsed ? item.desc : ""}
                     class:active={isActive(item.path)}
-                    on:click={() => navigate(item.path)}
+                    onclick={() => navigate(item.path)}
                 >
                     <span class="nav-icon">{item.icon}</span>
                     {#if !collapsed}
@@ -198,7 +197,7 @@
                     class="nav-item action-item"
                     title={collapsed ? item.desc : ""}
                     style="--action-color: {item.color}"
-                    on:click={() => navigate(item.path)}
+                    onclick={() => navigate(item.path)}
                 >
                     <span class="nav-icon">{item.icon}</span>
                     {#if !collapsed}
@@ -211,15 +210,25 @@
 
     <!-- TOOLS SECTION - Expandable -->
     <div class="nav-section expandable-section">
-        <div class="section-header" on:click={() => (showTools = !showTools)}>
+        <button
+            class="section-header"
+            id="tools-header"
+            onclick={() => (showTools = !showTools)}
+            onkeydown={(e) => e.key === "Enter" && (showTools = !showTools)}
+            aria-expanded={showTools}
+            aria-controls="tools-section"
+        >
             <span class="section-title" class:hidden={collapsed}>TOOLS</span>
             <span class="section-toggle" class:hidden={collapsed}
                 >{showTools ? "▼" : "▶"}</span
             >
-        </div>
+        </button>
 
         {#if showTools}
             <div
+                id="tools-section"
+                role="region"
+                aria-labelledby="tools-header"
                 class="section-items"
                 transition:fly={{ y: -10, duration: 150 }}
             >
@@ -228,7 +237,7 @@
                         class="nav-item tool-item"
                         title={collapsed ? item.desc : ""}
                         class:active={activeTool?.action === item.action}
-                        on:click={() => executeTool(item)}
+                        onclick={() => executeTool(item)}
                     >
                         <span class="nav-icon">{item.icon}</span>
                         {#if !collapsed}
@@ -242,9 +251,14 @@
 
     <!-- CAPABILITIES SECTION - Protocol features -->
     <div class="nav-section expandable-section">
-        <div
+        <button
             class="section-header"
-            on:click={() => (showCapabilities = !showCapabilities)}
+            id="capabilities-header"
+            onclick={() => (showCapabilities = !showCapabilities)}
+            onkeydown={(e) =>
+                e.key === "Enter" && (showCapabilities = !showCapabilities)}
+            aria-expanded={showCapabilities}
+            aria-controls="capabilities-section"
         >
             <span class="section-title" class:hidden={collapsed}
                 >CAPABILITIES</span
@@ -252,10 +266,13 @@
             <span class="section-toggle" class:hidden={collapsed}
                 >{showCapabilities ? "▼" : "▶"}</span
             >
-        </div>
+        </button>
 
         {#if showCapabilities}
             <div
+                id="capabilities-section"
+                role="region"
+                aria-labelledby="capabilities-header"
                 class="section-items"
                 transition:fly={{ y: -10, duration: 150 }}
             >
@@ -263,7 +280,7 @@
                     <button
                         class="capability-item"
                         title={collapsed ? item.desc : ""}
-                        on:click={() => executeTool(item)}
+                        onclick={() => executeTool(item)}
                     >
                         <span class="nav-icon">{item.icon}</span>
                         {#if !collapsed}
@@ -354,6 +371,9 @@
     .section-header {
         display: flex;
         align-items: center;
+        width: 100%;
+        background: transparent;
+        border: none;
         justify-content: space-between;
         padding: 0.5rem 0.75rem;
         cursor: pointer;

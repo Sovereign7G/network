@@ -19,7 +19,7 @@
 
 <div
     class="zk-shield-wrapper"
-    on:click={triggerVerification}
+    onclick={triggerVerification}
     role="button"
     tabindex="0"
 >

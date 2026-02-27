@@ -33,7 +33,7 @@
             top: {targetRect.bottom + 8}px;
             width: {targetRect.width}px;
         "
-        transition:blur={{ duration: 400 }}
+        transitionblur={{ duration: 400 }}
     >
         <!-- Annotation Stem -->
         <div

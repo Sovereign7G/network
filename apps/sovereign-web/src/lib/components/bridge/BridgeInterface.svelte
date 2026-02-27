@@ -1,10 +1,8 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import WalletConnector from "./WalletConnector.svelte";
-    import { bridgeStore } from "$lib/stores/bridge-store";
-    import { vaultStore } from "$lib/stores/vault-store";
+    import { bridgeStore } from "$lib/stores/bridge-store.svelte";
     import { SUPPORTED_CHAINS } from "$lib/types/blockchain";
-    import type { ChainConfig, BridgeQuote } from "$lib/types/blockchain";
+    import type { BridgeQuote } from "$lib/types/blockchain";
 
     let fromChain = "ETHEREUM";
     let toChain = "POLYGON";
@@ -13,10 +11,12 @@
     let quote: BridgeQuote | null = null;
     let isGettingQuote = false;
 
-    const chains = Object.entries(SUPPORTED_CHAINS).map(([id, config]) => ({
-        id,
-        ...config,
-    }));
+    const chains = Object.entries(SUPPORTED_CHAINS).map(
+        ([chainId, config]) => ({
+            id: chainId,
+            ...config,
+        }),
+    );
 
     async function getQuote() {
         if (amount <= 0) return;
@@ -114,7 +114,7 @@
 
         <button
             class="quote-btn"
-            on:click={getQuote}
+            onclick={getQuote}
             disabled={amount <= 0 || isGettingQuote}
         >
             {#if isGettingQuote}
@@ -150,15 +150,15 @@
                     </div>
                 </div>
 
-                <button class="execute-btn" on:click={executeBridge}>
+                <button class="execute-btn" onclick={executeBridge}>
                     Execute Bridge Transfer
                 </button>
             </div>
         {/if}
 
-        {#if $bridgeStore.error}
+        {#if bridgeStore.state.error}
             <div class="error-message">
-                ⚠️ {$bridgeStore.error}
+                ⚠️ {bridgeStore.state.error}
             </div>
         {/if}
     </div>

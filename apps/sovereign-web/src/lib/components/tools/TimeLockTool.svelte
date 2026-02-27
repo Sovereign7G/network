@@ -15,12 +15,12 @@
 
     <div class="input-row">
         <div class="input-group flex-2">
-            <label>Amount</label>
-            <input type="number" bind:value={amount} />
+            <label for="lock-amount">Amount</label>
+            <input id="lock-amount" type="number" bind:value={amount} />
         </div>
         <div class="input-group flex-1">
-            <label>Asset</label>
-            <select bind:value={asset}>
+            <label for="lock-asset">Asset</label>
+            <select id="lock-asset" bind:value={asset}>
                 <option value="SYND">SYND</option>
                 <option value="AGE">AGE</option>
                 <option value="USDC">USDC</option>
@@ -29,13 +29,13 @@
     </div>
 
     <div class="input-group">
-        <label>Unlock Date (UTC)</label>
-        <input type="datetime-local" bind:value={unlockDate} />
+        <label for="unlock-date">Unlock Date (UTC)</label>
+        <input id="unlock-date" type="datetime-local" bind:value={unlockDate} />
     </div>
 
     <button
         class="lock-btn"
-        on:click={scheduleLock}
+        onclick={scheduleLock}
         disabled={!unlockDate || !amount}
     >
         Engage Time Lock

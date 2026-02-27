@@ -1,18 +1,18 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { MEMORY_TYPES } from "$lib/stores/master-store";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
 
-    const dispatch = createEventDispatcher();
+    let { onsubmit, oncancel } = $props();
 
-    let content = "";
-    let title = "";
-    let type = "gratitude";
-    let tags = "";
-    let error = "";
+    let content = $state("");
+    let title = $state("");
+    let type = $state("gratitude");
+    let tags = $state("");
+    let error = $state("");
 
-    $: typeOptions = Object.values(MEMORY_TYPES);
+    let typeOptions = $derived(Object.values(MEMORY_TYPES));
 
-    function handleSubmit() {
+    function handleSubmit(e: Event) {
+        e.preventDefault();
         if (!content.trim()) {
             error = "Please write something";
             return;
@@ -24,16 +24,18 @@
             .filter((t) => t.length > 0)
             .map((t) => t.replace(/^#/, ""));
 
-        dispatch("submit", {
-            content: content.trim(),
-            title: title.trim() || null,
-            type,
-            tags: tagArray,
-        });
+        if (onsubmit) {
+            onsubmit({
+                content: content.trim(),
+                title: title.trim() || null,
+                type,
+                tags: tagArray,
+            });
+        }
     }
 </script>
 
-<form class="memory-form" on:submit|preventDefault={handleSubmit}>
+<form class="memory-form" onsubmit={handleSubmit}>
     <div class="form-header">
         <h3 class="form-title">
             <span class="title-icon">✨</span>
@@ -42,30 +44,33 @@
         <button
             type="button"
             class="close-btn"
-            on:click={() => dispatch("cancel")}
+            onclick={() => oncancel && oncancel()}
         >
             ✕
         </button>
     </div>
 
-    <div class="form-group">
-        <label class="form-label" id="type-label">Memory Type</label>
-        <div class="type-selector" role="group" aria-labelledby="type-label">
+    <fieldset class="form-group border-none p-0 m-0">
+        <legend class="form-label mb-2 text-sm opacity-80">Memory Type</legend>
+        <div class="type-selector">
             {#each typeOptions as option}
                 <button
                     type="button"
                     class="type-option"
                     class:selected={type === option.id}
                     style="--option-color: {option.color};"
-                    on:click={() => (type = option.id)}
+                    onclick={() => (type = option.id)}
+                    aria-pressed={type === option.id}
                 >
-                    <span class="option-icon">{option.icon}</span>
+                    <span class="option-icon" aria-hidden="true"
+                        >{option.icon}</span
+                    >
                     <span class="option-label">{option.label}</span>
                     <span class="option-resonance">+{option.resonance}</span>
                 </button>
             {/each}
         </div>
-    </div>
+    </fieldset>
 
     <div class="form-group">
         <label for="memory-title" class="form-label">Title (Optional)</label>
@@ -137,7 +142,7 @@
         <button
             type="button"
             class="cancel-btn"
-            on:click={() => dispatch("cancel")}
+            onclick={() => oncancel && oncancel()}
         >
             Cancel
         </button>

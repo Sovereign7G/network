@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
-import { get } from 'svelte/store';
-import type { UserContext, Conversation, ConversationMessage } from '$lib/types';
+
+import type { UserContext, Conversation } from '$lib/types';
 
 // ==================== TYPES ====================
 
@@ -605,7 +605,7 @@ class LLMService {
             const testMessage = 'Reply with exactly: "Connection successful" if you can hear me.';
             const response = await this.sendMessage(
                 { displayName: 'Test User' } as UserContext,
-                { messages: [] } as Conversation,
+                { messages: [] } as any,
                 testMessage,
                 'You are a helpful assistant.',
                 () => { }

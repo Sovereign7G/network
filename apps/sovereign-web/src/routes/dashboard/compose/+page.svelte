@@ -58,7 +58,7 @@
                         <button
                             class="primitive-card"
                             class:active={activeFlow === flow.id}
-                            on:click={() => (activeFlow = flow.id as any)}
+                            onclick={() => (activeFlow = flow.id as any)}
                         >
                             <span class="p-icon">{flow.icon}</span>
                             <div class="p-text">

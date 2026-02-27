@@ -61,7 +61,7 @@
                     >
                     <button
                         class="dismiss-btn"
-                        on:click={() => dispatch("dismiss", insight.id)}
+                        onclick={() => dispatch("dismiss", insight.id)}
                         aria-label="Dismiss insight"
                     >
                         ✕
@@ -85,7 +85,7 @@
                     {#if insight.actionable}
                         <button
                             class="action-btn"
-                            on:click={() => dispatch("execute", insight.id)}
+                            onclick={() => dispatch("execute", insight.id)}
                         >
                             {insight.action || "Take Action"} →
                         </button>

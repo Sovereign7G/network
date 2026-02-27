@@ -87,7 +87,7 @@
             <button
                 class="filter-tag"
                 class:active={selectedCategory === cat}
-                on:click={() => (selectedCategory = cat)}
+                onclick={() => (selectedCategory = cat)}
             >
                 {cat}
             </button>
@@ -123,7 +123,7 @@
                     </div>
                     <button
                         class="install-btn"
-                        on:click={() => installBlock(block)}
+                        onclick={() => installBlock(block)}
                     >
                         Install
                     </button>

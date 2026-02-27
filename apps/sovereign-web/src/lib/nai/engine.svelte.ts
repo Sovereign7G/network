@@ -21,7 +21,6 @@ class NAIEngine {
 
         this.lastFrameTime = now;
         this.currentFrame = frame;
-        console.log(`[NAI] Agent ${frame.agentId} pushed new frame`, frame);
 
         // 🧠 NAI: Mesh State Detection
         if (frame.agentId === 'SYSTEM_MESH' && frame.metadata?.condition === 'turbulence') {
@@ -34,7 +33,6 @@ class NAIEngine {
     /// 🧠 NAI: Mesh Inbound Bridge
     /// Handles frames received via the P2P Mesh (e.g., from Mobile Sentinel)
     injectMeshFrame(frame: A2UIFrame) {
-        console.log(`📡 [P2P Mesh] Inbound Frame from Peer: ${frame.agentId}`);
         this.isMeshConnected = true;
         this.pushFrame(frame);
     }

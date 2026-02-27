@@ -1,9 +1,13 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
 
-    let command = "";
-    let output: string[] = [];
+    let command = $state("");
+    let output = $state([] as string[]);
+    let inputEl: HTMLInputElement;
+
+    $effect(() => {
+        if (inputEl) inputEl.focus();
+    });
 
     const commands = [
         { cmd: "help", desc: "Show available commands" },
@@ -95,12 +99,12 @@
         <div class="terminal-input-line">
             <span class="prompt">$</span>
             <input
+                bind:this={inputEl}
                 type="text"
                 bind:value={command}
-                on:keydown={handleKeyDown}
+                onkeydown={handleKeyDown}
                 class="terminal-input"
                 placeholder="Type 'help' for commands..."
-                autofocus
             />
         </div>
     </div>
@@ -111,7 +115,7 @@
             {#each commands.filter((c) => c.cmd !== "help" && c.cmd !== "clear") as cmd}
                 <button
                     class="command-chip"
-                    on:click={() => goto(`/${cmd.cmd}`)}
+                    onclick={() => goto(`/${cmd.cmd}`)}
                 >
                     {cmd.cmd}
                 </button>

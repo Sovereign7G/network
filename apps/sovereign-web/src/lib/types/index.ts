@@ -64,6 +64,7 @@ export interface Insight {
     actionable: boolean;
     action?: string;
     actioned?: boolean;
+    icon?: string;
 }
 
 export interface Achievement {
@@ -243,7 +244,7 @@ export interface SystemVitals {
     cpu: number;
     memory: number;
     networkLatency: number;
-    syncStatus: 'synced' | 'syncing' | 'error';
+    syncStatus: 'synced' | 'syncing' | 'degraded' | 'error';
     activeConnections: number;
     resonance: number;
 }
@@ -451,3 +452,16 @@ export interface ConciergeStore {
         governance: GovernanceState
     ) => UserContext;
 }
+
+// ==================== WORKER TYPES ====================
+
+export type WorkerMessageType = 'STANDARDIZE_LAYOUT' | 'PROCESS_DATA' | 'QUERY_VECTOR' | 'ERROR';
+
+export interface WorkerMessage<T = any> {
+    id: string;
+    type: WorkerMessageType;
+    payload: T;
+    timestamp: number;
+    error?: string;
+}
+

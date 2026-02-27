@@ -10,7 +10,7 @@
 </script>
 
 <div class="personality-selector">
-    <button class="selector-button" on:click={() => (isOpen = !isOpen)}>
+    <button class="selector-button" onclick={() => (isOpen = !isOpen)}>
         <span class="current-icon"
             >{personalities[currentPersonality?.toUpperCase()]?.icon ||
                 "🧙"}</span
@@ -28,7 +28,7 @@
                 <button
                     class="personality-option"
                     class:active={personality.id === currentPersonality}
-                    on:click={() => {
+                    onclick={() => {
                         dispatch("change", personality.id);
                         isOpen = false;
                     }}

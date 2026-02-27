@@ -1,14 +1,11 @@
 <script lang="ts">
     import {
-        Gavel,
-        TrendingUp,
         Shield,
         Globe,
         Target,
         AlertCircle,
         CheckCircle2,
         XCircle,
-        UserCheck,
         Sparkles,
         EyeOff,
         RefreshCw,
@@ -16,8 +13,6 @@
         QrCode,
     } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
-    import { tweened } from "svelte/motion";
-    import { cubicOut } from "svelte/easing";
     import { naiEngine } from "$lib/nai/engine.svelte";
     import VisualOverlay from "$lib/nai/VisualOverlay.svelte";
     import SovereignAnnotation from "./SovereignAnnotation.svelte";
@@ -26,7 +21,6 @@
         PrivacyComponent,
         InstructionComponent,
         AmbientComponent,
-        VisualOverlayComponent,
         ActionComponent,
     } from "$lib/nai/types";
 
@@ -41,7 +35,6 @@
             .some((c) => c.peekerDetected),
     );
     let isMeshConnected = $derived(naiEngine.isMeshConnected);
-    let isTurbulent = $derived(naiEngine.isTurbulent);
     let isFlashCrash = $derived(
         naiEngine.currentFrame?.metadata?.condition === "flash_crash",
     );
@@ -281,7 +274,7 @@
     {#if isPeekerDetected}
         <div
             class="fixed top-8 left-1/2 -translate-x-1/2 z-[100] bg-amber-400 text-black px-6 py-2 rounded-full font-black text-[10px] tracking-widest uppercase flex items-center gap-3 shadow-[0_0_30px_rgba(251,191,36,0.5)]"
-            transition:fly={{ y: -50 }}
+            transitionfly={{ y: -50 }}
         >
             <EyeOff size={14} />
             Privacy Shield Active // {isMeshConnected
@@ -294,7 +287,7 @@
     {#if isFlashCrash}
         <div
             class="fixed top-20 left-1/2 -translate-x-1/2 z-[100] bg-rose-500 text-white px-8 py-3 rounded-full font-black text-[12px] tracking-widest uppercase flex items-center gap-3 shadow-[0_0_50px_rgba(244,63,94,0.6)] animate-pulse"
-            transition:fly={{ y: -50 }}
+            transitionfly={{ y: -50 }}
         >
             <Sparkles size={16} class="animate-spin" />
             AGENTIC FLASH CRASH // THRESHOLD EXCEEDED // SCTP SATURATION
@@ -304,7 +297,7 @@
     {#if resonanceSync}
         <div
             class="fixed top-8 right-8 z-[100] glass-panel border-cyan-400/50 px-6 py-4 flex items-center gap-4 shadow-[0_0_60px_rgba(34,211,238,0.5)] animate-[pulse_2s_infinite]"
-            transition:fly={{ x: 50 }}
+            transitionfly={{ x: 50 }}
         >
             <div class="p-2 rounded-full bg-cyan-400/30 text-cyan-400 relative">
                 <!-- Radiant Aura -->
@@ -330,7 +323,7 @@
     {#if isTotalBreach}
         <div
             class="fixed top-32 left-1/2 -translate-x-1/2 z-[100] bg-black text-rose-500 border-2 border-rose-500 px-10 py-4 rounded-xl font-black text-[14px] tracking-[0.3em] uppercase flex items-center gap-4 shadow-[0_0_100px_rgba(244,63,94,0.8)] animate-[pulse_0.2s_infinite]"
-            transition:fly={{ y: -50 }}
+            transitionfly={{ y: -50 }}
         >
             <Shield size={20} />
             TOTAL BREACH SIMULATION // FAST-PATH RECOVERY ACTIVE // HARDENED MODE
@@ -380,7 +373,7 @@
     {#if agentInstruction}
         <div
             class="fixed bottom-12 right-12 z-50 w-96 glass-panel p-8 border-cyan-400/30 shadow-[0_0_50px_rgba(34,211,238,0.1)]"
-            transition:fly={{ x: 100, duration: 800 }}
+            transitionfly={{ x: 100, duration: 800 }}
         >
             <div class="flex items-center gap-3 mb-6">
                 <div class="p-2 rounded-lg bg-cyan-400/10 text-cyan-400">

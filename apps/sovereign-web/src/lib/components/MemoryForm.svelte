@@ -1,27 +1,31 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { MEMORY_TYPES } from "$lib/stores/hearth-store";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
 
-    export let initialType = MEMORY_TYPES.GRATITUDE.id;
+    let {
+        initialType = MEMORY_TYPES.GRATITUDE.id,
+        onsubmit,
+        oncancel,
+    } = $props();
 
-    const dispatch = createEventDispatcher();
+    let content = $state("");
+    let title = $state("");
+    let type = $state(initialType);
+    let error = $state("");
 
-    let content = "";
-    let title = "";
-    let type = initialType;
-    let error = "";
-
-    function handleSubmit() {
+    function handleSubmit(e: Event) {
+        e.preventDefault();
         if (!content.trim()) {
             error = "Please write something";
             return;
         }
 
-        dispatch("submit", {
-            content: content.trim(),
-            title: title.trim() || null,
-            type,
-        });
+        if (onsubmit) {
+            onsubmit({
+                content: content.trim(),
+                title: title.trim() || null,
+                type,
+            });
+        }
 
         // Reset form
         content = "";
@@ -31,15 +35,14 @@
     }
 
     function handleCancel() {
-        dispatch("cancel");
+        if (oncancel) oncancel();
     }
 </script>
 
-<form class="memory-form" on:submit|preventDefault={handleSubmit}>
+<form class="memory-form" onsubmit={handleSubmit}>
     <div class="form-header">
         <h3>New Memory</h3>
-        <button type="button" class="close-btn" on:click={handleCancel}
-            >✕</button
+        <button type="button" class="close-btn" onclick={handleCancel}>✕</button
         >
     </div>
 
@@ -49,7 +52,9 @@
             id="memory-type"
             bind:value={type}
             class="type-select"
-            style="--selected-color: {MEMORY_TYPES[type.toUpperCase()]?.color}"
+            style="--selected-color: {(MEMORY_TYPES as Record<string, any>)[
+                type.toUpperCase()
+            ]?.color}"
         >
             {#each Object.values(MEMORY_TYPES) as memoryType}
                 <option value={memoryType.id}>
@@ -88,17 +93,22 @@
 
     <div
         class="preview-card"
-        style="--type-color: {MEMORY_TYPES[type.toUpperCase()]?.color}"
+        style="--type-color: {(MEMORY_TYPES as Record<string, any>)[
+            type.toUpperCase()
+        ]?.color}"
     >
         <div class="preview-header">
             <span class="preview-icon"
-                >{MEMORY_TYPES[type.toUpperCase()]?.icon}</span
+                >{(MEMORY_TYPES as Record<string, any>)[type.toUpperCase()]
+                    ?.icon}</span
             >
             <span class="preview-type"
-                >{MEMORY_TYPES[type.toUpperCase()]?.label}</span
+                >{(MEMORY_TYPES as Record<string, any>)[type.toUpperCase()]
+                    ?.label}</span
             >
             <span class="preview-resonance"
-                >+{MEMORY_TYPES[type.toUpperCase()]?.resonance}</span
+                >+{(MEMORY_TYPES as Record<string, any>)[type.toUpperCase()]
+                    ?.resonance}</span
             >
         </div>
         {#if title}
@@ -110,7 +120,7 @@
     </div>
 
     <div class="form-actions">
-        <button type="button" class="cancel-btn" on:click={handleCancel}>
+        <button type="button" class="cancel-btn" onclick={handleCancel}>
             Cancel
         </button>
         <button type="submit" class="submit-btn" disabled={!content.trim()}>

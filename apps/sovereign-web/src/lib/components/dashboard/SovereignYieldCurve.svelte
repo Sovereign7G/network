@@ -104,7 +104,7 @@
                     r={selectedLayer?.id === layer.id ? 10 : 6}
                     fill={layer.color}
                     class="node"
-                    on:mouseenter={() => selectLayer(layer)}
+                    onmouseenter={() => selectLayer(layer)}
                 />
             {/each}
         </svg>

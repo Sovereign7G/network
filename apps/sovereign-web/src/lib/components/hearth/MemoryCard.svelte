@@ -1,31 +1,37 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { MEMORY_TYPES } from "$lib/stores/master-store";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
 
-    export let memory;
-    export let isExpanded = false;
+    let {
+        memory,
+        isExpanded = $bindable(false),
+        onclick,
+        ondelete,
+        onreflect,
+    } = $props();
 
-    const dispatch = createEventDispatcher();
+    let showDeleteConfirm = $state(false);
+    let reflectionText = $state("");
 
-    let showDeleteConfirm = false;
-    let reflectionText = "";
+    let memoryType = $derived(
+        (MEMORY_TYPES as Record<string, any>)[memory?.type?.toUpperCase()] ||
+            MEMORY_TYPES.GRATITUDE,
+    );
 
-    $: memoryType =
-        MEMORY_TYPES[memory?.type?.toUpperCase()] || MEMORY_TYPES.GRATITUDE;
-
-    $: formattedDate = memory?.timestamp
-        ? new Intl.DateTimeFormat("en-US", {
-              month: "short",
-              day: "numeric",
-              year: "numeric",
-              hour: "2-digit",
-              minute: "2-digit",
-          }).format(new Date(memory.timestamp))
-        : "";
+    let formattedDate = $derived(
+        memory?.timestamp
+            ? new Intl.DateTimeFormat("en-US", {
+                  month: "short",
+                  day: "numeric",
+                  year: "numeric",
+                  hour: "2-digit",
+                  minute: "2-digit",
+              }).format(new Date(memory.timestamp))
+            : "",
+    );
 
     function handleDelete() {
         if (showDeleteConfirm) {
-            dispatch("delete");
+            if (ondelete) ondelete();
             showDeleteConfirm = false;
         } else {
             showDeleteConfirm = true;
@@ -35,21 +41,27 @@
 
     function handleAddReflection() {
         if (reflectionText.trim()) {
-            dispatch("reflect", reflectionText.trim());
+            if (onreflect) onreflect(reflectionText.trim());
             reflectionText = "";
         }
     }
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
 <div
     class="memory-card"
     class:expanded={isExpanded}
     style="--card-color: {memoryType.color}"
-    on:click={() => dispatch("click")}
-    on:keydown={(e) => e.key === "Enter" && dispatch("click")}
-    role="article"
+    role="button"
     tabindex="0"
+    onclick={() => {
+        if (onclick) onclick();
+    }}
+    onkeydown={(e) => {
+        if (e.key === "Enter") {
+            isExpanded = !isExpanded;
+            if (onclick) onclick();
+        }
+    }}
 >
     <div class="memory-header">
         <div class="memory-type">
@@ -74,7 +86,10 @@
             <button
                 class="delete-btn"
                 class:confirm={showDeleteConfirm}
-                on:click|stopPropagation={handleDelete}
+                onclick={(e) => {
+                    e.stopPropagation();
+                    handleDelete();
+                }}
                 aria-label="Delete memory"
             >
                 {showDeleteConfirm ? "✓" : "✕"}
@@ -99,8 +114,14 @@
     </div>
 
     {#if isExpanded}
-        <!-- svelte-ignore a11y-click-events-have-key-events a11y-no-static-element-interactions -->
-        <div class="memory-expanded" on:click|stopPropagation>
+        <!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+        <div
+            class="memory-expanded"
+            onclick={(e) => e.stopPropagation()}
+            role="region"
+            aria-label="Expanded memory view"
+            tabindex="-1"
+        >
             {#if memory.reflections && memory.reflections.length > 0}
                 <div class="reflections-section">
                     <h4 class="reflections-title">Reflections</h4>
@@ -131,12 +152,12 @@
                     class="reflection-input"
                     placeholder="Add a reflection..."
                     bind:value={reflectionText}
-                    on:keydown={(e) =>
+                    onkeydown={(e) =>
                         e.key === "Enter" && handleAddReflection()}
                 />
                 <button
                     class="add-reflection-btn"
-                    on:click={handleAddReflection}
+                    onclick={handleAddReflection}
                     disabled={!reflectionText.trim()}
                 >
                     Add

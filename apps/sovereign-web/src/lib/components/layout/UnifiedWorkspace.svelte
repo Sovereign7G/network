@@ -38,7 +38,7 @@
     <header class="workspace-header">
         <div class="breadcrumbs">
             <span class="crumb">
-                <button class="crumb-link" on:click={() => goto("/dashboard")}>
+                <button class="crumb-link" onclick={() => goto("/dashboard")}>
                     🏛️ AGE
                 </button>
             </span>
@@ -47,7 +47,7 @@
                     <span class="separator">/</span>
                     <button
                         class="crumb-link"
-                        on:click={() =>
+                        onclick={() =>
                             goto("/" + breadcrumbs.slice(0, i + 1).join("/"))}
                     >
                         {crumb}
@@ -60,14 +60,14 @@
             <button
                 class="icon-button"
                 title="Search"
-                on:click={handleCommandOpen}
+                onclick={handleCommandOpen}
             >
                 <span class="icon">🔍</span>
             </button>
             <button
                 class="icon-button"
                 title="Settings"
-                on:click={() => goto("/settings")}
+                onclick={() => goto("/settings")}
             >
                 <span class="icon">⚙️</span>
             </button>
@@ -82,7 +82,7 @@
     <!-- Floating action button (like Notion's +) -->
     <button
         class="floating-action-button"
-        on:click={() => handleCommandWith("/")}
+        onclick={() => handleCommandWith("/")}
     >
         <span class="fab-icon">+</span>
     </button>

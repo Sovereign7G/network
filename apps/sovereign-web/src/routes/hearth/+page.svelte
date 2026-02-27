@@ -57,19 +57,19 @@
         },
     ];
 
-    let selectedMemory = memories[memories.length - 1];
-    let hoveredMemory = null;
+    let selectedMemory = $state(memories[memories.length - 1]);
+    let hoveredMemory = $state(null as string | null);
 
     // 3D Canvas
-    let canvas;
-    let ctx;
-    let animationFrame;
-    let rotationX = 0;
-    let rotationY = 0;
-    let targetRotationX = 0;
-    let targetRotationY = 0;
-    let isDragging = false;
-    let previousMousePosition = { x: 0, y: 0 };
+    let canvas: HTMLCanvasElement | null = $state(null);
+    let ctx: CanvasRenderingContext2D | null = $state(null);
+    let animationFrame: number = $state(0);
+    let rotationX = $state(0);
+    let rotationY = $state(0);
+    let targetRotationX = $state(0);
+    let targetRotationY = $state(0);
+    let isDragging = $state(false);
+    let previousMousePosition = $state({ x: 0, y: 0 });
 
     // 3D Vertices for an Icosahedron (Crystal Shape)
     const t = (1.0 + Math.sqrt(5.0)) / 2.0;
@@ -250,12 +250,12 @@
     }
 
     // Mouse interactions for 3D spin
-    function handleMouseDown(e) {
+    function handleMouseDown(e: MouseEvent) {
         isDragging = true;
         previousMousePosition = { x: e.clientX, y: e.clientY };
     }
 
-    function handleMouseMove(e) {
+    function handleMouseMove(e: MouseEvent) {
         if (!isDragging) return;
         const deltaMove = {
             x: e.clientX - previousMousePosition.x,
@@ -276,7 +276,7 @@
     }
 </script>
 
-<svelte:window on:mouseup={handleMouseUp} on:mousemove={handleMouseMove} />
+<svelte:window onmouseup={handleMouseUp} onmousemove={handleMouseMove} />
 
 <div class="hearth-cathedral">
     <!-- Header -->
@@ -316,7 +316,11 @@
             in:fade={{ duration: 800 }}
             title="Interactable 3D representation of the sovereign memory archive"
         >
-            <div class="canvas-wrapper" on:mousedown={handleMouseDown}>
+            <div
+                class="canvas-wrapper"
+                role="presentation"
+                onmousedown={handleMouseDown}
+            >
                 <canvas id="crystal-canvas"></canvas>
             </div>
 
@@ -368,14 +372,15 @@
                 <div class="timeline-spine"></div>
 
                 {#each [...memories].reverse() as mem, i}
-                    <div
+                    <button
                         class="timeline-node"
                         class:selected={selectedMemory.id === mem.id}
                         class:is-kintsugi={mem.kintsugi}
-                        on:click={() => (selectedMemory = mem)}
+                        onclick={() => (selectedMemory = mem)}
                         title={mem.kintsugi
                             ? "Recovered Sovereign Memory (Kintsugi)"
                             : "Sovereign Memory Record"}
+                        style="all: unset; display: flex; gap: 1.5rem; cursor: pointer; z-index: 2; transition: transform 0.2s ease; width: 100%; text-align: left;"
                         in:fly={{ y: 20, duration: 300, delay: 300 + i * 100 }}
                     >
                         <!-- Timeline Dot -->
@@ -388,7 +393,7 @@
                                 <div class="node-gold-dust"></div>
                             {/if}
                         </div>
-                    </div>
+                    </button>
                 {/each}
             </div>
         </div>

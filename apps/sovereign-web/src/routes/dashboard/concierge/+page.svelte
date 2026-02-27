@@ -3,12 +3,12 @@
     import { goto } from "$app/navigation";
     import {
         conciergeStore,
-        CONCIERGE_PERSONALITIES,
         sovereignStore,
         hearthStore,
         vaultStore,
         governanceStore,
     } from "$lib/stores/master-store";
+    import { CONCIERGE_PERSONALITIES } from "$lib/stores/constants";
     import ConversationList from "$lib/components/concierge/ConversationList.svelte";
     import ChatInterface from "$lib/components/concierge/ChatInterface.svelte";
     import InsightPanel from "$lib/components/concierge/InsightPanel.svelte";
@@ -30,7 +30,7 @@
     function updateContext() {
         userContext = conciergeStore.generateUserContext(
             $sovereignStore,
-            $hearthStore,
+            hearthStore.state,
             $vaultStore,
             $governanceStore,
         );
@@ -61,7 +61,7 @@
         <div class="header-left">
             <button
                 class="menu-toggle"
-                on:click={() => (showSidebar = !showSidebar)}
+                onclick={() => (showSidebar = !showSidebar)}
                 aria-label="Toggle sidebar"
             >
                 <span class="menu-icon">{showSidebar ? "◀" : "▶"}</span>
@@ -75,9 +75,9 @@
 
         <div class="header-right">
             <PersonalitySelector
-                currentPersonality={$conciergeStore.personality}
+                currentPersonality={conciergeStore.state.personality}
                 personalities={CONCIERGE_PERSONALITIES}
-                on:change={(e) => conciergeStore.setPersonality(e.detail)}
+                onchange={(e) => conciergeStore.setPersonality(e.detail)}
             />
         </div>
     </div>
@@ -99,7 +99,7 @@
                         </h2>
                         <button
                             class="new-chat-btn"
-                            on:click={() => conciergeStore.newConversation()}
+                            onclick={() => conciergeStore.newConversation()}
                             title="New conversation"
                         >
                             <span class="btn-icon">+</span>
@@ -107,11 +107,11 @@
                     </div>
 
                     <ConversationList
-                        conversations={$conciergeStore.conversations}
-                        currentId={$conciergeStore.currentConversationId}
-                        on:select={(e) =>
+                        conversations={conciergeStore.state.conversations}
+                        currentId={conciergeStore.state.currentConversationId}
+                        onselect={(e) =>
                             conciergeStore.switchConversation(e.detail)}
-                        on:delete={(e) =>
+                        ondelete={(e) =>
                             conciergeStore.deleteConversation(e.detail)}
                     />
                 </div>
@@ -120,18 +120,18 @@
                     <h2 class="section-title">
                         <span class="title-icon">💡</span>
                         Active Insights
-                        {#if $conciergeStore.insights.length > 0}
+                        {#if conciergeStore.state.insights.length > 0}
                             <span class="insight-badge"
-                                >{$conciergeStore.insights.length}</span
+                                >{conciergeStore.state.insights.length}</span
                             >
                         {/if}
                     </h2>
 
                     <InsightPanel
-                        insights={$conciergeStore.insights}
-                        on:dismiss={(e) =>
+                        insights={conciergeStore.state.insights}
+                        ondismiss={(e) =>
                             conciergeStore.dismissInsight(e.detail)}
-                        on:execute={(e) =>
+                        onexecute={(e) =>
                             conciergeStore.executeInsightAction(e.detail)}
                     />
                 </div>
@@ -180,14 +180,14 @@
         <!-- Main chat area -->
         <div class="concierge-main" class:sidebar-hidden={!showSidebar}>
             <ChatInterface
-                conversation={$conciergeStore.conversations.find(
-                    (c) => c.id === $conciergeStore.currentConversationId,
+                conversation={conciergeStore.state.conversations.find(
+                    (c) => c.id === conciergeStore.state.currentConversationId,
                 )}
                 personality={CONCIERGE_PERSONALITIES[
-                    $conciergeStore.personality.toUpperCase()
+                    conciergeStore.state.personality.toUpperCase() as keyof typeof CONCIERGE_PERSONALITIES
                 ] || CONCIERGE_PERSONALITIES.WISE}
-                on:send={handleSendMessage}
-                on:new={() => conciergeStore.newConversation()}
+                onsend={handleSendMessage}
+                onnew={() => conciergeStore.newConversation()}
             />
         </div>
     </div>

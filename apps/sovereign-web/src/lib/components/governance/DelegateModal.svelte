@@ -27,7 +27,7 @@
             <span class="title-icon">🤝</span>
             Delegate Voting Power
         </h2>
-        <button class="close-btn" on:click={() => dispatch("close")}>✕</button>
+        <button class="close-btn" onclick={() => dispatch("close")}>✕</button>
     </div>
 
     <div class="modal-body">
@@ -84,12 +84,12 @@
         </div>
 
         <div class="modal-actions">
-            <button class="cancel-btn" on:click={() => dispatch("close")}>
+            <button class="cancel-btn" onclick={() => dispatch("close")}>
                 Cancel
             </button>
             <button
                 class="delegate-btn"
-                on:click={handleDelegate}
+                onclick={handleDelegate}
                 disabled={delegateType === "council"
                     ? !selectedCouncilMember
                     : !customAddress}

@@ -57,23 +57,23 @@
 
     <div class="stats-grid">
         <div class="stat-card">
-            <label>Entregas Hoje</label>
-            <div class="value">{stats.deliveriesCompleted}</div>
+            <label for="logistics-entregas">Entregas Hoje</label>
+            <div id="logistics-entregas" class="value" role="group">{stats.deliveriesCompleted}</div>
         </div>
 
         <div class="stat-card">
-            <label>Valor Total (USDC)</label>
-            <div class="value">${stats.totalPaid.toFixed(2)}</div>
+            <label for="logistics-valor">Valor Total (USDC)</label>
+            <div id="logistics-valor" class="value" role="group">${stats.totalPaid.toFixed(2)}</div>
         </div>
 
         <div class="stat-card">
-            <label>Tempo Médio</label>
-            <div class="value">{stats.avgDeliveryTime} min</div>
+            <label for="logistics-tempo">Tempo Médio</label>
+            <div id="logistics-tempo" class="value" role="group">{stats.avgDeliveryTime} min</div>
         </div>
 
         <div class="stat-card">
-            <label>Couriers Ativos</label>
-            <div class="value">{stats.activeCouriers}</div>
+            <label for="logistics-couriers">Couriers Ativos</label>
+            <div id="logistics-couriers" class="value" role="group">{stats.activeCouriers}</div>
         </div>
     </div>
 

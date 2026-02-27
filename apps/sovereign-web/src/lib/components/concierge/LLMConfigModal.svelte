@@ -61,7 +61,7 @@
             <span class="title-icon">⚙️</span>
             Configure AI Provider
         </h2>
-        <button class="close-btn" on:click={() => dispatch("close")}>✕</button>
+        <button class="close-btn" onclick={() => dispatch("close")}>✕</button>
     </div>
 
     <div class="modal-body">
@@ -72,7 +72,7 @@
                     <button
                         class="provider-card"
                         class:active={provider === id}
-                        on:click={() => {
+                        onclick={() => {
                             provider = id as LLMProvider;
                             model = info.defaultModel;
                         }}
@@ -99,7 +99,7 @@
                 {#if provider !== "local"}
                     <button
                         class="toggle-visibility"
-                        on:click={() => (showApiKey = !showApiKey)}
+                        onclick={() => (showApiKey = !showApiKey)}
                     >
                         {showApiKey ? "👁️" : "👁️🗨️"}
                     </button>
@@ -163,7 +163,7 @@
         <div class="config-section">
             <button
                 class="test-button"
-                on:click={testConnection}
+                onclick={testConnection}
                 disabled={isTesting || (provider !== "local" && !apiKey)}
             >
                 {#if isTesting}
@@ -192,10 +192,10 @@
         </div>
 
         <div class="modal-actions">
-            <button class="cancel-btn" on:click={() => dispatch("close")}>
+            <button class="cancel-btn" onclick={() => dispatch("close")}>
                 Cancel
             </button>
-            <button class="save-btn" on:click={handleSave}>
+            <button class="save-btn" onclick={handleSave}>
                 Save Configuration
             </button>
         </div>

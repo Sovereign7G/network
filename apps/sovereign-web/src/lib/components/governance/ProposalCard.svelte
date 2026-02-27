@@ -1,10 +1,7 @@
 <script lang="ts">
     import { createEventDispatcher } from "svelte";
-    import {
-        governanceStore,
-        PROPOSAL_TYPES,
-        PROPOSAL_STATUS,
-    } from "$lib/stores/master-store";
+    import { governanceStore } from "$lib/stores/master-store";
+    import { PROPOSAL_TYPES, PROPOSAL_STATUS } from "$lib/stores/constants";
 
     export let proposal;
     export let userVote = null;
@@ -162,7 +159,7 @@
                     <div class="voting-buttons">
                         <button
                             class="vote-btn for"
-                            on:click={() => handleVote("for")}
+                            onclick={() => handleVote("for")}
                             disabled={isVoting}
                         >
                             {#if isVoting}
@@ -173,7 +170,7 @@
                         </button>
                         <button
                             class="vote-btn against"
-                            on:click={() => handleVote("against")}
+                            onclick={() => handleVote("against")}
                             disabled={isVoting}
                         >
                             {#if isVoting}
@@ -184,7 +181,7 @@
                         </button>
                         <button
                             class="vote-btn abstain"
-                            on:click={() => handleVote("abstain")}
+                            onclick={() => handleVote("abstain")}
                             disabled={isVoting}
                         >
                             <span>○ Abstain</span>
@@ -216,7 +213,7 @@
 
         <button
             class="expand-btn"
-            on:click={() => (showDetails = !showDetails)}
+            onclick={() => (showDetails = !showDetails)}
         >
             {showDetails ? "Show less" : "Show details"}
         </button>

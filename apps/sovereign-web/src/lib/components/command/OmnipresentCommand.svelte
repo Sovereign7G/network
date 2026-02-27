@@ -122,15 +122,14 @@
 
     function executeSend(amount, asset, recipient) {
         // Auto-resolve address, check balance, show inline confirmation
-        console.log(`Sending ${amount} ${asset} to ${recipient}`);
         alert(`Mock Send: Sent ${amount} ${asset} to ${recipient}`);
         open = false;
     }
 </script>
 
 {#if open}
-    <div class="command-overlay" on:click={() => (open = false)}>
-        <div class="command-palette" on:click|stopPropagation>
+    <div class="command-overlay" onclick={() => (open = false)}>
+        <div class="command-palette" onclick={(e) => e.stopPropagation()}>
             <div class="command-input-area">
                 <span class="prompt">⌘</span>
                 <input
@@ -148,7 +147,7 @@
                             class="result-item {i === selectedIndex
                                 ? 'selected'
                                 : ''}"
-                            on:click={result.action}
+                            onclick={result.action}
                         >
                             <span class="result-type">{result.type}</span>
                             <span class="result-desc">

@@ -22,8 +22,9 @@
 
     <div class="threshold-config">
         <div class="input-group">
-            <label>Required Signatures (M)</label>
+            <label for="required-sigs">Required Signatures (M)</label>
             <input
+                id="required-sigs"
                 type="number"
                 bind:value={requiredSignatures}
                 min="1"
@@ -32,24 +33,36 @@
         </div>
         <div class="sync-symbol">/</div>
         <div class="input-group">
-            <label>Total Signatories (N)</label>
-            <input type="number" bind:value={totalSignatories} disabled />
+            <label for="total-signatories">Total Signatories (N)</label>
+            <input
+                id="total-signatories"
+                type="number"
+                bind:value={totalSignatories}
+                disabled
+            />
         </div>
     </div>
 
-    <div class="signatories-list">
-        <label>Signatory Addresses</label>
+    <div
+        class="signatories-list"
+        role="group"
+        aria-labelledby="signatories-title"
+    >
+        <span id="signatories-title" class="group-label"
+            >Signatory Addresses</span
+        >
         {#each signatories as sig, i}
             <input
                 type="text"
                 bind:value={signatories[i]}
                 placeholder="0x..."
+                aria-label="Signatory {i + 1}"
             />
         {/each}
-        <button class="add-btn" on:click={addSignatory}>+ Add Signatory</button>
+        <button class="add-btn" onclick={addSignatory}>+ Add Signatory</button>
     </div>
 
-    <button class="deploy-btn" on:click={deployVault}>
+    <button class="deploy-btn" onclick={deployVault}>
         Deploy Multi-Sig Vault
     </button>
 </div>
@@ -115,10 +128,12 @@
         gap: 0.5rem;
     }
 
-    .signatories-list label {
+    .signatories-list .group-label {
         font-size: 0.75rem;
         color: rgba(255, 215, 0, 0.7);
         text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        display: block;
     }
 
     .add-btn {

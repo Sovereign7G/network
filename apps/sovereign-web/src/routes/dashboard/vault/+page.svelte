@@ -16,12 +16,11 @@
     import { tooltip } from "$lib/actions/tooltip";
     import { fade, scale } from "svelte/transition";
 
-    let mounted = false;
-    let showSendModal = false;
-    let showReceiveModal = false;
-    let selectedAsset = "AGE";
-    let timeRange = "1M"; // 1D, 1W, 1M, 1Y
-    let searchQuery = "";
+    let showSendModal = $state(false);
+    let showReceiveModal = $state(false);
+    let selectedAsset = $state("AGE");
+    let timeRange = $state("1M"); // 1D, 1W, 1M, 1Y
+    let searchQuery = $state("");
 
     const ASSET_ICONS = {
         AGE: "⚛️",
@@ -31,32 +30,39 @@
         ETH: "Ξ",
     };
 
-    onMount(() => {
-        mounted = true;
+    let filteredTransactions = $derived(
+        vaultStore.state.transactions.filter((tx: any) => {
+            return (
+                (tx.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    tx.type
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase())) &&
+                (selectedAsset === "All" || tx.asset === selectedAsset)
+            );
+        }),
+    );
+
+    let totalValueFormatted = $derived(
+        new Intl.NumberFormat("en-US", {
+            style: "currency",
+            currency: "USD",
+            minimumFractionDigits: 0,
+        }).format(vaultStore.state.totalValue),
+    );
+
+    let selectedAssetPrice = $derived(
+        vaultStore.state?.assetPrices?.[selectedAsset] || 0,
+    );
+    let selectedAssetBalance = $derived(
+        vaultStore.state?.balances?.[selectedAsset] || 0,
+    );
+
+    $effect(() => {
+        if (selectedAssetBalance && selectedAssetPrice) {
+            // This is primarily for reactivity tracking
+            const _v = selectedAssetBalance * selectedAssetPrice;
+        }
     });
-
-    $: filteredTransactions = $vaultStore.transactions.filter((tx: any) => {
-        if (!searchQuery) return true;
-        return (
-            tx.asset.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            tx.from?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            tx.to?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            tx.type.toLowerCase().includes(searchQuery.toLowerCase())
-        );
-    });
-
-    $: totalValueFormatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-        minimumFractionDigits: 0,
-    }).format($vaultStore.totalValue);
-
-    $: selectedAssetPrice = $vaultStore?.assetPrices?.[selectedAsset] || 0;
-    $: selectedAssetBalance = $vaultStore?.balances?.[selectedAsset] || 0;
-    $: if (selectedAssetBalance && selectedAssetPrice) {
-        // This is primarily for reactivity tracking
-        const _v = selectedAssetBalance * selectedAssetPrice;
-    }
 
     function handleSend(asset: string) {
         selectedAsset = asset;
@@ -88,14 +94,14 @@
         <div class="header-actions">
             <button
                 class="action-btn primary"
-                on:click={() => (showReceiveModal = true)}
+                onclick={() => (showReceiveModal = true)}
                 use:tooltip={"Securely receive assets into your sovereign identity."}
             >
                 <span>📥 Receive</span>
             </button>
             <button
                 class="action-btn"
-                on:click={() => (showSendModal = true)}
+                onclick={() => (showSendModal = true)}
                 use:tooltip={"Allocate capital to external or internal logic nodes."}
             >
                 <span>📤 Send</span>
@@ -113,14 +119,15 @@
                 value={totalValueFormatted}
                 icon="💰"
                 variant="primary"
-                trend={$vaultStore.totalValueChange}
+                trend={vaultStore.state.totalValueChange}
             />
         </div>
 
         <div use:tooltip={"Liquid capital available for immediate deployment."}>
             <Tile
                 title="Available"
-                value={"$" + ($vaultStore.totalValue * 0.8).toLocaleString()}
+                value={"$" +
+                    (vaultStore.state.totalValue * 0.8).toLocaleString()}
                 icon="💧"
                 variant="success"
                 subtitle="80% Liquidity"
@@ -132,7 +139,8 @@
         >
             <Tile
                 title="Staked"
-                value={"$" + ($vaultStore.totalValue * 0.2).toLocaleString()}
+                value={"$" +
+                    (vaultStore.state.totalValue * 0.2).toLocaleString()}
                 icon="🔒"
                 variant="info"
                 subtitle="Earning ~12% APY"
@@ -159,14 +167,14 @@
             <div use:tooltip={"Detailed breakdown of your capital assets."}>
                 <GlassCard title="Holdings" icon="💼" variant="primary">
                     <div class="assets-list">
-                        {#each Object.entries($vaultStore.balances) as [asset, balance]}
+                        {#each Object.entries(vaultStore.state.balances) as [asset, balance]}
                             <AssetCard
                                 {asset}
                                 {balance}
-                                price={$vaultStore.assetPrices[asset]}
+                                price={vaultStore.state.assetPrices[asset]}
                                 icon={ASSET_ICONS[asset] || "🪙"}
-                                on:send={() => handleSend(asset)}
-                                on:receive={() => handleReceive(asset)}
+                                onsend={() => handleSend(asset)}
+                                onreceive={() => handleReceive(asset)}
                             />
                         {/each}
                     </div>
@@ -175,7 +183,7 @@
 
             <div use:tooltip={"Geometric distribution of risks and yields."}>
                 <GlassCard title="Allocation" icon="🥧" variant="info">
-                    <AllocationChart allocation={$vaultStore.allocation} />
+                    <AllocationChart allocation={vaultStore.state.allocation} />
                 </GlassCard>
             </div>
         </div>
@@ -188,7 +196,7 @@
                 <GlassCard title="Market Manifold" icon="📈" variant="warning">
                     <div class="chart-controls">
                         <select class="asset-select" bind:value={selectedAsset}>
-                            {#each Object.keys($vaultStore.assetPrices) as asset}
+                            {#each Object.keys(vaultStore.state.assetPrices) as asset}
                                 <option value={asset}>
                                     {asset} - {ASSET_ICONS[asset]}
                                 </option>
@@ -199,7 +207,7 @@
                                 <button
                                     class="range-button"
                                     class:active={timeRange === range}
-                                    on:click={() => (timeRange = range)}
+                                    onclick={() => (timeRange = range)}
                                 >
                                     {range}
                                 </button>
@@ -221,7 +229,8 @@
                     </div>
 
                     <PriceChart
-                        data={$vaultStore.priceHistory?.[selectedAsset] || []}
+                        data={vaultStore.state.priceHistory?.[selectedAsset] ||
+                            []}
                         color={selectedAsset === "AGE" ? "#4CAF50" : "#3498db"}
                     />
                 </GlassCard>
@@ -268,15 +277,27 @@
     {#if showSendModal}
         <div
             class="modal-overlay"
+            role="presentation"
+            tabindex="-1"
             in:fade
-            on:click={() => (showSendModal = false)}
+            onclick={() => (showSendModal = false)}
+            onkeydown={(e) => e.key === "Escape" && (showSendModal = false)}
         >
-            <div class="modal-content" in:scale on:click|stopPropagation>
+            <div
+                class="modal-content"
+                role="dialog"
+                tabindex="-1"
+                aria-modal="true"
+                aria-label="Send Modal"
+                in:scale
+                onclick={(e) => e.stopPropagation()}
+                onkeydown={(e) => e.stopPropagation()}
+            >
                 <SendModal
                     asset={selectedAsset}
                     balance={selectedAssetBalance}
-                    on:close={() => (showSendModal = false)}
-                    on:send={(e) => {
+                    onclose={() => (showSendModal = false)}
+                    onsend={(e) => {
                         vaultStore.addTransaction(e.detail);
                         showSendModal = false;
                     }}
@@ -288,14 +309,26 @@
     {#if showReceiveModal}
         <div
             class="modal-overlay"
+            role="presentation"
+            tabindex="-1"
             in:fade
-            on:click={() => (showReceiveModal = false)}
+            onclick={() => (showReceiveModal = false)}
+            onkeydown={(e) => e.key === "Escape" && (showReceiveModal = false)}
         >
-            <div class="modal-content" in:scale on:click|stopPropagation>
+            <div
+                class="modal-content"
+                role="dialog"
+                tabindex="-1"
+                aria-modal="true"
+                aria-label="Receive Modal"
+                in:scale
+                onclick={(e) => e.stopPropagation()}
+                onkeydown={(e) => e.stopPropagation()}
+            >
                 <ReceiveModal
                     asset={selectedAsset}
-                    address={$sovereignStore?.did || "did:age:..."}
-                    on:close={() => (showReceiveModal = false)}
+                    address={sovereignStore.state?.did || "did:age:..."}
+                    onclose={() => (showReceiveModal = false)}
                 />
             </div>
         </div>

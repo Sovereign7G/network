@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, tick } from "svelte";
+    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     import { fly, fade } from "svelte/transition";
     import { quintOut } from "svelte/easing";
@@ -101,44 +101,49 @@
     };
 
     // Filter state
-    let filterStatus = "all";
-    let filterType = "all";
-    let searchQuery = "";
+    let filterStatus = $state("all");
+    let filterType = $state("all");
+    let searchQuery = $state("");
 
-    $: filteredNodes = nodes.filter((node) => {
-        if (filterStatus !== "all" && node.status !== filterStatus)
-            return false;
-        if (filterType !== "all" && node.type !== filterType) return false;
-        if (
-            searchQuery &&
-            !node.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
-            !node.location.toLowerCase().includes(searchQuery.toLowerCase())
-        )
-            return false;
-        return true;
-    });
+    let filteredNodes = $derived(
+        nodes.filter((node) => {
+            if (filterStatus !== "all" && node.status !== filterStatus)
+                return false;
+            if (filterType !== "all" && node.type !== filterType) return false;
+            if (
+                searchQuery &&
+                !node.name.toLowerCase().includes(searchQuery.toLowerCase()) &&
+                !node.location.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+                return false;
+            return true;
+        }),
+    );
 
-    let selectedNode = null;
-    let hoveredNode = null;
+    let selectedNode: string | null = $state(null);
+    let hoveredNode: string | null = $state(null);
 
     // Canvas visualization
-    let canvas;
-    let ctx;
-    let animationFrame;
-    let mounted = false;
+    let canvas: HTMLCanvasElement | null = $state(null);
+    let ctx: CanvasRenderingContext2D | null = $state(null);
+    let animationFrame: number = $state(0);
+    let mounted = $state(false);
 
-    onMount(async () => {
+    onMount(() => {
         mounted = true;
-        await tick();
         initCanvas();
-        return () => cancelAnimationFrame(animationFrame);
+        return () => {
+            if (animationFrame) cancelAnimationFrame(animationFrame);
+        };
     });
 
     function initCanvas() {
-        canvas = document.getElementById("network-canvas");
+        canvas = document.getElementById("network-canvas") as HTMLCanvasElement;
         if (!canvas) return;
 
         ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
         canvas.width = canvas.offsetWidth;
         canvas.height = 400;
 
@@ -148,15 +153,18 @@
     function animate() {
         if (!ctx || !canvas) return;
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const currentCtx = ctx;
+        const currentCanvas = canvas;
+
+        currentCtx.clearRect(0, 0, currentCanvas.width, currentCanvas.height);
 
         // Draw network connections
-        ctx.strokeStyle = "rgba(255, 215, 0, 0.1)";
-        ctx.lineWidth = 1;
+        currentCtx.strokeStyle = "rgba(255, 215, 0, 0.1)";
+        currentCtx.lineWidth = 1;
 
         // Draw nodes as glowing orbs
         const nodePositions = nodes.map((node, i) => ({
-            x: 100 + ((i * 120) % (canvas.width - 200)),
+            x: 100 + ((i * 120) % (currentCanvas.width - 200)),
             y: 100 + Math.floor(i / 6) * 100,
             node,
         }));
@@ -170,11 +178,11 @@
                 );
 
                 if (dist < 150) {
-                    ctx.beginPath();
-                    ctx.moveTo(nodePositions[i].x, nodePositions[i].y);
-                    ctx.lineTo(nodePositions[j].x, nodePositions[j].y);
-                    ctx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - dist / 150)})`;
-                    ctx.stroke();
+                    currentCtx.beginPath();
+                    currentCtx.moveTo(nodePositions[i].x, nodePositions[i].y);
+                    currentCtx.lineTo(nodePositions[j].x, nodePositions[j].y);
+                    currentCtx.strokeStyle = `rgba(255, 215, 0, ${0.1 * (1 - dist / 150)})`;
+                    currentCtx.stroke();
                 }
             }
         }
@@ -184,8 +192,8 @@
             const isSelected = selectedNode === nodes[i].id;
             const isHovered = hoveredNode === nodes[i].id;
 
-            ctx.beginPath();
-            ctx.arc(pos.x, pos.y, isSelected ? 12 : 8, 0, Math.PI * 2);
+            currentCtx.beginPath();
+            currentCtx.arc(pos.x, pos.y, isSelected ? 12 : 8, 0, Math.PI * 2);
 
             // Color based on status
             let color;
@@ -203,7 +211,7 @@
                     color = "#FFD700";
             }
 
-            const gradient = ctx.createRadialGradient(
+            const gradient = currentCtx.createRadialGradient(
                 pos.x - 3,
                 pos.y - 3,
                 0,
@@ -214,25 +222,25 @@
             gradient.addColorStop(0, color);
             gradient.addColorStop(1, "rgba(0,0,0,0.5)");
 
-            ctx.fillStyle = gradient;
-            ctx.shadowColor = color;
-            ctx.shadowBlur = isSelected ? 30 : 15;
-            ctx.fill();
+            currentCtx.fillStyle = gradient;
+            currentCtx.shadowColor = color;
+            currentCtx.shadowBlur = isSelected ? 30 : 15;
+            currentCtx.fill();
 
             // Label on hover
             if (isHovered) {
-                ctx.shadowBlur = 0;
-                ctx.fillStyle = "white";
-                ctx.font = "12px Inter";
-                ctx.textAlign = "center";
-                ctx.fillText(nodes[i].name, pos.x, pos.y - 20);
+                currentCtx.shadowBlur = 0;
+                currentCtx.fillStyle = "white";
+                currentCtx.font = "12px Inter";
+                currentCtx.textAlign = "center";
+                currentCtx.fillText(nodes[i].name, pos.x, pos.y - 20);
             }
         });
 
         animationFrame = requestAnimationFrame(animate);
     }
 
-    function handleNodeClick(nodeId) {
+    function handleNodeClick(nodeId: string) {
         selectedNode = selectedNode === nodeId ? null : nodeId;
     }
 </script>
@@ -303,8 +311,12 @@
         >
             <div class="filters">
                 <div class="filter-group">
-                    <label>Status</label>
-                    <select bind:value={filterStatus} class="glass-select">
+                    <label for="status-filter">Status</label>
+                    <select
+                        id="status-filter"
+                        bind:value={filterStatus}
+                        class="glass-select"
+                    >
                         <option value="all">All Nodes</option>
                         <option value="active">Active</option>
                         <option value="degraded">Degraded</option>
@@ -313,8 +325,12 @@
                 </div>
 
                 <div class="filter-group">
-                    <label>Type</label>
-                    <select bind:value={filterType} class="glass-select">
+                    <label for="type-filter">Type</label>
+                    <select
+                        id="type-filter"
+                        bind:value={filterType}
+                        class="glass-select"
+                    >
                         <option value="all">All Types</option>
                         <option value="backbone">Backbone (S4)</option>
                         <option value="edge">Edge (S3)</option>
@@ -322,8 +338,9 @@
                 </div>
 
                 <div class="filter-group search">
-                    <label>Search</label>
+                    <label for="search-filter">Search</label>
                     <input
+                        id="search-filter"
                         type="text"
                         bind:value={searchQuery}
                         placeholder="Search nodes..."
@@ -361,10 +378,14 @@
             {#each filteredNodes as node}
                 <div
                     class="node-card glass-panel"
+                    role="button"
+                    tabindex="0"
                     class:selected={selectedNode === node.id}
-                    on:mouseenter={() => (hoveredNode = node.id)}
-                    on:mouseleave={() => (hoveredNode = null)}
-                    on:click={() => handleNodeClick(node.id)}
+                    onmouseenter={() => (hoveredNode = node.id)}
+                    onmouseleave={() => (hoveredNode = null)}
+                    onclick={() => handleNodeClick(node.id)}
+                    onkeydown={(e) =>
+                        e.key === "Enter" && handleNodeClick(node.id)}
                     title="Click to view details for {node.name}"
                     in:fly={{
                         y: 20,
@@ -404,16 +425,20 @@
                         <div class="node-actions">
                             <button
                                 class="node-action"
-                                on:click|stopPropagation={() =>
-                                    goto(`/node/${node.id}`)}
+                                onclick={(e) => {
+                                    e.stopPropagation();
+                                    goto(`/node/${node.id}`);
+                                }}
                                 title="Manage Sovereign Node"
                             >
                                 Manage
                             </button>
                             <button
                                 class="node-action"
-                                on:click|stopPropagation={() =>
-                                    goto(`/node/${node.id}/logs`)}
+                                onclick={(e) => {
+                                    e.stopPropagation();
+                                    goto(`/node/${node.id}/logs`);
+                                }}
                                 title="View System Logs"
                             >
                                 Logs
@@ -629,6 +654,7 @@
         backdrop-filter: blur(25px) saturate(180%);
         border: 1px solid rgba(255, 215, 0, 0.1);
         border-radius: 24px;
+        text-align: left;
     }
 
     .node-card:hover {

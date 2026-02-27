@@ -59,7 +59,7 @@
         >
             <button
                 class="conversation-content"
-                on:click={() => dispatch("select", conv.id)}
+                onclick={() => dispatch("select", conv.id)}
             >
                 <span class="conv-icon">💬</span>
                 <div class="conv-info">
@@ -73,7 +73,7 @@
                 <button
                     class="delete-btn"
                     class:confirm={conv.id === deletingId}
-                    on:click={(e) => handleDelete(conv.id, e)}
+                    onclick={(e) => handleDelete(conv.id, e)}
                     aria-label="Delete conversation"
                 >
                     {deletingId === conv.id ? "✓" : "✕"}

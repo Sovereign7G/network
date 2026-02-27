@@ -96,7 +96,7 @@
     <div class="welcome-actions">
         <button
             class="begin-button"
-            on:click={() => dispatch("next")}
+            onclick={() => dispatch("next")}
             disabled={isTyping}
         >
             <span class="button-text">Begin the Journey</span>

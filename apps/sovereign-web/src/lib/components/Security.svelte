@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { completeSecurity } from "../stores/auth.js";
+    import { authStore } from "../stores/auth.svelte";
     import { ShieldCheck, Fingerprint, Lock, ArrowRight } from "lucide-svelte";
     import { fade, fly } from "svelte/transition";
 
@@ -62,7 +62,7 @@
 
                 <div class="flex flex-col gap-6">
                     <button
-                        onclick={completeSecurity}
+                        onclick={() => authStore.completeSecurity()}
                         class="group h-16 w-full flex items-center justify-between px-8 rounded-2xl bg-cyan-400/10 border border-cyan-400/30 text-cyan-400 font-bold hover:bg-cyan-400/20 transition-all"
                     >
                         <div class="flex items-center gap-4">
@@ -73,7 +73,7 @@
                     </button>
 
                     <button
-                        onclick={completeSecurity}
+                        onclick={() => authStore.completeSecurity()}
                         class="h-16 w-full flex items-center justify-center text-xs font-black tracking-widest text-white/20 hover:text-white/40 transition-colors"
                     >
                         SKIP FOR NOW

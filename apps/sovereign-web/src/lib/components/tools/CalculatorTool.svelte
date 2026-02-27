@@ -1,6 +1,6 @@
 <script lang="ts">
-    let input = "";
-    let result = "";
+    let input = $state("");
+    let result = $state("");
 
     function calculate() {
         try {
@@ -24,9 +24,9 @@
         type="text"
         bind:value={input}
         placeholder="Enter expression (e.g., 2+2)..."
-        on:keydown={handleKeydown}
+        onkeydown={handleKeydown}
     />
-    <button on:click={calculate}>=</button>
+    <button onclick={calculate}>=</button>
     {#if result}
         <div class="result">Result: {result}</div>
     {/if}

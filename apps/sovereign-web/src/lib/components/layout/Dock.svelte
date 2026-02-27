@@ -31,10 +31,10 @@
         },
     ];
 
-    let activeItem = "dashboard";
-    let hoveredItem = null;
+    let activeItem = $state("dashboard");
+    let hoveredItem = $state(null as string | null);
 
-    function handleClick(route, id) {
+    function handleClick(route: string, id: string) {
         activeItem = id;
         goto(route);
     }
@@ -47,9 +47,15 @@
                 class="dock-item"
                 class:active={activeItem === item.id}
                 class:hovered={hoveredItem === item.id}
-                on:click={() => handleClick(item.route, item.id)}
-                on:mouseenter={() => (hoveredItem = item.id)}
-                on:mouseleave={() => (hoveredItem = null)}
+                onclick={() => handleClick(item.route, item.id)}
+                onmouseenter={() => (hoveredItem = item.id)}
+                onmouseleave={() => (hoveredItem = null)}
+                onkeydown={(e: KeyboardEvent) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        handleClick(item.route, item.id);
+                    }
+                }}
                 aria-label={item.label}
             >
                 <span class="dock-icon">{item.icon}</span>

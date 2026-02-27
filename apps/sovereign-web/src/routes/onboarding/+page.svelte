@@ -4,7 +4,7 @@
     import {
         onboardingStore,
         ONBOARDING_STEPS,
-    } from "$lib/stores/onboarding-store";
+    } from "$lib/stores/onboarding-store.svelte";
     import { sovereignStore } from "$lib/stores/master-store";
     import WelcomeStep from "$lib/components/onboarding/WelcomeStep.svelte";
     import IdentityStep from "$lib/components/onboarding/IdentityStep.svelte";
@@ -115,7 +115,7 @@
         <div class="progress-bar">
             <div
                 class="progress-fill"
-                style="width: {$onboardingStore.progress}%"
+                style="width: {onboardingStore.state.progress}%"
                 in:fade
             ></div>
         </div>
@@ -123,9 +123,9 @@
             {#each Object.values(ONBOARDING_STEPS) as step, index}
                 <div
                     class="progress-step"
-                    class:active={$onboardingStore.currentStep === step}
+                    class:active={onboardingStore.state.currentStep === step}
                     class:completed={Object.values(ONBOARDING_STEPS).indexOf(
-                        $onboardingStore.currentStep,
+                        onboardingStore.state.currentStep,
                     ) > index}
                 >
                     <span class="step-dot"></span>
@@ -139,37 +139,37 @@
 
     <!-- Step content with transitions -->
     <div class="onboarding-content">
-        {#if $onboardingStore.currentStep === ONBOARDING_STEPS.WELCOME}
+        {#if onboardingStore.state.currentStep === ONBOARDING_STEPS.WELCOME}
             <div
                 in:fly={{ y: 20, duration: 500 }}
                 out:fly={{ y: -20, duration: 300 }}
             >
-                <WelcomeStep on:next={() => onboardingStore.nextStep()} />
+                <WelcomeStep onnext={() => onboardingStore.nextStep()} />
             </div>
         {/if}
 
-        {#if $onboardingStore.currentStep === ONBOARDING_STEPS.IDENTITY}
+        {#if onboardingStore.state.currentStep === ONBOARDING_STEPS.IDENTITY}
             <div
                 in:fly={{ y: 20, duration: 500 }}
                 out:fly={{ y: -20, duration: 300 }}
             >
                 <IdentityStep
-                    data={$onboardingStore.data}
-                    on:next={(data) => {
+                    data={onboardingStore.state.data}
+                    onnext={(data) => {
                         onboardingStore.updateData(data.detail);
                         onboardingStore.nextStep();
                     }}
-                    on:back={() => onboardingStore.previousStep()}
+                    onback={() => onboardingStore.previousStep()}
                 />
             </div>
         {/if}
 
-        {#if $onboardingStore.currentStep === ONBOARDING_STEPS.SEAL}
+        {#if onboardingStore.state.currentStep === ONBOARDING_STEPS.SEAL}
             <div in:scale={{ duration: 500 }} out:scale={{ duration: 300 }}>
                 <SealStep
-                    data={$onboardingStore.data}
-                    on:complete={handleComplete}
-                    on:back={() => onboardingStore.previousStep()}
+                    data={onboardingStore.state.data}
+                    oncomplete={handleComplete}
+                    onback={() => onboardingStore.previousStep()}
                 />
             </div>
         {/if}

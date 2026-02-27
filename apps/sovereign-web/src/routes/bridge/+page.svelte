@@ -1,5 +1,4 @@
 <script lang="ts">
-    import { onMount } from "svelte";
     import { goto } from "$app/navigation";
     // Mock vault store to prevent import errors if it doesn't exist
     // Replace with actual import if it exists properly
@@ -44,15 +43,15 @@
         },
     };
 
-    let fromChain = "base";
-    let toChain = "optimism";
-    let amount = "";
-    let asset = "USDC";
-    let isProcessing = false;
-    let showConfirmation = false;
-    let transferId = "";
-    let transferProgress = 0;
-    let hoveredChain = null;
+    let fromChain = $state("base");
+    let toChain = $state("optimism");
+    let amount = $state("");
+    let asset = $state("USDC");
+    let isProcessing = $state(false);
+    let showConfirmation = $state(false);
+    let transferId = $state("");
+    let transferProgress = $state(0);
+    let hoveredChain = $state(null as string | null);
 
     // For the living topology visualization
     let canvasCtx;
@@ -205,8 +204,8 @@
     }
 
     // Somatic weight - press and hold for execution
-    let holdProgress = 0;
-    let holdInterval;
+    let holdProgress = $state(0);
+    let holdInterval: any;
 
     function startHold() {
         if (!amount || !fromChain || !toChain) return;
@@ -270,16 +269,22 @@
         <div class="chain-selectors">
             <div
                 class="chain-panel from"
-                on:mouseenter={() => (hoveredChain = fromChain)}
-                on:mouseleave={() => (hoveredChain = null)}
+                role="region"
+                aria-label="Source Chain Selection"
+                onmouseenter={() => (hoveredChain = fromChain)}
+                onmouseleave={() => (hoveredChain = null)}
             >
-                <label>From</label>
+                <label for="from-chain-select">From</label>
                 <div
                     class="chain-display"
                     style="border-color: {chains[fromChain].color}"
                 >
                     <span class="chain-icon">{chains[fromChain].icon}</span>
-                    <select bind:value={fromChain} class="chain-select">
+                    <select
+                        id="from-chain-select"
+                        bind:value={fromChain}
+                        class="chain-select"
+                    >
                         {#each Object.entries(chains) as [key, chain]}
                             <option value={key}>{chain.name}</option>
                         {/each}
@@ -298,16 +303,22 @@
 
             <div
                 class="chain-panel to"
-                on:mouseenter={() => (hoveredChain = toChain)}
-                on:mouseleave={() => (hoveredChain = null)}
+                role="region"
+                aria-label="Destination Chain Selection"
+                onmouseenter={() => (hoveredChain = toChain)}
+                onmouseleave={() => (hoveredChain = null)}
             >
-                <label>To</label>
+                <label for="to-chain-select">To</label>
                 <div
                     class="chain-display"
                     style="border-color: {chains[toChain].color}"
                 >
                     <span class="chain-icon">{chains[toChain].icon}</span>
-                    <select bind:value={toChain} class="chain-select">
+                    <select
+                        id="to-chain-select"
+                        bind:value={toChain}
+                        class="chain-select"
+                    >
                         {#each Object.entries(chains) as [key, chain]}
                             <option value={key}>{chain.name}</option>
                         {/each}
@@ -331,14 +342,21 @@
 
             <div class="asset-input-group">
                 <input
+                    id="bridge-amount"
                     type="number"
                     bind:value={amount}
                     placeholder="0.00"
                     class="asset-input glass-input"
                     step="0.01"
+                    aria-label="Bridge Amount"
                 />
 
-                <select bind:value={asset} class="asset-select glass-select">
+                <select
+                    id="bridge-asset"
+                    bind:value={asset}
+                    class="asset-select glass-select"
+                    aria-label="Select Asset"
+                >
                     <option value="USDC">USDC</option>
                     <option value="AGE">AGE</option>
                     <option value="SYND">SYND</option>
@@ -372,9 +390,9 @@
             <button
                 class="hold-button"
                 class:processing={isProcessing}
-                on:mousedown={startHold}
-                on:mouseup={cancelHold}
-                on:mouseleave={cancelHold}
+                onmousedown={startHold}
+                onmouseup={cancelHold}
+                onmouseleave={cancelHold}
                 disabled={!amount || isProcessing}
             >
                 <span class="hold-text">
@@ -412,7 +430,7 @@
         {#if showConfirmation}
             <div
                 class="confirmation-ceremony"
-                transition:fly={{ y: 20, duration: 400 }}
+                transitionfly={{ y: 20, duration: 400 }}
             >
                 <div class="ceremony-glow"></div>
                 <div class="ceremony-content">
@@ -431,7 +449,7 @@
                     </div>
                     <button
                         class="ceremony-button"
-                        on:click={() => goto("/vault")}
+                        onclick={() => goto("/vault")}
                     >
                         View in Vault
                     </button>

@@ -1,34 +1,40 @@
 <script lang="ts">
-    import { onMount } from "svelte";
-    import { hearthStore, MEMORY_TYPES } from "$lib/stores/hearth-store";
+    import { hearthStore } from "$lib/stores/master-store";
+    import { MEMORY_TYPES } from "$lib/stores/constants";
     import MemoryForm from "./MemoryForm.svelte";
     import MemoryCard from "./MemoryCard.svelte";
     import StreakDisplay from "./StreakDisplay.svelte";
     import ResonanceBalance from "./ResonanceBalance.svelte";
     import { fade, slide } from "svelte/transition";
 
-    let showForm = false;
-    let selectedType = "all";
-    let searchQuery = "";
+    import type { Memory } from "$lib/types";
+
+    let showForm = $state(false);
+    let selectedType = $state("all");
+    let searchQuery = $state("");
 
     // Derived: filtered memories
-    $: filteredMemories = $hearthStore.memories.filter((memory) => {
-        const matchesType =
-            selectedType === "all" || memory.type === selectedType;
-        const matchesSearch =
-            searchQuery === "" ||
-            memory.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            memory.title?.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesType && matchesSearch;
-    });
+    let filteredMemories = $derived(
+        hearthStore.state.memories.filter((memory: Memory) => {
+            const matchesType =
+                selectedType === "all" || memory.type === selectedType;
+            const matchesSearch =
+                searchQuery === "" ||
+                memory.content
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                memory.title?.toLowerCase().includes(searchQuery.toLowerCase());
+            return matchesType && matchesSearch;
+        }),
+    );
 
     // Update store when filters change
-    $: {
-        hearthStore.setFilter("type", selectedType);
+    $effect(() => {
+        hearthStore.setFilter("type", selectedType as any);
         hearthStore.setFilter("search", searchQuery);
-    }
+    });
 
-    function handleNewMemory(memory) {
+    function handleNewMemory(memory: any) {
         hearthStore.addMemory(memory);
         showForm = false;
     }
@@ -43,8 +49,8 @@
         </h1>
 
         <div class="stats-row">
-            <StreakDisplay streak={$hearthStore.streak} />
-            <ResonanceBalance resonance={$hearthStore.totalResonance} />
+            <StreakDisplay streak={hearthStore.state.streak} />
+            <ResonanceBalance resonance={hearthStore.state.totalResonance} />
         </div>
     </div>
 
@@ -52,7 +58,7 @@
     <div class="action-bar">
         <button
             class="new-memory-btn"
-            on:click={() => (showForm = !showForm)}
+            onclick={() => (showForm = !showForm)}
             class:active={showForm}
         >
             <span class="btn-icon">{showForm ? "✕" : "+"}</span>
@@ -85,10 +91,10 @@
 
     <!-- Memory form (slides in) -->
     {#if showForm}
-        <div transition:slide={{ duration: 200 }}>
+        <div transitionslide={{ duration: 200 }}>
             <MemoryForm
-                on:submit={(e) => handleNewMemory(e.detail)}
-                on:cancel={() => (showForm = false)}
+                onsubmit={handleNewMemory}
+                oncancel={() => (showForm = false)}
             />
         </div>
     {/if}
@@ -97,7 +103,7 @@
     <div class="memories-list">
         {#if filteredMemories.length === 0}
             <div class="empty-state" transition:fade>
-                {#if $hearthStore.memories.length === 0}
+                {#if hearthStore.state.memories.length === 0}
                     <p>
                         ✨ Your hearth is empty. Add your first memory to start
                         building resonance.
@@ -111,7 +117,7 @@
                 <div transition:fade>
                     <MemoryCard
                         {memory}
-                        on:delete={() => hearthStore.deleteMemory(memory.id)}
+                        ondelete={() => hearthStore.deleteMemory(memory.id)}
                     />
                 </div>
             {/each}
@@ -119,7 +125,7 @@
     </div>
 
     <!-- Quick tips for new users -->
-    {#if $hearthStore.memories.length === 0 && !showForm}
+    {#if hearthStore.state.memories.length === 0 && !showForm}
         <div class="tips-card" transition:fade>
             <h3>✨ Memory Types & Resonance</h3>
             <div class="tips-grid">

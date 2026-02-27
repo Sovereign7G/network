@@ -59,7 +59,7 @@
             {#if hoveredId === item.id}
                 <div
                     class="absolute -top-12 px-3 py-1.5 bg-black/80 border border-white/10 rounded-lg text-[9px] font-black uppercase tracking-widest text-white whitespace-nowrap shadow-2xl backdrop-blur-xl"
-                    transition:fly={{ y: 5, duration: 200 }}
+                    transitionfly={{ y: 5, duration: 200 }}
                 >
                     {item.label}
                 </div>

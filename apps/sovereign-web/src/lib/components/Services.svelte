@@ -230,7 +230,12 @@
                 {@const Icon = e.icon}
                 <div
                     class="glass-panel p-12 group hover:border-white/10 transition-all cursor-pointer relative overflow-hidden"
+                    role="button"
+                    tabindex="0"
                     onclick={() => initiateSignature(e.label)}
+                    onkeydown={(evt) =>
+                        evt.key === "Enter" && initiateSignature(e.label)}
+                    aria-label={`Initiate signature for ${e.label}`}
                 >
                     <div
                         class="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity"

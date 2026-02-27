@@ -9,7 +9,7 @@
     <div class="stake-card glass">
         <p>Staking functionality coming soon.</p>
         <button
-            on:click={() => goto("/dashboard/sovereign")}
+            onclick={() => goto("/dashboard/sovereign")}
             class="stake-button">Return to Dashboard</button
         >
     </div>

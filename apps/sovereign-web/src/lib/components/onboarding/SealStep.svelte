@@ -146,13 +146,13 @@
             </div>
 
             <div class="seal-actions">
-                <button class="back-button" on:click={() => dispatch("back")}>
+                <button class="back-button" onclick={() => dispatch("back")}>
                     ← Back
                 </button>
                 <button
                     class="seal-button"
                     class:ready={acceptedTerms && acceptedProtocol}
-                    on:click={handleSeal}
+                    onclick={handleSeal}
                     disabled={!acceptedTerms || !acceptedProtocol}
                 >
                     <span class="button-text">Seal Identity</span>

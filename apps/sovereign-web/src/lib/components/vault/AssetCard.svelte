@@ -37,7 +37,7 @@
     <div class="asset-actions">
         <button
             class="action-btn send"
-            on:click={() => dispatch("send")}
+            onclick={() => dispatch("send")}
             aria-label="Send {asset}"
         >
             <span class="btn-glow"></span>
@@ -45,7 +45,7 @@
         </button>
         <button
             class="action-btn receive"
-            on:click={() => dispatch("receive")}
+            onclick={() => dispatch("receive")}
             aria-label="Receive {asset}"
         >
             <span class="btn-glow"></span>
@@ -53,7 +53,7 @@
         </button>
         <button
             class="action-btn stake"
-            on:click={() => dispatch("stake")}
+            onclick={() => dispatch("stake")}
             aria-label="Stake {asset}"
         >
             <span class="btn-glow"></span>
@@ -61,7 +61,7 @@
         </button>
         <button
             class="action-btn swap"
-            on:click={() => dispatch("swap")}
+            onclick={() => dispatch("swap")}
             aria-label="Swap {asset}"
         >
             <span class="btn-glow"></span>

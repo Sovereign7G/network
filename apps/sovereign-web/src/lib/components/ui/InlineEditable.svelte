@@ -42,8 +42,8 @@
         <textarea
             bind:this={inputElement}
             bind:value={editValue}
-            on:blur={saveEdit}
-            on:keydown={handleKeyDown}
+            onblur={saveEdit}
+            onkeydown={handleKeyDown}
             class="inline-editor"
             {placeholder}
         ></textarea>
@@ -52,8 +52,8 @@
             bind:this={inputElement}
             type="number"
             bind:value={editValue}
-            on:blur={saveEdit}
-            on:keydown={handleKeyDown}
+            onblur={saveEdit}
+            onkeydown={handleKeyDown}
             class="inline-editor"
         />
     {:else}
@@ -61,8 +61,8 @@
             bind:this={inputElement}
             type="text"
             bind:value={editValue}
-            on:blur={saveEdit}
-            on:keydown={handleKeyDown}
+            onblur={saveEdit}
+            onkeydown={handleKeyDown}
             class="inline-editor"
             {placeholder}
         />
@@ -70,7 +70,7 @@
 {:else}
     <span
         class="inline-display"
-        on:dblclick={startEditing}
+        ondblclick={startEditing}
         title="Double-click to edit"
     >
         {value || placeholder || "—"}

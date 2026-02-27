@@ -2,11 +2,23 @@
     import { onMount, onDestroy } from "svelte";
     import { goto } from "$app/navigation";
 
-    export let open = false;
+    let { open = $bindable(false) } = $props();
 
-    let input = "";
-    let results: any[] = [];
-    let selectedIndex = 0;
+    let input = $state("");
+    let selectedIndex = $state(0);
+
+    let results = $derived.by(() => {
+        if (input.startsWith("/")) {
+            return commands["/"].filter((cmd) =>
+                cmd.name.toLowerCase().includes(input.slice(1).toLowerCase()),
+            );
+        } else if (input.startsWith("@")) {
+            return commands["@"].filter((cmd) =>
+                cmd.name.toLowerCase().includes(input.slice(1).toLowerCase()),
+            );
+        }
+        return [];
+    });
 
     const commands = {
         "/": [
@@ -24,20 +36,6 @@
             { name: "Council", command: "@council", icon: "⚖️" },
         ],
     };
-
-    $: {
-        if (input.startsWith("/")) {
-            results = commands["/"].filter((cmd) =>
-                cmd.name.toLowerCase().includes(input.slice(1).toLowerCase()),
-            );
-        } else if (input.startsWith("@")) {
-            results = commands["@"].filter((cmd) =>
-                cmd.name.toLowerCase().includes(input.slice(1).toLowerCase()),
-            );
-        } else {
-            results = [];
-        }
-    }
 
     function handleKeydownGlobal(e: KeyboardEvent) {
         if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -74,7 +72,6 @@
             goto(cmd.command);
         } else if (cmd.command.startsWith("@")) {
             // Handle mentions
-            console.log("Mention:", cmd);
         }
         open = false;
         input = "";
@@ -102,36 +99,54 @@
 </script>
 
 {#if open}
-    <div class="command-overlay" on:click={() => (open = false)}>
-        <div class="command-palette" on:click|stopPropagation>
+    <div
+        class="command-overlay"
+        role="presentation"
+        onclick={() => (open = false)}
+        onkeydown={(e) => e.key === "Escape" && (open = false)}
+        tabindex="-1"
+    >
+        <div
+            class="command-palette"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Command Palette"
+            onclick={(e) => e.stopPropagation()}
+            onkeydown={(e) => e.stopPropagation()}
+            tabindex="0"
+        >
             <div class="command-input-area">
                 <span class="prompt">⌘</span>
                 <input
-                    autofocus
                     bind:value={input}
-                    on:keydown={handleInputKeydown}
+                    onkeydown={handleInputKeydown}
                     placeholder="Type '/' for commands, '@' to mention..."
                     class="command-input"
+                    aria-label="Search commands"
                 />
             </div>
 
             {#if results.length > 0}
-                <div class="command-results">
+                <div class="command-results" role="listbox">
                     {#each results as result, i}
-                        <div
+                        <button
                             class="result-item {i === selectedIndex
                                 ? 'selected'
                                 : ''}"
-                            on:click={() => executeCommand(result)}
+                            role="option"
+                            aria-selected={i === selectedIndex}
+                            onclick={() => executeCommand(result)}
+                            onkeydown={(e) =>
+                                e.key === "Enter" && executeCommand(result)}
                         >
                             <span class="result-icon">{result.icon}</span>
                             <span class="result-name">{result.name}</span>
                             <span class="result-command">{result.command}</span>
-                        </div>
+                        </button>
                     {/each}
                 </div>
             {:else if input}
-                <div class="no-results">
+                <div class="no-results" role="status">
                     <span>No commands found</span>
                 </div>
             {/if}
@@ -206,11 +221,16 @@
     .result-item {
         display: flex;
         align-items: center;
+        width: 100%;
+        background: transparent;
+        border: none;
         gap: 0.75rem;
         padding: 0.75rem 1rem;
         border-radius: 8px;
         cursor: pointer;
         transition: all 0.2s ease;
+        text-align: left;
+        font-family: inherit;
     }
 
     .result-item:hover,

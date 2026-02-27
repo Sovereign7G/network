@@ -3,13 +3,12 @@
     import { workspacePersistence } from "$lib/services/workspace-persistence";
     import { fly } from "svelte/transition";
 
-    export let onSelect: (columns: any[]) => void;
-    export let currentColumns: any[] = [];
+    let { onSelect, currentColumns = [] } = $props();
 
-    let templates: any[] = [];
-    let showNewTemplate = false;
-    let newTemplateName = "";
-    let newTemplateDesc = "";
+    let templates = $state([] as any[]);
+    let showNewTemplate = $state(false);
+    let newTemplateName = $state("");
+    let newTemplateDesc = $state("");
 
     onMount(() => {
         templates = workspacePersistence.listTemplates();
@@ -42,7 +41,14 @@
 
     <div class="template-grid">
         {#each templates as template}
-            <div class="template-card" on:click={() => loadTemplate(template)}>
+            <div
+                class="template-card"
+                role="button"
+                tabindex="0"
+                onclick={() => loadTemplate(template)}
+                onkeydown={(e) => e.key === "Enter" && loadTemplate(template)}
+                aria-label={`Load template: ${template.name}`}
+            >
                 <h4>{template.name}</h4>
                 <p>{template.description}</p>
                 <div class="template-meta">
@@ -58,7 +64,7 @@
 
         <button
             class="new-template-btn"
-            on:click={() => (showNewTemplate = true)}
+            onclick={() => (showNewTemplate = true)}
         >
             <span class="btn-icon">+</span>
             Save Current
@@ -68,7 +74,7 @@
     {#if showNewTemplate}
         <div
             class="new-template-modal"
-            transition:fly={{ y: 20, duration: 200 }}
+            transitionfly={{ y: 20, duration: 200 }}
         >
             <h4>Save Workspace Template</h4>
             <input
@@ -86,9 +92,9 @@
             <div class="modal-actions">
                 <button
                     class="cancel-btn"
-                    on:click={() => (showNewTemplate = false)}>Cancel</button
+                    onclick={() => (showNewTemplate = false)}>Cancel</button
                 >
-                <button class="save-btn" on:click={saveCurrentAsTemplate}
+                <button class="save-btn" onclick={saveCurrentAsTemplate}
                     >Save</button
                 >
             </div>

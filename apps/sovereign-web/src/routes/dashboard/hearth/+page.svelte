@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { hearthStore, RESONANCE_TIERS } from "$lib/stores/master-store";
+    import { hearthStore } from "$lib/stores/master-store";
+    import { RESONANCE_TIERS } from "$lib/stores/constants";
     import MemoryCard from "$lib/components/hearth/MemoryCard.svelte";
     import MemoryForm from "$lib/components/hearth/MemoryForm.svelte";
     import ResonanceHistory from "$lib/components/hearth/ResonanceHistory.svelte";
@@ -33,7 +34,7 @@
     }
 
     // Get filtered memories
-    $: filteredMemories = $hearthStore.memories.filter((memory: any) => {
+    $: filteredMemories = hearthStore.state.memories.filter((memory: any) => {
         const matchesType =
             selectedType === "all" || memory.type === selectedType;
         const matchesSearch =
@@ -57,13 +58,15 @@
         return matchesType && matchesSearch && matchesDate;
     });
 
-    $: currentTier = hearthStore.getResonanceTier($hearthStore.totalResonance);
+    $: currentTier = hearthStore.getResonanceTier(
+        hearthStore.state.totalResonance,
+    );
     $: nextTier = RESONANCE_TIERS.find(
-        (t: any) => t.threshold > $hearthStore.totalResonance,
+        (t: any) => t.threshold > hearthStore.state.totalResonance,
     );
     $: progressToNext =
         nextTier && currentTier
-            ? (($hearthStore.totalResonance - currentTier.threshold) /
+            ? ((hearthStore.state.totalResonance - currentTier.threshold) /
                   (nextTier.threshold - currentTier.threshold)) *
               100
             : 100;
@@ -95,14 +98,14 @@
         <div class="header-actions">
             <button
                 class="action-btn primary"
-                on:click={() => (showForm = !showForm)}
+                onclick={() => (showForm = !showForm)}
                 use:tooltip={"Record a new memory pulse to the hearth."}
             >
                 <span>{showForm ? "✕ Close" : "+ New Memory"}</span>
             </button>
             <button
                 class="action-btn"
-                on:click={() =>
+                onclick={() =>
                     (viewMode = viewMode === "grid" ? "list" : "grid")}
                 use:tooltip={"Toggle visual distribution of memories."}
             >
@@ -128,7 +131,7 @@
         <div use:tooltip={"Consecutive days of active resonance pulse."}>
             <Tile
                 title="Active Streak"
-                value={$hearthStore.streak + " Days"}
+                value={hearthStore.state.streak + " Days"}
                 icon="🔥"
                 variant="warning"
                 trend="+1"
@@ -138,7 +141,7 @@
         <div use:tooltip={"Total number of recorded memory facets."}>
             <Tile
                 title="Memories"
-                value={$hearthStore.memories.length.toString()}
+                value={hearthStore.state.memories.length.toString()}
                 icon="📝"
                 variant="info"
                 subtitle="Immutable logs"
@@ -150,7 +153,7 @@
         >
             <Tile
                 title="Lifetime Yield"
-                value={$hearthStore.lifetimeResonance.toString()}
+                value={hearthStore.state.lifetimeResonance.toString()}
                 icon="🏆"
                 variant="success"
                 trend="+15%"
@@ -180,8 +183,8 @@
                             in:fly={{ y: -20, duration: 300 }}
                         >
                             <MemoryForm
-                                on:submit={handleNewMemory}
-                                on:cancel={() => (showForm = false)}
+                                onsubmit={handleNewMemory}
+                                oncancel={() => (showForm = false)}
                             />
                         </div>
                     {/if}
@@ -191,13 +194,13 @@
                             <MemoryCard
                                 {memory}
                                 isExpanded={selectedMemory?.id === memory.id}
-                                on:click={() => handleMemoryClick(memory)}
-                                on:delete={() =>
+                                onclick={() => handleMemoryClick(memory)}
+                                ondelete={() =>
                                     hearthStore.deleteMemory(memory.id)}
-                                on:reflect={(e) =>
+                                onreflect={(detail) =>
                                     hearthStore.addReflection(
                                         memory.id,
-                                        e.detail,
+                                        detail,
                                     )}
                             />
                         {/each}
@@ -210,7 +213,9 @@
         <div class="column">
             <div use:tooltip={"Temporal distribution of your resonance flow."}>
                 <GlassCard title="Resonance Flow" icon="📈" variant="info">
-                    <ResonanceHistory data={$hearthStore.resonanceHistory} />
+                    <ResonanceHistory
+                        data={hearthStore.state.resonanceHistory}
+                    />
                 </GlassCard>
             </div>
 
@@ -218,7 +223,7 @@
                 use:tooltip={"Deep recursive awareness patterns detected by the kernel."}
             >
                 <GlassCard title="Deep Insights" icon="💡" variant="warning">
-                    <InsightPanel insights={$hearthStore.insights} />
+                    <InsightPanel insights={hearthStore.state.insights} />
                 </GlassCard>
             </div>
         </div>
@@ -229,7 +234,9 @@
                 use:tooltip={"Milestones earned through consistent resonance."}
             >
                 <GlassCard title="Achievements" icon="🏆" variant="success">
-                    <AchievementWall achievements={$hearthStore.achievements} />
+                    <AchievementWall
+                        achievements={hearthStore.state.achievements}
+                    />
                 </GlassCard>
             </div>
 

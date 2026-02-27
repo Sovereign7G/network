@@ -1,20 +1,26 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
+    let { data, onnext, onback } = $props();
 
-    export let data;
+    let formData = $state({
+        displayName: "",
+        handle: "",
+        bio: "",
+        interests: [] as string[],
+        avatar: null as string | null,
+    });
 
-    const dispatch = createEventDispatcher();
+    let errors = $state({} as any);
+    let avatarPreview = $state(null as string | null);
+    let isGeneratingAvatar = $state(false);
 
-    let formData = {
-        displayName: data.displayName || "",
-        handle: data.handle || "",
-        bio: data.bio || "",
-        interests: data.interests || [],
-    };
-
-    let errors = {};
-    let avatarPreview = data.avatar || null;
-    let isGeneratingAvatar = false;
+    $effect(() => {
+        formData.displayName = data.displayName || "";
+        formData.handle = data.handle || "";
+        formData.bio = data.bio || "";
+        formData.interests = data.interests || [];
+        formData.avatar = data.avatar || null;
+        avatarPreview = data.avatar || null;
+    });
 
     const INTEREST_OPTIONS = [
         "DeFi",
@@ -43,19 +49,22 @@
         return Object.keys(errors).length === 0;
     }
 
-    function handleSubmit() {
+    function handleSubmit(e: Event) {
+        e.preventDefault();
         if (validateForm()) {
-            dispatch("next", formData);
+            if (onnext) onnext(formData);
         }
     }
 
-    function handleFileUpload(event) {
-        const file = event.target.files[0];
+    function handleFileUpload(event: Event) {
+        const target = event.target as HTMLInputElement;
+        const file = target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = (e) => {
-                avatarPreview = e.target.result;
-                formData.avatar = e.target.result;
+                const result = e.target?.result as string;
+                avatarPreview = result;
+                formData.avatar = result;
             };
             reader.readAsDataURL(file);
         }
@@ -71,7 +80,7 @@
             const initials =
                 formData.displayName
                     .split(" ")
-                    .map((n) => n[0])
+                    .map((n: string) => n[0])
                     .join("")
                     .toUpperCase()
                     .slice(0, 2) || "C";
@@ -85,10 +94,10 @@
         }, 1000);
     }
 
-    function toggleInterest(interest) {
+    function toggleInterest(interest: string) {
         if (formData.interests.includes(interest)) {
             formData.interests = formData.interests.filter(
-                (i) => i !== interest,
+                (i: string) => i !== interest,
             );
         } else {
             formData.interests = [...formData.interests, interest];
@@ -100,7 +109,7 @@
     <h2 class="step-title">Forge Your Identity</h2>
     <p class="step-subtitle">Your sovereign self awaits</p>
 
-    <form class="identity-form" on:submit|preventDefault={handleSubmit}>
+    <form class="identity-form" onsubmit={handleSubmit}>
         <!-- Avatar section -->
         <div class="avatar-section">
             <div class="avatar-container">
@@ -125,13 +134,13 @@
                         type="file"
                         id="avatar-input"
                         accept="image/*"
-                        on:change={handleFileUpload}
+                        onchange={handleFileUpload}
                         hidden
                     />
                     <button
                         type="button"
                         class="avatar-generate"
-                        on:click={generateAvatar}
+                        onclick={generateAvatar}
                         disabled={isGeneratingAvatar}
                     >
                         <span class="generate-icon"
@@ -206,14 +215,18 @@
 
         <!-- Interests -->
         <div class="form-group">
-            <label class="form-label">Interests</label>
-            <div class="interests-grid">
+            <span class="form-label" id="interests-label">Interests</span>
+            <div
+                class="interests-grid"
+                role="group"
+                aria-labelledby="interests-label"
+            >
                 {#each INTEREST_OPTIONS as interest}
                     <button
                         type="button"
                         class="interest-tag"
                         class:selected={formData.interests.includes(interest)}
-                        on:click={() => toggleInterest(interest)}
+                        onclick={() => toggleInterest(interest)}
                     >
                         {interest}
                     </button>
@@ -226,7 +239,7 @@
             <button
                 type="button"
                 class="back-button"
-                on:click={() => dispatch("back")}
+                onclick={() => onback && onback()}
             >
                 ← Back
             </button>

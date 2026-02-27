@@ -130,7 +130,7 @@
                 </div>
             </div>
 
-            <button class="activate-btn" on:click={activateNode}>
+            <button class="activate-btn" onclick={activateNode}>
                 Launch S-Node Activation
             </button>
         {:else}

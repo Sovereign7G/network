@@ -4,7 +4,7 @@
     import { pillars } from "../../../../../../packages/age-warroom/src/pillars/pillar-tracker";
     import { SovereignMoat } from "../../../../../../packages/age-warroom/src/moat/moat-trigger";
     import { lifeboatWeights } from "../../../../../../packages/age-warroom/src/lifeboat/weights";
-    import { vaultStore } from "$lib/stores/vault-store";
+    import { vaultStore } from "$lib/stores/vault-store.svelte";
 
     let moatActive = false;
     let weights: any[] = [];

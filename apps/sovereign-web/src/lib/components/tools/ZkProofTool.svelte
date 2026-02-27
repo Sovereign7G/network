@@ -1,51 +1,58 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
+  import { fade } from "svelte/transition";
 
-  let payload = '';
+  let payload = "";
   let generating = false;
-  let proof = '';
+  let proof = "";
 
   function generateProof() {
     if (!payload) return;
     generating = true;
-    proof = '';
-    
+    proof = "";
+
     // Simulate ZK-SNARK generation delay
     setTimeout(() => {
       generating = false;
-      proof = `zkp_${crypto.randomUUID().replace(/-/g, '')}_v1`;
+      proof = `zkp_${crypto.randomUUID().replace(/-/g, "")}_v1`;
     }, 1500);
   }
 </script>
 
 <div class="zk-tool">
   <div class="header-info">
-    <p>Generate a Zero-Knowledge Proof to verify state without revealing underlying data.</p>
+    <p>
+      Generate a Zero-Knowledge Proof to verify state without revealing
+      underlying data.
+    </p>
   </div>
-  
+
   <div class="input-group">
-    <label>Payload to Prove</label>
-    <textarea 
+    <label for="zk-payload">Payload to Prove</label>
+    <textarea
+      id="zk-payload"
       bind:value={payload}
-      placeholder="e.g., {'balance': '> 50000', 'kyc': true}"
+      placeholder={"e.g., {'balance': '> 50000', 'kyc': true}"}
       rows="3"
     ></textarea>
   </div>
 
-  <button 
-    class="generate-btn" 
-    on:click={generateProof} 
+  <button
+    class="generate-btn"
+    onclick={generateProof}
     disabled={generating || !payload}
   >
-    {generating ? 'Synthesizing Circuit...' : 'Generate ZK-SNARK'}
+    {generating ? "Synthesizing Circuit..." : "Generate ZK-SNARK"}
   </button>
 
   {#if proof}
     <div class="proof-result" in:fade>
-      <label>Generated Proof Hash</label>
+      <label for="zk-proof-hash">Generated Proof Hash</label>
       <div class="hash-box">
-        <code>{proof}</code>
-        <button class="copy-btn" on:click={() => navigator.clipboard.writeText(proof)}>Copy</button>
+        <code id="zk-proof-hash">{proof}</code>
+        <button
+          class="copy-btn"
+          onclick={() => navigator.clipboard.writeText(proof)}>Copy</button
+        >
       </div>
       <p class="success-text">✓ Ready for on-chain verification.</p>
     </div>
@@ -58,13 +65,13 @@
     flex-direction: column;
     gap: 1.5rem;
   }
-  
+
   .header-info p {
     margin: 0;
     font-size: 0.9rem;
     color: rgba(255, 255, 255, 0.6);
   }
-  
+
   .input-group label {
     display: block;
     font-size: 0.8rem;
@@ -73,7 +80,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
   }
-  
+
   textarea {
     width: 100%;
     padding: 0.75rem;
@@ -85,26 +92,30 @@
     font-family: monospace;
     resize: vertical;
   }
-  
+
   textarea:focus {
     outline: none;
-    border-color: #FFD700;
+    border-color: #ffd700;
   }
-  
+
   .generate-btn {
     padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.1));
+    background: linear-gradient(
+      135deg,
+      rgba(255, 215, 0, 0.2),
+      rgba(255, 215, 0, 0.1)
+    );
     border: 1px solid rgba(255, 215, 0, 0.5);
     border-radius: 8px;
-    color: #FFD700;
+    color: #ffd700;
     font-weight: bold;
     cursor: pointer;
     transition: all 0.2s;
   }
-  
+
   .generate-btn:hover:not(:disabled) {
-    background: #FFD700;
-    color: #0A0A0F;
+    background: #ffd700;
+    color: #0a0a0f;
   }
 
   .generate-btn:disabled {
@@ -137,7 +148,7 @@
     background: rgba(0, 0, 0, 0.4);
     border-radius: 4px;
     font-family: monospace;
-    color: #4CAF50;
+    color: #4caf50;
     word-break: break-all;
   }
 
@@ -146,7 +157,7 @@
     background: rgba(76, 175, 80, 0.2);
     border: none;
     border-radius: 4px;
-    color: #4CAF50;
+    color: #4caf50;
     cursor: pointer;
   }
 
@@ -157,6 +168,6 @@
   .success-text {
     margin: 0.5rem 0 0 0;
     font-size: 0.8rem;
-    color: #4CAF50;
+    color: #4caf50;
   }
 </style>

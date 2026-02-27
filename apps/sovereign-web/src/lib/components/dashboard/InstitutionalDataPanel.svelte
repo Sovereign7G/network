@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onDestroy } from "svelte";
-    import { telemetryStore } from "$lib/stores/telemetry-store";
+    import { telemetryStore } from "$lib/stores/telemetry-store.svelte";
     import { warRoomStore } from "../../../../../../packages/age-warroom/src/store";
 
     let systemic: any = {};

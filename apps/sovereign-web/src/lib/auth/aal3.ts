@@ -29,7 +29,6 @@ export class AAL3Service {
      * Involves biometric simulation and shard-bound verification.
      */
     async performHandshake(): Promise<boolean> {
-        console.log("[AAL3] Initializing Deep Handshake...");
         // Simulate quantum delay
         await new Promise(r => setTimeout(r, 1200));
 
@@ -40,7 +39,6 @@ export class AAL3Service {
             lastHandshake: Date.now()
         };
 
-        console.log("[AAL3] Handshake Successful. Clearance: AAL3_ALPHA");
         return true;
     }
 
@@ -57,13 +55,11 @@ export class AAL3Service {
      * Ensures seamless navigation between substrates.
      */
     async kakaoSSO(partnerId: string): Promise<boolean> {
-        console.log(`[AAL3] Automatic SSO Handshake for Partner: ${partnerId}`);
         if (!this.isVerified()) {
             await this.performHandshake();
         }
         // Simulate UserAgent injection and partner token exchange
         await new Promise(r => setTimeout(r, 600));
-        console.log(`[AAL3] Partner ${partnerId} Linked Successfully.`);
         return true;
     }
 }

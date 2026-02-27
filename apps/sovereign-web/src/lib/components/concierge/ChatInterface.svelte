@@ -1,24 +1,22 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { createEventDispatcher } from "svelte";
     import { fly } from "svelte/transition";
 
-    export let conversation = null;
-    export let personality = null;
+    let { conversation = null, personality = null, onsend, onnew } = $props();
 
-    const dispatch = createEventDispatcher();
+    let messagesEnd: HTMLElement | null = $state(null);
+    let inputValue = $state("");
+    let isTyping = $state(false);
 
-    let messagesEnd;
-    let inputValue = "";
-    let isTyping = false;
+    $effect(() => {
+        if (conversation) {
+            scrollToBottom();
+        }
+    });
 
     onMount(() => {
         scrollToBottom();
     });
-
-    $: if (conversation) {
-        scrollToBottom();
-    }
 
     function scrollToBottom() {
         setTimeout(() => {
@@ -31,7 +29,7 @@
     function handleSend(textValue = inputValue) {
         if (!textValue.trim()) return;
 
-        dispatch("send", textValue);
+        if (onsend) onsend(textValue);
         if (textValue === inputValue) {
             inputValue = "";
         }
@@ -44,7 +42,7 @@
         }, 1500);
     }
 
-    function handleKeyDown(e) {
+    function handleKeyDown(e: KeyboardEvent) {
         if (e.key === "Enter" && !e.shiftKey) {
             e.preventDefault();
             handleSend();
@@ -107,7 +105,7 @@
                                         {#each message.suggestions as suggestion}
                                             <button
                                                 class="suggestion-chip"
-                                                on:click={() =>
+                                                onclick={() =>
                                                     handleSend(suggestion.text)}
                                             >
                                                 {suggestion.text}
@@ -142,7 +140,7 @@
                 </div>
             {/if}
 
-            <div bind:this={messagesEnd} />
+            <div bind:this={messagesEnd}></div>
         </div>
 
         <!-- Input area -->
@@ -151,13 +149,13 @@
                 class="message-input"
                 placeholder="Ask your Concierge..."
                 bind:value={inputValue}
-                on:keydown={handleKeyDown}
+                onkeydown={handleKeyDown}
                 rows="1"
             ></textarea>
 
             <button
                 class="send-button"
-                on:click={() => handleSend(inputValue)}
+                onclick={() => handleSend(inputValue)}
                 disabled={!inputValue.trim() || isTyping}
             >
                 <span class="send-icon">📤</span>
@@ -168,7 +166,7 @@
             <span class="empty-icon">💭</span>
             <h3>No conversation selected</h3>
             <p>Start a new conversation or select one from the sidebar</p>
-            <button class="new-chat-btn" on:click={() => dispatch("new")}>
+            <button class="new-chat-btn" onclick={() => onnew && onnew()}>
                 New Conversation
             </button>
         </div>

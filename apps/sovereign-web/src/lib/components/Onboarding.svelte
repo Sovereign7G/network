@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { completeOnboarding } from "../stores/auth.js";
+    import { authStore } from "../stores/auth.svelte";
     import {
         Shield,
         Zap,
@@ -51,7 +51,7 @@
                 phase = "security";
             }
         } else if (phase === "security") {
-            completeOnboarding();
+            authStore.completeOnboarding();
         }
     }
 
@@ -220,7 +220,7 @@
 
                 <div class="flex flex-col gap-4">
                     <button
-                        onclick={completeOnboarding}
+                        onclick={() => authStore.completeOnboarding()}
                         class="h-16 w-full rounded-2xl bg-cyan-400 text-black font-black italic tracking-widest text-sm"
                     >
                         INITIALIZE IMPORT

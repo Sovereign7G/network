@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount, createEventDispatcher } from "svelte";
+    import { onMount, onDestroy } from "svelte";
     import { fly, fade } from "svelte/transition";
     import { quintOut } from "svelte/easing";
     import { goto } from "$app/navigation";
@@ -75,25 +75,27 @@
     ];
 
     // Filter commands based on search
-    $: filteredCommands =
-        searchTerm.trim() === ""
-            ? commands
-            : commands.filter(
-                  (cmd) =>
-                      cmd.name
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase()) ||
-                      cmd.keywords
-                          ?.toLowerCase()
-                          .includes(searchTerm.toLowerCase()),
-              );
+    let filteredCommands = $derived.by(() => {
+        const term = searchTerm.trim().toLowerCase();
+        if (term === "") return commands;
+        return commands.filter(
+            (cmd) =>
+                cmd.name.toLowerCase().includes(term) ||
+                cmd.keywords?.toLowerCase().includes(term),
+        );
+    });
 
     // Reset selected index when filter changes
-    $: if (filteredCommands.length > 0) {
-        selectedIndex = Math.min(selectedIndex, filteredCommands.length - 1);
-    } else {
-        selectedIndex = 0;
-    }
+    $effect(() => {
+        if (filteredCommands.length > 0) {
+            selectedIndex = Math.min(
+                selectedIndex,
+                filteredCommands.length - 1,
+            );
+        } else {
+            selectedIndex = 0;
+        }
+    });
 
     onMount(() => {
         // Keyboard shortcuts
@@ -146,7 +148,7 @@
         open = false;
         searchTerm = "";
         selectedIndex = 0;
-        dispatch("close");
+        if (onclose) onclose();
     }
 
     function executeCommand(cmd: (typeof commands)[0]) {
@@ -154,10 +156,8 @@
             goto(cmd.action);
         } else if (cmd.action === "command") {
             // Toggle command palette (already open)
-            console.log("Command palette already open");
         } else {
             // Execute custom action
-            console.log("Executing:", cmd.name);
         }
         closePalette();
     }
@@ -166,13 +166,13 @@
 {#if open}
     <div
         class="command-overlay"
-        on:click={closePalette}
-        transition:fade={{ duration: 150 }}
+        onclick={closePalette}
+        transitionfade={{ duration: 150 }}
     >
         <div
             class="command-palette"
-            on:click|stopPropagation
-            transition:fly={{ y: -20, duration: 200, easing: quintOut }}
+            onclick={(e) => e.stopPropagation()}
+            transitionfly={{ y: -20, duration: 200, easing: quintOut }}
         >
             <div class="command-header">
                 <span class="command-icon">⌘</span>
@@ -198,8 +198,8 @@
                             class="command-item {index === selectedIndex
                                 ? 'selected'
                                 : ''}"
-                            on:click={() => executeCommand(cmd)}
-                            on:mouseenter={() => (selectedIndex = index)}
+                            onclick={() => executeCommand(cmd)}
+                            onmouseenter={() => (selectedIndex = index)}
                         >
                             <span class="command-item-icon">{cmd.icon}</span>
                             <span class="command-item-name">{cmd.name}</span>

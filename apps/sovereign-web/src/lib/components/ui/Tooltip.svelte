@@ -10,7 +10,7 @@
     <div
         class="tooltip-container"
         style="left: {x}px; top: {y}px;"
-        transition:scale={{ duration: 200, start: 0.95, opacity: 0 }}
+        transitionscale={{ duration: 200, start: 0.95, opacity: 0 }}
     >
         <div class="tooltip-aura"></div>
         <div class="tooltip-content">

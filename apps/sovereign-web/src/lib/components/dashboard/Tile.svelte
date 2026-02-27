@@ -1,31 +1,33 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
+    let { tile, value = undefined, loading = false, onclick } = $props();
 
-    export let tile;
-    export let value: string | number | undefined = undefined;
-    export let loading = false;
-
-    const dispatch = createEventDispatcher();
-
-    let isHovered = false;
-    let isPressed = false;
-    let pulseScale = 1;
+    let isHovered = $state(false);
+    let isPressed = $state(false);
+    let pulseScale = $state(1);
 
     let pulseInterval: ReturnType<typeof setInterval> | null = null;
 
-    $: if (isHovered) {
-        if (!pulseInterval) {
-            pulseInterval = setInterval(() => {
-                pulseScale = pulseScale === 1 ? 1.02 : 1;
-            }, 1000);
+    $effect(() => {
+        if (isHovered) {
+            if (!pulseInterval) {
+                pulseInterval = setInterval(() => {
+                    pulseScale = pulseScale === 1 ? 1.02 : 1;
+                }, 1000);
+            }
+        } else {
+            if (pulseInterval) {
+                clearInterval(pulseInterval);
+                pulseInterval = null;
+                pulseScale = 1;
+            }
         }
-    } else {
-        if (pulseInterval) {
-            clearInterval(pulseInterval);
-            pulseInterval = null;
-            pulseScale = 1;
-        }
-    }
+        return () => {
+            if (pulseInterval) {
+                clearInterval(pulseInterval);
+                pulseInterval = null;
+            }
+        };
+    });
 </script>
 
 <!-- svelte-ignore a11y-mouse-events-have-key-events a11y-no-noninteractive-element-interactions a11y-click-events-have-key-events -->
@@ -39,23 +41,23 @@
           : pulseScale});"
     class:hovered={isHovered}
     class:pressed={isPressed}
-    on:mouseenter={() => (isHovered = true)}
-    on:mouseleave={() => {
+    onmouseenter={() => (isHovered = true)}
+    onmouseleave={() => {
         isHovered = false;
         isPressed = false;
     }}
-    on:mousedown={() => (isPressed = true)}
-    on:mouseup={() => {
+    onmousedown={() => (isPressed = true)}
+    onmouseup={() => {
         isPressed = false;
-        dispatch("click");
+        if (onclick) onclick();
     }}
-    on:click={() => dispatch("click")}
-    on:keydown={(e) => {
+    onclick={() => onclick && onclick()}
+    onkeydown={(e: KeyboardEvent) => {
         if (e.key === "Enter" || e.key === " ") {
             isPressed = true;
             setTimeout(() => {
                 isPressed = false;
-                dispatch("click");
+                if (onclick) onclick();
             }, 100);
         }
     }}

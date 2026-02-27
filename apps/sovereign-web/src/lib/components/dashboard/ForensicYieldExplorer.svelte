@@ -1,64 +1,66 @@
 <script lang="ts">
     import { fade, fly } from "svelte/transition";
 
-    export let yieldData = {
-        total: 12.4,
-        components: [
-            {
-                layer: 1,
-                name: "Identity",
-                contribution: 0.4,
-                source: "S-ID signatures",
-                color: "#FF6B6B",
-            },
-            {
-                layer: 4,
-                name: "Brazil",
-                contribution: 1.2,
-                source: "age://pay volume",
-                color: "#4ECDC4",
-            },
-            {
-                id: 5,
-                name: "Finance",
-                contribution: 1.8,
-                source: "Credit pools",
-                color: "#45B7D1",
-            },
-            {
-                id: 13,
-                name: "Infra",
-                contribution: 0.4,
-                source: "S-Node rewards",
-                color: "#B565A7",
-            },
-            {
-                id: 13,
-                name: "ICP Work",
-                contribution: 1.1,
-                source: "Cycles / Node Uptime",
-                color: "#F15A24",
-            },
-            {
-                id: 15,
-                name: "Supply",
-                contribution: 1.3,
-                source: "Invoice tokens",
-                color: "#DD4124",
-            },
-            {
-                id: 20,
-                name: "Bond",
-                contribution: 0.1,
-                source: "Parity spread",
-                color: "#9B2335",
-            },
-        ],
-    };
+    let {
+        yieldData = {
+            total: 12.4,
+            components: [
+                {
+                    layer: 1,
+                    name: "Identity",
+                    contribution: 0.4,
+                    source: "S-ID signatures",
+                    color: "#FF6B6B",
+                },
+                {
+                    layer: 4,
+                    name: "Brazil",
+                    contribution: 1.2,
+                    source: "age://pay volume",
+                    color: "#4ECDC4",
+                },
+                {
+                    id: 5,
+                    name: "Finance",
+                    contribution: 1.8,
+                    source: "Credit pools",
+                    color: "#45B7D1",
+                },
+                {
+                    id: 13,
+                    name: "Infra",
+                    contribution: 0.4,
+                    source: "S-Node rewards",
+                    color: "#B565A7",
+                },
+                {
+                    id: 13,
+                    name: "ICP Work",
+                    contribution: 1.1,
+                    source: "Cycles / Node Uptime",
+                    color: "#F15A24",
+                },
+                {
+                    id: 15,
+                    name: "Supply",
+                    contribution: 1.3,
+                    source: "Invoice tokens",
+                    color: "#DD4124",
+                },
+                {
+                    id: 20,
+                    name: "Bond",
+                    contribution: 0.1,
+                    source: "Parity spread",
+                    color: "#9B2335",
+                },
+            ],
+        },
+    } = $props();
 
-    let selectedLayer = null;
+    let selectedLayer = $state<any>(null);
 
-    function unfold(component) {
+    function unfold(component: any) {
         selectedLayer = component;
     }
 </script>
@@ -69,20 +71,28 @@
         <p>Mathematical certainty for every basis point.</p>
     </div>
 
-    <div class="summary-card" on:click={() => (selectedLayer = null)}>
+    <button
+        class="summary-card"
+        onclick={() => (selectedLayer = null)}
+        onkeydown={(e) => e.key === "Enter" && (selectedLayer = null)}
+        aria-label="Reset layer selection"
+    >
         <div class="yield-display">
             <span class="total">{yieldData.total}%</span>
             <span class="label">Total sAGE Yield</span>
         </div>
         <div class="trace-hint">Click a layer to unfold the truth</div>
-    </div>
+    </button>
 
     <div class="layer-grid">
         {#each yieldData.components as component}
-            <div
+            <button
                 class="layer-card"
                 style="--layer-color: {component.color}"
-                on:click={() => unfold(component)}
+                onclick={() => unfold(component)}
+                onkeydown={(e) => e.key === "Enter" && unfold(component)}
+                aria-label="Select {component.name} layer"
+                aria-expanded={selectedLayer === component}
             >
                 <div class="card-top">
                     <span class="name">{component.name}</span>
@@ -102,7 +112,7 @@
                         </div>
                     </div>
                 {/if}
-            </div>
+            </button>
         {/each}
     </div>
 </div>
@@ -125,6 +135,7 @@
     }
 
     .summary-card {
+        width: 100%;
         background: rgba(255, 255, 255, 0.03);
         border: 1px dashed rgba(255, 255, 255, 0.2);
         padding: 2rem;
@@ -132,6 +143,8 @@
         text-align: center;
         margin: 2rem 0;
         cursor: pointer;
+        color: white;
+        font-family: inherit;
     }
 
     .total {
@@ -153,12 +166,17 @@
     }
 
     .layer-card {
+        width: 100%;
+        text-align: left;
         background: rgba(255, 255, 255, 0.05);
+        border: none;
         border-left: 4px solid var(--layer-color);
         padding: 1rem;
         border-radius: 0.5rem;
         cursor: pointer;
         transition: transform 0.2s;
+        color: white;
+        font-family: inherit;
     }
 
     .layer-card:hover {

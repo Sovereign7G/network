@@ -98,7 +98,7 @@
     </div>
 
     <div class="propose">
-        <button on:click={proposeCodeBurn} class="primary">
+        <button onclick={proposeCodeBurn} class="primary">
             🔥 Propose Code Burn
         </button>
         <p class="hint">

@@ -56,7 +56,7 @@
 >
     <div class="intent-header">
         <h2>{CONFIG[type].icon} {CONFIG[type].title}</h2>
-        <button class="close-btn" on:click={() => dispatch("close")}>✕</button>
+        <button class="close-btn" onclick={() => dispatch("close")}>✕</button>
     </div>
 
     <div class="intent-body">
@@ -109,7 +109,7 @@
             style="background: {CONFIG[type].color}; --intent-color: {CONFIG[
                 type
             ].color};"
-            on:click={handleAction}
+            onclick={handleAction}
             disabled={isProcessing}
         >
             {#if isProcessing}

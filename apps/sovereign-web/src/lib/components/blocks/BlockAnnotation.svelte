@@ -1,16 +1,9 @@
 <script lang="ts">
     import { fade, slide } from "svelte/transition";
 
-    export let blockId: string;
-    export let comments: Array<{
-        id: string;
-        author: string;
-        text: string;
-        time: string;
-    }> = [];
-    export let onClose: () => void;
+    let { blockId, comments = $bindable([]), onClose } = $props();
 
-    let newComment = "";
+    let newComment = $state("");
 
     function submitComment() {
         if (!newComment.trim()) return;
@@ -44,7 +37,7 @@
             <span class="icon">🏷️</span>
             <h4>Block Annotations</h4>
         </div>
-        <button class="close-btn" on:click={onClose}>×</button>
+        <button class="close-btn" onclick={onClose}>×</button>
     </div>
 
     <div class="comments-list">
@@ -69,14 +62,14 @@
         <textarea
             bind:value={newComment}
             placeholder="Type @ to mention..."
-            on:keydown={handleKeydown}
+            onkeydown={handleKeydown}
         ></textarea>
         <div class="actions">
             <button class="tool-btn" title="Bookmark">🔖</button>
             <button class="tool-btn" title="Highlight">🖍️</button>
             <button
                 class="submit-btn"
-                on:click={submitComment}
+                onclick={submitComment}
                 disabled={!newComment.trim()}
             >
                 Send

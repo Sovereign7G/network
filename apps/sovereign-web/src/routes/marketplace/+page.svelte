@@ -3,7 +3,6 @@
 
     function handleInstall(e: CustomEvent) {
         const block = e.detail;
-        console.log(`Installing block: ${block.name}`);
         alert(
             `${block.name} successfully installed to your workspace templates.`,
         );
@@ -14,4 +13,4 @@
     <title>Sovereign Marketplace | AGE Protocol</title>
 </svelte:head>
 
-<MarketplaceBrowser on:install={handleInstall} />
+<MarketplaceBrowser oninstall={handleInstall} />

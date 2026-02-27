@@ -75,7 +75,7 @@
                     >≈ ${(deliveryFee / 5).toFixed(2)} USDC</span
                 >
             </label>
-            <button class="generate-qr-btn" on:click={generateDeliveryQR}
+            <button class="generate-qr-btn" onclick={generateDeliveryQR}
                 >Gerar age://dispatch QR</button
             >
         </div>
@@ -115,7 +115,7 @@
 
                     <button
                         class="confirm-delivery"
-                        on:click={() => confirmDelivery(delivery.orderId)}
+                        onclick={() => confirmDelivery(delivery.orderId)}
                     >
                         ✅ Confirmar (NFC / QR Sync)
                     </button>
@@ -123,13 +123,13 @@
             {/each}
         </div>
 
-        <button class="back" on:click={() => (deliveryMode = false)}
+        <button class="back" onclick={() => (deliveryMode = false)}
             >← Voltar ao PDV</button
         >
     </div>
 {:else}
     <div class="pos-actions">
-        <button class="delivery-btn" on:click={() => (deliveryMode = true)}>
+        <button class="delivery-btn" onclick={() => (deliveryMode = true)}>
             🚚 AGE Courier Mode (Bypass Uber)
         </button>
     </div>

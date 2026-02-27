@@ -1,12 +1,11 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
+    let { asset, address, onclose } = $props<{
+        asset: string;
+        address: string;
+        onclose?: () => void;
+    }>();
 
-    export let asset;
-    export let address;
-
-    const dispatch = createEventDispatcher();
-
-    let copied = false;
+    let copied = $state(false);
 
     function copyAddress() {
         navigator.clipboard.writeText(address);
@@ -18,11 +17,13 @@
 <div class="receive-modal">
     <div class="modal-header">
         <h2 class="modal-title">
-            <span class="title-icon">📥</span>
+            <span class="title-icon" aria-hidden="true">📥</span>
             Receive {asset}
         </h2>
-        <button class="close-button" on:click={() => dispatch("close")}
-            >✕</button
+        <button
+            class="close-button"
+            onclick={() => onclose?.()}
+            aria-label="Close modal">✕</button
         >
     </div>
 
@@ -36,10 +37,10 @@
         </div>
 
         <div class="address-section">
-            <label class="address-label">Your {asset} Address</label>
+            <span class="address-label">Your {asset} Address</span>
             <div class="address-box">
                 <code class="address">{address}</code>
-                <button class="copy-button" on:click={copyAddress}>
+                <button class="copy-button" onclick={copyAddress}>
                     <span class="copy-icon">{copied ? "✅" : "📋"}</span>
                 </button>
             </div>
@@ -56,7 +57,7 @@
         </div>
 
         <div class="modal-actions">
-            <button class="done-button" on:click={() => dispatch("close")}>
+            <button class="done-button" onclick={() => onclose?.()}>
                 Done
             </button>
         </div>

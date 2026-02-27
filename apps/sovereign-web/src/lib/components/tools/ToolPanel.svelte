@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { toolStore } from "$lib/stores/tool-store";
+    import { toolStore } from "$lib/stores/tool-store.svelte";
     import CalculatorTool from "./CalculatorTool.svelte";
     import ConverterTool from "./ConverterTool.svelte";
     import ZkProofTool from "./ZkProofTool.svelte";
@@ -8,11 +8,7 @@
     import RecoveryTool from "./RecoveryTool.svelte";
     import { fade, fly } from "svelte/transition";
 
-    let activeTool: any;
-
-    toolStore.subscribe((state) => {
-        activeTool = state.activeTool;
-    });
+    let activeTool = $derived(toolStore.state.activeTool);
 
     function closePanel() {
         toolStore.deactivateTool();
@@ -22,18 +18,30 @@
 {#if activeTool}
     <div
         class="tool-panel-overlay"
-        on:click={closePanel}
+        role="presentation"
+        onclick={closePanel}
+        onkeydown={(e) => e.key === "Escape" && closePanel()}
+        tabindex="-1"
         transition:fade={{ duration: 200 }}
     >
         <div
             class="tool-panel"
-            on:click|stopPropagation
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="tool-panel-title"
+            onclick={(e) => e.stopPropagation()}
+            onkeydown={(e) => e.stopPropagation()}
+            tabindex="0"
             transition:fly={{ x: -20, duration: 200 }}
         >
             <div class="tool-header">
                 <span class="tool-icon">{activeTool.icon}</span>
-                <h3>{activeTool.name}</h3>
-                <button class="close-btn" on:click={closePanel}>×</button>
+                <h3 id="tool-panel-title">{activeTool.name}</h3>
+                <button
+                    class="close-btn"
+                    onclick={closePanel}
+                    aria-label="Close tool panel">×</button
+                >
             </div>
 
             <div class="tool-content">

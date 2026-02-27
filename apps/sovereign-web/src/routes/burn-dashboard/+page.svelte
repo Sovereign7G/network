@@ -77,16 +77,20 @@
         <h1>🔥 The Great Simplification</h1>
         <div class="burn-stats">
             <div class="stat">
-                <label>Burnable Lines</label>
-                <value>{totalBurnableLines.toLocaleString()}</value>
+                <span class="label">Burnable Lines</span>
+                <span class="value">{totalBurnableLines.toLocaleString()}</span>
             </div>
             <div class="stat">
-                <label>Potential Reward</label>
-                <value>{totalPotentialReward.toLocaleString()} AGE</value>
+                <span class="label">Potential Reward</span>
+                <span class="value"
+                    >{totalPotentialReward.toLocaleString()} AGE</span
+                >
             </div>
             <div class="stat">
-                <label>Density Gain</label>
-                <value>+{(totalBurnableLines / 1000).toFixed(1)}x</value>
+                <span class="label">Density Gain</span>
+                <span class="value"
+                    >+{(totalBurnableLines / 1000).toFixed(1)}x</span
+                >
             </div>
         </div>
     </header>
@@ -106,7 +110,7 @@
 
                 <div class="metrics">
                     <div class="metric">
-                        <label>Current Density</label>
+                        <span class="label">Current Density</span>
                         <div
                             class="value {opp.currentDensity < 0.3
                                 ? 'bad'
@@ -118,13 +122,13 @@
                         </div>
                     </div>
                     <div class="metric">
-                        <label>Target Density</label>
+                        <span class="label">Target Density</span>
                         <div class="value good">
                             {opp.targetDensity.toFixed(2)}
                         </div>
                     </div>
                     <div class="metric">
-                        <label>Potential Reward</label>
+                        <span class="label">Potential Reward</span>
                         <div class="value">{opp.lines * 10} AGE</div>
                     </div>
                 </div>
@@ -135,10 +139,10 @@
                 </div>
 
                 <div class="actions">
-                    <button on:click={() => proposeBurn(opp)} class="burn">
+                    <button onclick={() => proposeBurn(opp)} class="burn">
                         🔥 Propose Burn
                     </button>
-                    <button on:click={() => showDetails(opp)} class="inspect">
+                    <button onclick={() => showDetails(opp)} class="inspect">
                         🔍 Inspect
                     </button>
                 </div>
@@ -183,13 +187,13 @@
         border-radius: 8px;
     }
 
-    .stat label {
+    .stat .label {
         font-size: 14px;
         opacity: 0.9;
         color: #ff8e8e;
     }
 
-    .stat value {
+    .stat .value {
         display: block;
         font-size: 32px;
         font-weight: bold;
@@ -247,7 +251,7 @@
         text-align: center;
     }
 
-    .metric label {
+    .metric .label {
         font-size: 13px;
         color: #888;
         text-transform: uppercase;

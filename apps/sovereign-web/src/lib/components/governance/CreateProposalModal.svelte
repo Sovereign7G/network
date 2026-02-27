@@ -1,19 +1,24 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
-    import { PROPOSAL_TYPES } from "$lib/stores/master-store";
+    import { PROPOSAL_TYPES } from "$lib/stores/constants";
 
-    const dispatch = createEventDispatcher();
+    interface Props {
+        onClose: () => void;
+        onCreate: (proposal: any) => void;
+    }
 
-    let step = 1;
-    let proposal = {
+    let { onClose, onCreate }: Props = $props();
+
+    let step = $state(1);
+    let proposal = $state({
         title: "",
         description: "",
         type: PROPOSAL_TYPES.PARAMETER.id,
-        details: {},
-    };
+        details: {} as any,
+        discussion: "",
+    });
 
-    let errors = {};
-    let isSubmitting = false;
+    let errors = $state({} as any);
+    let isSubmitting = $state(false);
 
     function validateStep1() {
         errors = {};
@@ -40,7 +45,7 @@
 
         // Simulate blockchain transaction
         setTimeout(() => {
-            dispatch("create", proposal);
+            onCreate(proposal);
             isSubmitting = false;
         }, 1500);
     }
@@ -52,7 +57,7 @@
             <span class="title-icon">📝</span>
             Create Proposal
         </h2>
-        <button class="close-btn" on:click={() => dispatch("close")}>✕</button>
+        <button class="close-btn" onclick={onClose}>✕</button>
     </div>
 
     <div class="modal-body">
@@ -231,17 +236,16 @@
 
         <div class="modal-actions">
             {#if step === 1}
-                <button class="cancel-btn" on:click={() => dispatch("close")}>
-                    Cancel
-                </button>
-                <button class="next-btn" on:click={nextStep}> Next → </button>
+                <button class="cancel-btn" onclick={onClose}> Cancel </button>
+                <button class="next-btn" onclick={nextStep}> Next → </button>
             {:else}
-                <button class="back-btn" on:click={() => (step = 1)}>
+                <button class="cancel-btn" onclick={onClose}> Cancel </button>
+                <button class="back-btn" onclick={() => (step = 1)}>
                     ← Back
                 </button>
                 <button
                     class="submit-btn"
-                    on:click={handleSubmit}
+                    onclick={handleSubmit}
                     disabled={isSubmitting}
                 >
                     {#if isSubmitting}

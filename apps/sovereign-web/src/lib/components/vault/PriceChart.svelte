@@ -159,8 +159,8 @@
         bind:this={canvas}
         width="600"
         height="300"
-        on:mousemove={handleMouseMove}
-        on:mouseleave={handleMouseLeave}
+        onmousemove={handleMouseMove}
+        onmouseleave={handleMouseLeave}
     ></canvas>
 
     {#if tooltip.show}

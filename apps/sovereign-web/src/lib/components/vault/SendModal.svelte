@@ -1,23 +1,19 @@
 <script lang="ts">
-    import { createEventDispatcher } from "svelte";
     import { cleanRoom } from "../../../../../../packages/age-cleanroom/src/store/clean-room-store";
     import ContextFlush from "../../../../../../packages/age-cleanroom/src/gestures/ContextFlush.svelte";
     import VerificationOverlay from "../../../../../../packages/age-cleanroom/src/components/VerificationOverlay.svelte";
 
-    export let asset: string;
-    export let balance: number;
+    let { asset, balance, onsend, onclose } = $props();
 
-    const dispatch = createEventDispatcher();
+    let amount = $state("");
+    let recipient = $state("");
+    let memo = $state("");
+    let error = $state("");
+    let isProcessing = $state(false);
+    let showCleanRoom = $state(false);
+    let pendingTransaction = $state(null as any);
 
-    let amount = "";
-    let recipient = "";
-    let memo = "";
-    let error = "";
-    let isProcessing = false;
-    let showCleanRoom = false;
-    let pendingTransaction: any = null;
-
-    let flushTrigger: any = null;
+    let flushTrigger = $state(null as any);
 
     function handleSend() {
         error = "";
@@ -77,15 +73,17 @@
 
         // Simulate blockchain transaction
         setTimeout(() => {
-            dispatch("send", {
-                type: "send",
-                asset,
-                amount: parseFloat(amount),
-                to: recipient,
-                memo,
-                from: "0xabcd...efgh",
-                status: "pending",
-            });
+            if (onsend) {
+                onsend({
+                    type: "send",
+                    asset,
+                    amount: parseFloat(amount),
+                    to: recipient,
+                    memo,
+                    from: "0xabcd...efgh",
+                    status: "pending",
+                });
+            }
             isProcessing = false;
         }, 1500);
     }
@@ -101,7 +99,7 @@
             <span class="title-icon">📤</span>
             Send {asset}
         </h2>
-        <button class="close-button" on:click={() => dispatch("close")}
+        <button class="close-button" onclick={() => onclose && onclose()}
             >✕</button
         >
     </div>
@@ -112,7 +110,12 @@
             <span class="info-value">{balance.toFixed(4)} {asset}</span>
         </div>
 
-        <form on:submit|preventDefault={handleSend}>
+        <form
+            onsubmit={(e) => {
+                e.preventDefault();
+                handleSend();
+            }}
+        >
             <div class="form-group">
                 <label for="recipient" class="form-label"
                     >Recipient Address</label
@@ -144,7 +147,7 @@
                     <button
                         type="button"
                         class="max-button"
-                        on:click={setMaxAmount}
+                        onclick={setMaxAmount}
                         disabled={isProcessing}
                     >
                         MAX
@@ -182,7 +185,7 @@
                 <button
                     type="button"
                     class="cancel-button"
-                    on:click={() => dispatch("close")}
+                    onclick={() => onclose && onclose()}
                     disabled={isProcessing}
                 >
                     Cancel
@@ -191,7 +194,7 @@
                 <ContextFlush
                     threshold={2000}
                     targetAmount={1000}
-                    on:flush={handleFlush}
+                    onFlush={handleFlush}
                     bind:this={flushTrigger}
                 >
                     <svelte:fragment slot="trigger" let:startPress>
@@ -221,8 +224,8 @@
     {#if showCleanRoom && pendingTransaction}
         <VerificationOverlay
             transaction={pendingTransaction}
-            on:confirmed={handleConfirmed}
-            on:cancelled={handleCancelled}
+            onConfirmed={handleConfirmed}
+            onCancelled={handleCancelled}
         />
     {/if}
 </div>

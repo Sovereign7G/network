@@ -34,7 +34,7 @@
 	import Profile from "$lib/components/Profile.svelte";
 	import Governance from "$lib/components/Governance.svelte";
 	import Services from "$lib/components/Services.svelte";
-	import { authStatus, hasSeenTutorial } from "$lib/stores/auth.js";
+	import { authStore } from "$lib/stores/auth.svelte";
 	import { naiEngine } from "$lib/nai/engine.svelte";
 	import type { AmbientComponent } from "$lib/nai/types";
 
@@ -90,12 +90,12 @@
 
 <svelte:window bind:scrollY />
 
-{#if $authStatus === "onboarding"}
+{#if authStore.state.status === "onboarding"}
 	<Onboarding />
-{:else if $authStatus === "security"}
+{:else if authStore.state.status === "security"}
 	<Security />
 {:else}
-	{#if !$hasSeenTutorial}
+	{#if !authStore.state.hasSeenTutorial}
 		<Tutorial />
 	{/if}
 

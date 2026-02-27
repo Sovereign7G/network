@@ -55,11 +55,11 @@
         <div
             class="node {node.active ? 'active-glow' : ''}"
             style="transform: translate({node.x}px, {node.y}px)"
-            on:mousedown={() => (draggingNode = node)}
-            on:mousemove={(e) => {
+            onmousedown={() => (draggingNode = node)}
+            onmousemove={(e) => {
                 if (draggingNode?.id === node.id) handleDrag(e, node);
             }}
-            on:mouseup={() => (draggingNode = null)}
+            onmouseup={() => (draggingNode = null)}
             role="button"
             tabindex="0"
         >

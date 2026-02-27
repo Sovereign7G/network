@@ -64,7 +64,7 @@
             <div class="wallet-grid">
                 <button
                     class="wallet-option metamask"
-                    on:click={() => connect("metamask")}
+                    onclick={() => connect("metamask")}
                     disabled={isConnecting}
                 >
                     <span class="wallet-icon">🦊</span>
@@ -73,7 +73,7 @@
 
                 <button
                     class="wallet-option walletconnect"
-                    on:click={() => connect("walletconnect")}
+                    onclick={() => connect("walletconnect")}
                     disabled={isConnecting}
                 >
                     <span class="wallet-icon">🔗</span>
@@ -83,7 +83,7 @@
 
                 <button
                     class="wallet-option coinbase"
-                    on:click={() => connect("coinbase")}
+                    onclick={() => connect("coinbase")}
                     disabled={isConnecting}
                 >
                     <span class="wallet-icon">📱</span>
@@ -106,7 +106,7 @@
                     <span class="status-text">Connected</span>
                 </div>
 
-                <button class="disconnect-btn" on:click={disconnect}>
+                <button class="disconnect-btn" onclick={disconnect}>
                     Disconnect
                 </button>
             </div>
@@ -119,7 +119,7 @@
                     >
                     <button
                         class="copy-btn"
-                        on:click={() =>
+                        onclick={() =>
                             navigator.clipboard.writeText(walletState.address!)}
                         title="Copy address"
                     >
@@ -132,7 +132,7 @@
                     <div class="network-selector">
                         <button
                             class="network-btn"
-                            on:click={() =>
+                            onclick={() =>
                                 (showChainSelector = !showChainSelector)}
                             style="--chain-color: {getCurrentChain()?.color ||
                                 '#9370DB'}"
@@ -155,7 +155,7 @@
                                         class="chain-option"
                                         class:active={chain.id ===
                                             walletState.chainId}
-                                        on:click={() => switchChain(id)}
+                                        onclick={() => switchChain(id)}
                                         style="--chain-color: {chain.color}"
                                     >
                                         <span class="chain-icon"

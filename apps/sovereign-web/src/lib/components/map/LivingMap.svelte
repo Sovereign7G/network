@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
-    import { Activity, Globe, Compass, Layers } from "lucide-svelte";
+
+    import { Globe, Compass, Layers } from "lucide-svelte";
 
     let canvas: HTMLCanvasElement;
     let ctx: CanvasRenderingContext2D;
@@ -34,6 +34,13 @@
     import { naiEngine } from "$lib/nai/engine.svelte";
     import type { AmbientComponent } from "$lib/nai/types";
 
+    interface Props {
+        shards?: Shard[];
+        ribbons?: Ribbon[];
+        title?: string;
+        subtitle?: string;
+    }
+
     let {
         shards = [
             { id: "CORE", x: 0.5, y: 0.5, color: "#FDB813" },
@@ -51,7 +58,7 @@
         ],
         title = "Living Map",
         subtitle = "Phase Space: Recursive",
-    } = $props();
+    }: Props = $props();
 
     let sentimentParticles: SentimentParticle[] = [];
 
