@@ -4,6 +4,8 @@
   import '$lib/styles/css-state-machine.css';
   import { LocalStore } from '$lib/local-first/local-store';
   import { IntelligenceEngine } from '$lib/local-first/intelligence-engine';
+  import SovereignPaymentWeaver from '$lib/components/dashboard/SovereignPaymentWeaver.svelte';
+  import { manifold } from '$lib/stores/master-store.svelte';
   
   // ==========================================
   // 🏛️ THE SOVEREIGN STACK: OMNI-STATE SYNTHESIS
@@ -166,6 +168,10 @@
                 <span class="label">Cloud AI Calls</span>
                 <span class="value success">0</span>
             </div>
+            <div class="stat-box">
+                <span class="label">Sovereign Credits</span>
+                <span class="value tabular-nums">{manifold.ageCredits.toLocaleString()}</span>
+            </div>
           </div>
 
           <div class="interaction">
@@ -228,6 +234,12 @@
             </div>
           </div>
         </div>
+
+        <!-- AVENUE 4: Value Weaver -->
+        <div class="panel value-panel">
+            <h2>💰 Avenue 4: Sovereign Value Weaving</h2>
+            <SovereignPaymentWeaver />
+        </div>
       </div>
   {/if}
 </div>
@@ -261,6 +273,7 @@
       letter-spacing: 0.1em;
       background: linear-gradient(90deg, #64ffda, #3b82f6);
       -webkit-background-clip: text;
+      background-clip: text;
       -webkit-text-fill-color: transparent;
   }
   
@@ -286,6 +299,7 @@
     margin-bottom: 0.5rem;
     background: linear-gradient(90deg, #ffd700, #ff6b6b);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     letter-spacing: 0.05em;
   }
@@ -371,7 +385,7 @@
 
   .panels {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.2fr 1fr 1fr;
     gap: 2rem;
   }
 
