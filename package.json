@@ -1,0 +1,19 @@
+{
+    "name": "age-protocol-root",
+    "private": true,
+    "workspaces": [
+        "packages/*",
+        "apps/*"
+    ],
+    "scripts": {
+        "build:types": "cd packages/age-types && npm run build",
+        "watch:types": "cd packages/age-types && npm run watch",
+        "mobile:get": "cd apps/mobile && flutter pub get",
+        "mobile:build": "cd apps/mobile && flutter build apk",
+        "web:dev": "cd apps/sovereign-web && npm run dev",
+        "web:build": "cd apps/sovereign-web && npm run build",
+        "test": "cd apps/sovereign-web && npm run check",
+        "prepare": "husky",
+        "pre-commit": "npm run test"
+    }
+}
