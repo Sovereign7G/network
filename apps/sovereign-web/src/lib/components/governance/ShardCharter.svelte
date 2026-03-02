@@ -1,20 +1,11 @@
 <script lang="ts">
     import { fade, fly, scale } from "svelte/transition";
-    import {
-        FileSignature,
-        Scale,
-        Percent,
-        Zap,
-        Users,
-        Hexagon,
-    } from "lucide-svelte";
+    import { FileSignature, Scale, Zap, Users, Hexagon } from "lucide-svelte";
     import { manifold } from "$lib/stores/master-store.svelte";
 
     let inscribeProgress = $state(0);
     let isSigning = $state(false);
     let isChartered = $state(false);
-
-    let signatureRef = $state<HTMLInputElement | null>(null);
 
     // Initial Genesis Parameters for Shard 001
     let equalizationTax = $state(2.5); // 2.5% local tax, 0% platform fee
@@ -225,7 +216,10 @@
                 onmousedown={startSigning}
                 onmouseup={cancelSigning}
                 onmouseleave={cancelSigning}
-                ontouchstart|preventDefault={startSigning}
+                ontouchstart={(e) => {
+                    e.preventDefault();
+                    startSigning();
+                }}
                 ontouchend={cancelSigning}
                 ontouchcancel={cancelSigning}
             >
