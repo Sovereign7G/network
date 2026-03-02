@@ -1,356 +1,271 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { fly } from "svelte/transition";
-	import WorkspaceCanvas from "$lib/components/blocks/WorkspaceCanvas.svelte";
-	import TemplateSelector from "$lib/components/workspace/TemplateSelector.svelte";
-	import { vaultStore } from "$lib/stores/master-store";
+    // @ts-nocheck
+    import { onMount } from "svelte";
+    import { fade } from "svelte/transition";
+    import WorkspaceCanvas from "$lib/components/blocks/WorkspaceCanvas.svelte";
+    import ProtocolGlyph from "$lib/components/dashboard/ProtocolGlyph.svelte";
+    import ResonanceMonitor from "$lib/components/telemetry/ResonanceMonitor.svelte";
+    import IntentStage from "$lib/components/economics/IntentStage.svelte";
+    import { designEngineering } from "$lib/services/design-engineering-engine.svelte";
+    import { Activity } from "lucide-svelte";
 
-	// Initial workspace state - citizens will rearrange this
-	const initialColumns: any[] = [
-		{
-			id: "col-wealth",
-			blocks: [
-				{
-					id: "block-wealth",
-					type: "tile",
-					content: {
-						title: "Sovereign Treasury",
-						value: "$48.76B",
-						icon: "💰",
-						variant: "primary",
-					},
-					schema: "wealth-tile",
-				},
-				{
-					id: "block-resonance",
-					type: "tile",
-					content: {
-						title: "Resonance",
-						value: "98%",
-						icon: "✨",
-						variant: "success",
-					},
-					schema: "resonance-tile",
-				},
-			],
-		},
-		{
-			id: "col-atlas",
-			blocks: [
-				{
-					id: "block-atlas",
-					type: "canvas",
-					content: {
-						title: "Living Atlas",
-						canvasType: "network-topology",
-						height: 300,
-					},
-					schema: "atlas-canvas",
-				},
-			],
-		},
-		{
-			id: "col-nodes",
-			blocks: [
-				{
-					id: "block-nodes",
-					type: "tile",
-					content: {
-						title: "Active Nodes",
-						value: "389,000",
-						icon: "⚡",
-						variant: "warning",
-					},
-					schema: "nodes-tile",
-				},
-				{
-					id: "block-hearth",
-					type: "tile",
-					content: {
-						title: "Hearth Memories",
-						value: "47",
-						icon: "🔥",
-						variant: "danger",
-					},
-					schema: "hearth-tile",
-				},
-			],
-		},
-		{
-			id: "col-activity",
-			blocks: [
-				{
-					id: "block-activity",
-					type: "table",
-					content: {
-						title: "Recent Activity",
-						headers: ["Type", "Amount", "Time", "Status"],
-						rows: [
-							["Bridge", "5,000 USDC", "2 min ago", "completed"],
-							["Stake", "1,200 SYND", "15 min ago", "active"],
-							["Vote", "Proposal #12", "1 hour ago", "cast"],
-						],
-					},
-					schema: "activity-table",
-				},
-			],
-		},
-	];
+    // Manifold State
+    const manifold = $state({
+        isPoeticMode: true,
+    });
 
-	let workspaceColumns = $state(initialColumns);
+    const initialColumns = [
+        {
+            id: "col-1",
+            blocks: [
+                {
+                    id: "block-1",
+                    type: "tile",
+                    content: {
+                        title: "Vault Balance",
+                        value: "1,247.32",
+                        symbol: "AGE",
+                        type: "wallet",
+                    },
+                },
+                {
+                    id: "block-2",
+                    type: "tile",
+                    content: {
+                        title: "Network Resonance",
+                        value: "98.2",
+                        symbol: "%",
+                        type: "atlas",
+                    },
+                },
+            ],
+        },
+        {
+            id: "col-2",
+            blocks: [
+                {
+                    id: "block-3",
+                    type: "tile",
+                    content: {
+                        title: "Active Nodes",
+                        value: "4,092",
+                        symbol: "NODES",
+                        type: "node",
+                    },
+                },
+                {
+                    id: "block-connect",
+                    type: "connectivity",
+                    content: {},
+                },
+            ],
+        },
+    ];
 
-	let isLoading = $state(true);
+    let workspaceColumns = $state(initialColumns);
+    let isLoading = $state(true);
 
-	onMount(async () => {
-		try {
-			await vaultStore.loadVaultData();
-		} catch (e) {
-			console.warn("Store load skipped", e);
-		}
+    onMount(() => {
+        setTimeout(() => {
+            isLoading = false;
+        }, 600);
+    });
 
-		// Load saved workspace from localStorage
-		const saved = localStorage.getItem("sovereign-workspace");
-		if (saved) {
-			try {
-				workspaceColumns = JSON.parse(saved);
-			} catch (e) {}
-		}
-
-		isLoading = false;
-	});
-
-	function handleWorkspaceChange(
-		updatedColumns: { id: string; blocks: any[] }[],
-	) {
-		workspaceColumns = updatedColumns;
-		localStorage.setItem(
-			"sovereign-workspace",
-			JSON.stringify(updatedColumns),
-		);
-	}
-
-	function addNewColumn() {
-		workspaceColumns = [
-			...workspaceColumns,
-			{
-				id: `col-${Date.now()}`,
-				blocks: [],
-			},
-		];
-	}
-
-	function handleTemplateSelect(columns: any[]) {
-		workspaceColumns = columns;
-		localStorage.setItem("sovereign-workspace", JSON.stringify(columns));
-	}
+    function addNewBlock({ columnIndex }: { columnIndex: number }) {
+        const newBlock = {
+            id: `block-${Date.now()}`,
+            type: "tile",
+            content: {
+                title: "New Metric",
+                value: "0.00",
+                symbol: "UNIT",
+                type: "overview",
+            },
+        };
+        workspaceColumns[columnIndex].blocks = [
+            ...workspaceColumns[columnIndex].blocks,
+            newBlock,
+        ];
+    }
 </script>
 
-<div class="dashboard-container" in:fly={{ y: 20, duration: 400 }}>
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="resonance-breath"></div>
-			<p>Awakening the Cathedral...</p>
-		</div>
-	{:else}
-		<TemplateSelector
-			currentColumns={workspaceColumns}
-			onSelect={handleTemplateSelect}
-		/>
+<div class="dashboard-page h-full w-full">
+    {#if isLoading}
+        <div class="h-full flex flex-col items-center justify-center" out:fade>
+            <div class="w-16 h-16 relative">
+                <div
+                    class="absolute inset-0 border-2 border-cyan-500/20 rounded-full"
+                ></div>
+                <div
+                    class="absolute inset-0 border-2 border-t-cyan-500 rounded-full animate-spin"
+                ></div>
+            </div>
+            <p class="text-label mt-8 animate-pulse">Syncing Manifold...</p>
+        </div>
+    {:else}
+        <div in:fade={{ duration: 800 }} class="space-y-12">
+            <!-- Header Section -->
+            <header class="flex items-end justify-between">
+                <div>
+                    <h1 class="text-4xl text-premium">Sovereign Command</h1>
+                    <p class="text-label !opacity-40 mt-2">
+                        Personal Node Infrastructure & Assets
+                    </p>
+                </div>
 
-		<WorkspaceCanvas
-			bind:columns={workspaceColumns}
-			onLayoutChange={handleWorkspaceChange}
-			tile={tileSnippet}
-			canvas={canvasSnippet}
-			table={tableSnippet}
-		/>
+                <div class="flex items-center gap-4">
+                    <div class="flex flex-col items-end">
+                        <span
+                            class="text-[10px] font-black opacity-20 uppercase tracking-widest"
+                            >Latency</span
+                        >
+                        <span class="text-sm font-mono text-emerald-400"
+                            >12ms</span
+                        >
+                    </div>
+                </div>
+            </header>
 
-		{#snippet tileSnippet(content: any)}
-			<div class="wealth-tile">
-				<span class="tile-icon">{content.icon}</span>
-				<div class="tile-content">
-					<h3>{content.title}</h3>
-					<p class="tile-value">{content.value}</p>
-				</div>
-			</div>
-		{/snippet}
+            <!-- Workspace Section -->
+            <WorkspaceCanvas
+                bind:columns={workspaceColumns}
+                tile={tileSnippet}
+                onAddBlock={addNewBlock}
+            />
 
-		{#snippet canvasSnippet(content: any)}
-			<div class="canvas-container" style="height: {content.height}px">
-				<!-- Canvas component would render here -->
-				<div class="canvas-placeholder">
-					<span class="canvas-icon">🗺️</span>
-					<span>{content.title}</span>
-				</div>
-			</div>
-		{/snippet}
+            <!-- RESONANCE & INTENT ORCHESTRATION -->
+            <div
+                class="resonance-orchestrator grid grid-cols-1 xl:grid-cols-5 gap-10 mt-20 pb-40"
+            >
+                <div class="xl:col-span-2">
+                    <ResonanceMonitor />
+                </div>
+                <div class="xl:col-span-3">
+                    <IntentStage />
+                </div>
+            </div>
+        </div>
 
-		{#snippet tableSnippet(content: any)}
-			<div class="table-container">
-				<h4>{content.title}</h4>
-				<table>
-					<thead>
-						<tr>
-							{#each content.headers || [] as header}
-								<th>{header}</th>
-							{/each}
-						</tr>
-					</thead>
-					<tbody>
-						{#each content.rows || [] as row}
-							<tr>
-								{#each row as cell}
-									<td>{cell}</td>
-								{/each}
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
-		{/snippet}
+        <!-- 🧪 STRESS CONTROLLER (DE-Sim) -->
+        <div class="fixed bottom-8 right-8 z-[1000]">
+            <div
+                class="chiaroscuro-card p-6 border-white/10 backdrop-blur-2xl w-64 space-y-4 shadow-2xl"
+            >
+                <div class="flex items-center gap-3">
+                    <Activity size={16} class="text-cyan-400" />
+                    <span class="text-label text-[10px]">Stress Manifold</span>
+                </div>
 
-		<button class="add-column-btn" onclick={addNewColumn}>
-			<span class="btn-icon">+</span>
-			Add Column
-		</button>
-	{/if}
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-bold">
+                        <span class="opacity-40 uppercase"
+                            >{manifold.isPoeticMode
+                                ? "HILBERT INDEX"
+                                : "SYSTEM HEALTH"}</span
+                        >
+                        <span class="text-cyan-400"
+                            >{Math.round(designEngineering.hilbertIndex)}</span
+                        >
+                    </div>
+                    <input
+                        type="range"
+                        bind:value={designEngineering.hilbertIndex}
+                        min="50"
+                        max="100"
+                        step="1"
+                        class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+                    />
+                </div>
+
+                <div class="space-y-2">
+                    <div class="flex justify-between text-[10px] font-bold">
+                        <span class="opacity-40 uppercase">Moral Merits</span>
+                        <span class="text-emerald-400"
+                            >{Math.round(designEngineering.moralMerits)}</span
+                        >
+                    </div>
+                    <input
+                        type="range"
+                        bind:value={designEngineering.moralMerits}
+                        min="50"
+                        max="100"
+                        step="1"
+                        class="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-emerald-500"
+                    />
+                </div>
+
+                <div class="pt-2 border-t border-white/5 flex gap-2">
+                    <button
+                        class="flex-1 py-1 px-2 rounded bg-white/5 hover:bg-red-500/20 text-[8px] font-black transition-colors"
+                        onclick={() => (designEngineering.hilbertIndex = 70)}
+                        >EMERGENCY</button
+                    >
+                    <button
+                        class="flex-1 py-1 px-2 rounded bg-white/5 hover:bg-emerald-500/20 text-[8px] font-black transition-colors"
+                        onclick={() => {
+                            designEngineering.hilbertIndex = 98;
+                            designEngineering.moralMerits = 98;
+                        }}>GRACE</button
+                    >
+                </div>
+            </div>
+        </div>
+    {/if}
 </div>
 
+{#snippet tileSnippet(content: any)}
+    <div
+        class="chiaroscuro-card p-8 h-full min-h-[220px] flex flex-col justify-between group overflow-hidden relative"
+    >
+        <!-- Decoration -->
+        <div
+            class="absolute -right-4 -top-4 w-32 h-32 bg-cyan-500/5 blur-3xl rounded-full group-hover:bg-cyan-500/10 transition-all duration-700"
+        ></div>
+
+        <div class="flex items-start justify-between relative z-10">
+            <div class="space-y-4">
+                <div class="text-label !opacity-60">{content.title}</div>
+                <div class="flex items-baseline gap-2">
+                    <span
+                        class="text-5xl text-premium transition-all group-hover:tracking-tight"
+                        >{content.value}</span
+                    >
+                    <span
+                        class="text-[10px] font-black opacity-30 tracking-tighter"
+                        >{content.symbol}</span
+                    >
+                </div>
+            </div>
+            <div
+                class="p-4 rounded-2xl bg-white/5 border border-white/5 group-hover:border-cyan-500/30 transition-all duration-500"
+            >
+                <ProtocolGlyph type={content.type} size={24} active />
+            </div>
+        </div>
+
+        <div class="flex items-center gap-6 relative z-10">
+            <div
+                class="flex-1 h-px bg-white/5 group-hover:bg-white/10 transition-colors"
+            ></div>
+            <div class="flex items-center gap-2">
+                <div
+                    class="w-1.5 h-1.5 rounded-full bg-emerald-400 glow-emerald"
+                ></div>
+                <span class="text-[8px] font-black opacity-30 tracking-[0.2em]"
+                    >OPERATIONAL</span
+                >
+            </div>
+        </div>
+    </div>
+{/snippet}
+
 <style>
-	.dashboard-container {
-		min-height: 100vh;
-		padding: 1rem;
-		padding-bottom: 6rem;
-	}
+    .dashboard-page {
+        overflow-y: auto;
+        padding-bottom: 200px;
+    }
 
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 60vh;
-		gap: 2rem;
-	}
-
-	.resonance-breath {
-		width: 100px;
-		height: 100px;
-		background: radial-gradient(
-			circle at 30% 50%,
-			rgba(255, 215, 0, 0.3),
-			transparent 70%
-		);
-		animation: breath 4s ease-in-out infinite;
-		border-radius: 50%;
-	}
-
-	@keyframes breath {
-		0%,
-		100% {
-			transform: scale(1);
-			opacity: 0.5;
-		}
-		50% {
-			transform: scale(1.1);
-			opacity: 0.8;
-		}
-	}
-
-	.wealth-tile {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		padding: 1rem;
-	}
-
-	.tile-icon {
-		font-size: 2rem;
-	}
-
-	.tile-content h3 {
-		margin: 0 0 0.25rem;
-		color: rgba(255, 255, 255, 0.7);
-		font-size: 0.9rem;
-	}
-
-	.tile-value {
-		margin: 0;
-		font-size: 1.5rem;
-		font-weight: bold;
-		color: #ffd700;
-	}
-
-	.canvas-placeholder {
-		width: 100%;
-		height: 100%;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		background: rgba(0, 0, 0, 0.3);
-		border-radius: 16px;
-		color: rgba(255, 255, 255, 0.5);
-	}
-
-	.canvas-icon {
-		font-size: 2rem;
-	}
-
-	.table-container {
-		padding: 1rem;
-	}
-
-	.table-container h4 {
-		margin: 0 0 1rem;
-		color: rgba(255, 255, 255, 0.7);
-	}
-
-	table {
-		width: 100%;
-		border-collapse: collapse;
-	}
-
-	th {
-		text-align: left;
-		padding: 0.5rem;
-		color: rgba(255, 255, 255, 0.5);
-		font-weight: normal;
-		font-size: 0.8rem;
-		border-bottom: 1px solid rgba(255, 215, 0, 0.2);
-	}
-
-	td {
-		padding: 0.5rem;
-		color: white;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-	}
-
-	.add-column-btn {
-		position: fixed;
-		bottom: 2rem;
-		right: 2rem;
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: rgba(255, 215, 0, 0.1);
-		border: 1px solid rgba(255, 215, 0, 0.3);
-		border-radius: 100px;
-		color: #ffd700;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		z-index: 100;
-	}
-
-	.add-column-btn:hover {
-		background: #ffd700;
-		color: #0a0a0f;
-		transform: translateY(-2px);
-	}
-
-	.btn-icon {
-		font-size: 1.2rem;
-		font-weight: bold;
-	}
+    .glow-emerald {
+        box-shadow: 0 0 10px #10b981;
+    }
 </style>
