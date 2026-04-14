@@ -43,6 +43,7 @@ def sovereign_total_system_audit():
         ("Quantum: Attosecond Entanglement Control", "simulate_attosecond_entanglement.py"),
         ("Sovereign: Trinity-Large-Thinking MoE", "simulate_trinity_sovereignty.py"),
         ("Energy: Sparse Gold Dendrite Shield", "simulate_sparse_gold_nanoparticle_coating.py"),
+        ("Power: Nickelate Superconductor Grid", "simulate_nickelate_superconductor.py"),
     ]
 
     results = []
