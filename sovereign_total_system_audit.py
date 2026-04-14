@@ -44,6 +44,7 @@ def sovereign_total_system_audit():
         ("Sovereign: Trinity-Large-Thinking MoE", "simulate_trinity_sovereignty.py"),
         ("Energy: Sparse Gold Dendrite Shield", "simulate_sparse_gold_nanoparticle_coating.py"),
         ("Power: Nickelate Superconductor Grid", "simulate_nickelate_superconductor.py"),
+        ("Photonics: Quantum Fiber Stabilization", "simulate_quantum_fiber_stabilizer.py"),
     ]
 
     results = []
