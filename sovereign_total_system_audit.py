@@ -41,6 +41,7 @@ def sovereign_total_system_audit():
         ("Mission: 167-Year Power & Shroud", "nfpp_discharge_ghostmode.py"),
         ("Thermal: Single-Atom Phonon Tuning", "simulate_single_atom_phonon_tuning.py"),
         ("Quantum: Attosecond Entanglement Control", "simulate_attosecond_entanglement.py"),
+        ("Sovereign: Trinity-Large-Thinking MoE", "simulate_trinity_sovereignty.py"),
     ]
 
     results = []
@@ -52,8 +53,6 @@ def sovereign_total_system_audit():
     print("═" * 78)
     
     if all(results):
-        print(f"    [{len(results)}/{len(results)} PASS] All subsystems nominal.")
-        print(f"    [{len(results)}/{len(results)} PASS] All subsystems nominal.")
         print(f"    [{len(results)}/{len(results)} PASS] All subsystems nominal.")
         print("    [HARDWARE]   Ph III/IV, Photonic, Memristor:   INVARIANT.")
         print("    [ENERGY]     Sodium/PNE, 167-Year Fade < 8%:  CERTIFIED.")
