@@ -47,6 +47,7 @@ def sovereign_total_system_audit():
         ("Photonics: Quantum Fiber Stabilization", "simulate_quantum_fiber_stabilizer.py"),
         ("Chemistry: IQPE Simulator (FTQC)", "simulate_iqpe_quantum_chemistry.py"),
         ("Stealth: KRISS EM Hull Crawlers", "simulate_kriss_em_crawler.py"),
+        ("Life Support: 4H-HEA Electrocatalysis", "simulate_4h_hea_electrocatalysis.py"),
     ]
 
     results = []
