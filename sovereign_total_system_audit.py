@@ -45,6 +45,7 @@ def sovereign_total_system_audit():
         ("Energy: Sparse Gold Dendrite Shield", "simulate_sparse_gold_nanoparticle_coating.py"),
         ("Power: Nickelate Superconductor Grid", "simulate_nickelate_superconductor.py"),
         ("Photonics: Quantum Fiber Stabilization", "simulate_quantum_fiber_stabilizer.py"),
+        ("Chemistry: IQPE Simulator (FTQC)", "simulate_iqpe_quantum_chemistry.py"),
     ]
 
     results = []
