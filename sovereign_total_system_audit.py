@@ -51,6 +51,7 @@ def sovereign_total_system_audit():
         ("Synchronization: Superluminal Metronome", "simulate_superluminal_pulse_sync.py"),
         ("Medical Diagnostics: NeAT Neural Fields", "simulate_neat_medical_optics.py"),
         ("Virtual Avatars: Artemis II Organ-Chips", "simulate_avatar_organ_chips.py"),
+        ("Foundry Biocatalysis: UAA Metalloenzymes", "simulate_uaa_copper_metalloenzyme.py"),
     ]
 
     results = []
