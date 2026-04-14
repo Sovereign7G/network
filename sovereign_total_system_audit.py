@@ -46,6 +46,7 @@ def sovereign_total_system_audit():
         ("Power: Nickelate Superconductor Grid", "simulate_nickelate_superconductor.py"),
         ("Photonics: Quantum Fiber Stabilization", "simulate_quantum_fiber_stabilizer.py"),
         ("Chemistry: IQPE Simulator (FTQC)", "simulate_iqpe_quantum_chemistry.py"),
+        ("Stealth: KRISS EM Hull Crawlers", "simulate_kriss_em_crawler.py"),
     ]
 
     results = []
