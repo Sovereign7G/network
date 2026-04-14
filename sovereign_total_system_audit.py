@@ -42,6 +42,7 @@ def sovereign_total_system_audit():
         ("Thermal: Single-Atom Phonon Tuning", "simulate_single_atom_phonon_tuning.py"),
         ("Quantum: Attosecond Entanglement Control", "simulate_attosecond_entanglement.py"),
         ("Sovereign: Trinity-Large-Thinking MoE", "simulate_trinity_sovereignty.py"),
+        ("Energy: Sparse Gold Dendrite Shield", "simulate_sparse_gold_nanoparticle_coating.py"),
     ]
 
     results = []
