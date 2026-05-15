@@ -1,0 +1,1 @@
+Expected: /dev/ttyUSB0 or /dev/ttyACM0 at 115200 baud
