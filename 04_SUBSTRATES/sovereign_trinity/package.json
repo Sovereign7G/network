@@ -1,0 +1,17 @@
+{
+  "name": "@age-republic/sovereign-trinity",
+  "version": "1.0.0",
+  "description": "🏛️ AGE REPUBLIC Sovereign Trinity — Axon × Zetto × Mojo on Bun",
+  "type": "module",
+  "scripts": {
+    "build:zetto": "cd zetto && $HOME/.cargo/bin/cargo build --release",
+    "test:zetto": "cd zetto && $HOME/.cargo/bin/cargo test -- --nocapture",
+    "dev": "bun run axon/src/server.ts",
+    "bench": "bun run bench/trinity_benchmark.ts",
+    "link": "bun run axon/src/cli.ts",
+    "test": "bun test",
+    "build": "npm run build:zetto && echo '✅ Zetto .so compiled → axon FFI bridge ready'"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
