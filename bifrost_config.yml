@@ -1,0 +1,197 @@
+# =====================================================================
+# 🏛️ AGE REPUBLIC: KNOWLEDGE ASSET (ERA 226.0)
+# Identifier: 00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY
+# Theme: Philosophical Codex of Multi-Token Prediction (MTP) Speculative Decoding
+# =====================================================================
+# SOVEREIGN COGNITIVE AUDIT MANIFEST:
+# This document formalizes the philosophical axioms, conceptual distillations,
+# and design principles extracted from the implementation of Gemma 4 Multi-Token
+# Prediction (MTP) and speculative decoding architectures.
+#
+# I. Leveraging Idle Capacity → Run drafter in latency gaps.
+# II. Folly of Autoregressive Thinking → System 1 (draft) / System 2 (verify).
+# III. Verification Over Generation → Final arbiter retains veto.
+# IV. Zero Degradation → Speed without fidelity loss.
+# V. Paradox of Batching → Batch 4–8 unlocks MoE routing.
+# VI. Context Sharing → KV cache inheritance, no rebuild from zero.
+# VII. Edge as Frontier → Air-gapped sovereignty.
+# =====================================================================
+# 🌉 AGE REPUBLIC :: BIFROST LOCAL PROTOCOL ROUTER CONFIGURATION
+# =====================================================================
+# Establishes your local sandboxed execution environment on port 8080.
+# Integrates local inference engines (Ollama & LM Studio) with RAG (LanceDB).
+# Minimizes Google API token consumption by up to 98% via Code Mode.
+
+
+gateway:
+  name: "sovereign-bifrost-gateway"
+  port: 8080
+  code_mode: true
+  sandbox:
+    type: "deno"  # Secure sandboxed JavaScript/TypeScript engine
+    memory_limit: "512MB"
+    timeout_seconds: 30
+    allow_networking: true
+    allow_env_access: false
+    allow_filesystem: true
+    allowed_paths:
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/data"
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/reports"
+      - "/tmp/bifrost"
+
+# 🧠 Adaptive Model Cascading Routing Plane
+llm_routing:
+  default_strategy: "latency_aware"
+  
+  inference_engines:
+    - name: "llama-cpp-lfm"
+      url: "http://localhost:8080"
+      model: "LFM2.5-8B-A1B"        # Liquid AI High-Throughput Edge MoE
+      priority: 1
+      max_tokens: 128000
+      temperature: 0.1              # Low temperature for precise tool calling
+      roles: ["tool_calling", "complex_reasoning", "portfolio_rebalancing"]
+
+    - name: "ollama-gemma"
+      url: "http://localhost:11434"
+      model: "gemma:2b"             # Lightweight, ultra-fast 2B model
+      priority: 3
+      max_tokens: 2048
+      temperature: 0.2               # Low temperature for deterministic embeddings & tool routing
+      roles: ["embedding", "intent_routing", "summarization"]
+
+    - name: "ollama-gemma4-mtp"
+      url: "http://localhost:11434"
+      model: "gemma4:31b-coding-mtp-bf16" # Gemma 4 speculative decoding MTP model
+      priority: 2
+      max_tokens: 8192
+      temperature: 0.2
+      roles: ["embedding", "intent_routing", "summarization", "low_latency_reasoning"]
+      
+    - name: "lm-studio-reasoning"
+      url: "http://localhost:1234/v1"
+      model: "meta-llama-3-8b-instruct" # Large instruct model
+      priority: 3
+      max_tokens: 8192
+      temperature: 0.7
+      roles: ["code_generation", "tool_calling", "complex_reasoning"]
+      
+    - name: "antigravity-cloud"
+      url: "https://antigravity.googleapis.com/v1"
+      model: "gemini-1.5-pro"        # Zero-cost sandbox fallback
+      priority: 4
+      max_tokens: 16384
+      temperature: 0.5
+      roles: ["mega_context_reasoning"]
+
+  # Intent-Based Semantic Cascading Rules
+  routing_rules:
+    - match: { intent: "embedding" }
+      route_to: "ollama-gemma"
+      latency_sla_ms: 150
+      
+    - match: { intent: "query_rewriting" }
+      route_to: "ollama-gemma"
+      latency_sla_ms: 300
+      
+    - match: { intent: "cortex_summarization" }
+      route_to: "ollama-gemma"
+      latency_sla_ms: 1000
+      
+    - match: { intent: "tool_calling" }
+      route_to: "lm-studio-reasoning"
+      fallback_to: "antigravity-cloud"
+      latency_sla_ms: 2000
+      
+    - match: { intent: "code_generation" }
+      route_to: "lm-studio-reasoning"
+      fallback_to: "ollama-gemma4-mtp"
+      latency_sla_ms: 1000
+
+    - match: { intent: "somatic_overlay_reaction" }
+      route_to: "ollama-gemma4-mtp"
+      latency_sla_ms: 300
+
+    - match: { intent: "complex_reasoning" }
+      route_to: "lm-studio-reasoning"
+      fallback_to: "antigravity-cloud"
+      latency_sla_ms: 5000
+
+# 🔌 Registered Model Context Protocol (MCP) Server Clusters
+mcp_servers:
+  # 1. LanceDB High-Dimensional Vector Lake
+  - name: "lancedb-vector-lake"
+    transport: "stdio"
+    command: "python3"
+    args: 
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/lancedb_state_manager.py"
+    env:
+      LANCEDB_PATH: "/tmp/age_republic_lancedb"
+      PYTHONPATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+    auto_discover: true
+    
+  # 2. Sovereign Trading Desk Substrate
+  - name: "sovereign-trading-desk"
+    transport: "stdio"
+    command: "python3"
+    args:
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/mcp_server.py"
+    env:
+      PYTHONPATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+    auto_discover: true
+
+  # 3. AnythingLLM Document ingest & RAG Bridge
+  - name: "anythingllm-rag-bridge"
+    transport: "stdio"
+    command: "npx"
+    args:
+      - "-y"
+      - "@modelcontextprotocol/server-anythingllm"
+      - "--api-url"
+      - "http://localhost:3001/api/v1"
+      - "--api-key"
+      - "${ANYTHINGLLM_API_KEY}"
+    auto_discover: true
+
+  # 4. Postgres Sovereign Database Connector
+  - name: "postgres-republic"
+    transport: "stdio"
+    command: "npx"
+    args: ["-y", "@modelcontextprotocol/server-postgres", "postgresql://root:password@localhost:5432/republic_vault"]
+    auto_discover: true
+    
+  # 5. Local Filesystem Connector cap-isolated to 06_INFRA data folders
+  - name: "filesystem"
+    transport: "stdio"
+    command: "npx"
+    args: 
+      - "-y"
+      - "@modelcontextprotocol/server-filesystem"
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/data"
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/reports"
+    auto_discover: true
+
+  # 6. ESP32 Hardware Bridge — Physical device flashing & telemetry
+  - name: "esp32-hardware-bridge"
+    transport: "stdio"
+    command: "node"
+    args:
+      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/esp32_mcp_bridge.js"
+    env:
+      NODE_PATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+    auto_discover: true
+
+protobuf:
+  enabled: true
+  schema_path: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/bifrost_protobuf.proto"
+  serializer: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/bifrost_proto_serializer.py"
+  use_binary: true
+
+monitoring:
+  metrics_port: 9090
+  logs:
+    level: "info"
+    output: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/logs/bifrost_gateway.log"
+  health_check:
+    endpoint: "/health"
+    interval_seconds: 30
