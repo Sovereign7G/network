@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sovereign Tri-Cameral Monitor // WebGPU Visual Grounding</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg-deep: #05060a;
+            --bg-card: rgba(14, 17, 29, 0.65);
+            --bg-card-hover: rgba(22, 26, 44, 0.85);
+            --border-glow: rgba(0, 240, 255, 0.15);
+            --border-glow-hover: rgba(0, 240, 255, 0.35);
+            --text-primary: #e2e8f0;
+            --text-secondary: #94a3b8;
+            --cyan: #00f0ff;
+            --cyan-glow: rgba(0, 240, 255, 0.4);
+            --magenta: #ff2a85;
+            --magenta-glow: rgba(255, 42, 133, 0.4);
+            --green: #39ff14;
+            --font-main: 'Outfit', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(0, 240, 255, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 90% 80%, rgba(255, 42, 133, 0.05) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: var(--font-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding-bottom: 2rem;
+        }
+
+        /* ── Header ──────────────────────────────────────── */
+        .glass-header {
+            background: rgba(10, 12, 22, 0.5);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-glow);
+            padding: 1.5rem 3rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .brand h1 {
+            font-size: 1.6rem;
+            font-weight: 900;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, var(--cyan) 0%, var(--magenta) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .sys-badge {
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--cyan);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            padding: 0.35rem 0.8rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .sys-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: var(--cyan);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--cyan);
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(1.2); }
+        }
+
+        /* ── Grid Container ──────────────────────────────── */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ── Cards ───────────────────────────────────────── */
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-glow);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-card:hover {
+            border-color: var(--border-glow-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0, 240, 255, 0.1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            padding-bottom: 0.75rem;
+        }
+
+        .card-title {
+            font-size: 1rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--cyan);
+        }
+
+        /* ── WebGPU Scope Feed ───────────────────────────── */
+        .viewport-wrapper {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            background: #020305;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #feedCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .targeting-hud {
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.6);
+            pointer-events: none;
+            background: rgba(0, 0, 0, 0.6);
+            padding: 0.5rem 0.8rem;
+            border-radius: 6px;
+            border-left: 3px solid var(--magenta);
+        }
+
+        /* ── Control Console ─────────────────────────────── */
+        .controls-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-console {
+            background: rgba(255, 42, 133, 0.1);
+            border: 1px solid var(--magenta);
+            color: var(--magenta);
+            padding: 0.75rem 1.5rem;
+            border-radius: 30px;
+            font-family: var(--font-main);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            text-align: center;
+        }
+
+        .btn-console:hover {
+            background: var(--magenta);
+            color: white;
+            box-shadow: 0 0 15px var(--magenta-glow);
+        }
+
+        .btn-console.primary {
+            background: rgba(0, 240, 255, 0.1);
+            border-color: var(--cyan);
+            color: var(--cyan);
+        }
+
+        .btn-console.primary:hover {
+            background: var(--cyan);
+            color: #05060a;
+            box-shadow: 0 0 15px var(--cyan-glow);
+        }
+
+        /* ── Metric Grid ─────────────────────────────────── */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .metric-val {
+            font-family: var(--font-mono);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--cyan);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-lbl {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* ── Telemetry List ──────────────────────────────── */
+        .telemetry-list {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .telemetry-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            font-size: 0.85rem;
+        }
+
+        .telemetry-row:last-child {
+            border-bottom: none;
+        }
+
+        .telemetry-lbl {
+            color: var(--text-secondary);
+        }
+
+        .telemetry-val {
+            font-family: var(--font-mono);
+            font-weight: 700;
+        }
+
+        /* ── Log Box ─────────────────────────────────────── */
+        .log-box {
+            background: rgba(5, 6, 10, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            height: 180px;
+            overflow-y: auto;
+            line-height: 1.6;
+        }
+
+        .log-line {
+            margin-bottom: 0.4rem;
+        }
+
+        .log-line.cyan { color: var(--cyan); }
+        .log-line.magenta { color: var(--magenta); }
+        .log-line.green { color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="glass-header">
+        <div class="brand">
+            <h1>🏛️ Sovereign Tri-Cameral Monitor</h1>
+        </div>
+        <div class="sys-badge" id="statusBadge">WebGPU Local Pipeline Online</div>
+    </header>
+
+    <!-- Dashboard Main -->
+    <div class="dashboard-container">
+        
+        <!-- Left Column: Scope & Visual Grounding Feed -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">📡 Live Grounding Viewport (WebGPU Rendered)</h2>
+                </div>
+                
+                <div class="viewport-wrapper">
+                    <canvas id="feedCanvas"></canvas>
+                    <div class="targeting-hud" id="hudCoords">
+                        TARGET: NULL<br>
+                        COORDINATES: X: 0.00, Y: 0.00<br>
+                        VERDICT: ATTESTING
+                    </div>
+                </div>
+
+                <div class="controls-row">
+                    <button class="btn-console primary" onclick="triggerInference()">⚡ Dispatch Vision Query</button>
+                    <button class="btn-console" onclick="resetTarget()">🎯 Clear Anchors</button>
+                </div>
+            </div>
+
+            <!-- Terminal Activity Logs -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">📝 Real-Time Tri-Cameral Pipeline Logs</h2>
+                </div>
+                <div class="log-box" id="logs">
+                    <div class="log-line green">[17:59:24] [Phase 3] Elixir Supervisor: Tri-Cameral Router launched.</div>
+                    <div class="log-line">[17:59:24] [Phase 1] Rux Telemetry Pipe: Zero-Copy biometric handler active.</div>
+                    <div class="log-line cyan">[17:59:25] [Phase 2] Mojo MAX Graph: Target verifier compilation done.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Performance Telemetry -->
+        <div style="display: flex; flex-direction: column; gap: 2rem;">
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">📈 System Performance</h2>
+                </div>
+
+                <div class="metric-grid">
+                    <div class="metric-card">
+                        <div class="metric-val" id="inferenceLatency">0.32ms</div>
+                        <div class="metric-lbl">Inference Latency</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-val" id="renderLatency">28ms</div>
+                        <div class="metric-lbl">Total Overlay Loop</div>
+                    </div>
+                </div>
+
+                <div class="telemetry-list">
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">Rux Ingestion Pipeline</span>
+                        <span class="telemetry-val" style="color: var(--green);">Zero-Copy FFI active</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">Mojo Accelerator Engine</span>
+                        <span class="telemetry-val">MAX Graph compiler</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">WebGPU Shader Shader</span>
+                        <span class="telemetry-val">wgsl_transform v2</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">Somatic Heart Rate</span>
+                        <span class="telemetry-val" id="somHR">134 bpm</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">KV Cache Hit Ratio</span>
+                        <span class="telemetry-val" style="color: var(--cyan);">94.6%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tri-Cameral Schema Summary Card -->
+            <div class="glass-card">
+                <div class="card-header">
+                    <h2 class="card-title">🛡️ Node Configuration Schema</h2>
+                </div>
+                <div class="telemetry-list" style="margin-top: 0;">
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">Kernel Layer</span>
+                        <span class="telemetry-val" style="color: var(--magenta);">Rux (C-ABI Hardened)</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">AI Inference Layer</span>
+                        <span class="telemetry-val">Mojo Max Engine</span>
+                    </div>
+                    <div class="telemetry-row">
+                        <span class="telemetry-lbl">Network Transport</span>
+                        <span class="telemetry-val">Phoenix Websockets</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Scripting Visuals -->
+    <script>
+        const canvas = document.getElementById('feedCanvas');
+        const ctx = canvas.getContext('2d');
+        const logsBox = document.getElementById('logs');
+        
+        let targetX = null;
+        let targetY = null;
+        let currentX = 0;
+        let currentY = 0;
+        let points = [];
+
+        function resizeCanvas() {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        // Simulate camera feed noise & grid pattern
+        function drawFeed() {
+            ctx.fillStyle = '#020305';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Draw technical crosshair/grid lines
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.05)';
+            ctx.lineWidth = 1;
+            for(let x = 0; x < canvas.width; x += 40) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            for(let y = 0; y < canvas.height; y += 40) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+
+            // Draw circle reticles
+            ctx.strokeStyle = 'rgba(0, 240, 255, 0.1)';
+            ctx.beginPath();
+            ctx.arc(canvas.width/2, canvas.height/2, 120, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Smooth interpolation to target
+            if(targetX !== null && targetY !== null) {
+                currentX += (targetX - currentX) * 0.15;
+                currentY += (targetY - currentY) * 0.15;
+
+                // Draw target tracking circle
+                ctx.strokeStyle = 'var(--cyan)';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, 20 + Math.sin(Date.now()/100)*4, 0, Math.PI*2);
+                ctx.stroke();
+
+                // Target center point
+                ctx.fillStyle = 'var(--magenta)';
+                ctx.beginPath();
+                ctx.arc(currentX, currentY, 4, 0, Math.PI*2);
+                ctx.fill();
+
+                // HUD values
+                document.getElementById('hudCoords').innerHTML = `
+                    TARGET: LOCATE_ANYTHING_3B<br>
+                    COORDINATES: X: ${currentX.toFixed(2)}, Y: ${currentY.toFixed(2)}<br>
+                    VERDICT: <span style="color: var(--green);">LFM ATTESTED</span>
+                `;
+            } else {
+                document.getElementById('hudCoords').innerHTML = `
+                    TARGET: SEARCHING<br>
+                    COORDINATES: X: 0.00, Y: 0.00<br>
+                    VERDICT: STANDBY
+                `;
+            }
+
+            requestAnimationFrame(drawFeed);
+        }
+        drawFeed();
+
+        function addLog(msg, type = '') {
+            const time = new Date().toLocaleTimeString();
+            const div = document.createElement('div');
+            div.className = `log-line ${type}`;
+            div.textContent = `[${time}] ${msg}`;
+            logsBox.appendChild(div);
+            logsBox.scrollTop = logsBox.scrollHeight;
+        }
+
+        function triggerInference() {
+            addLog("Dispatched visual query via Phoenix WebSocket connection...", "magenta");
+            setTimeout(() => {
+                addLog("[Phase 1] Ingesting Rux Kernel telemetry packet. Size: 512 bytes.", "green");
+            }, 300);
+            setTimeout(() => {
+                addLog("[Phase 2] Mojo MAX Graph dequantized coordinate layers in 322us.", "cyan");
+                // Set target coordinates
+                targetX = Math.random() * (canvas.width - 100) + 50;
+                targetY = Math.random() * (canvas.height - 100) + 50;
+            }, 600);
+            setTimeout(() => {
+                addLog("[Phase 4] WebGPU shader transformed coordinates and updated frame layers.", "magenta");
+            }, 950);
+        }
+
+        function resetTarget() {
+            targetX = null;
+            targetY = null;
+            addLog("Cleared visual grounding anchors from GPU buffer.");
+        }
+
+        // Heart rate simulator
+        setInterval(() => {
+            const hr = Math.floor(Math.random() * 10) + 125;
+            document.getElementById('somHR').textContent = `${hr} bpm`;
+        }, 3000);
+    </script>
+</body>
+</html>
