@@ -88,8 +88,70 @@ For client-side execution, the browser acts as a sovereign model runner using We
 
 ---
 
+## 🛠️ III. Phase-by-Phase Technical Implementation Steps
+
+### Phase 1: Rux Kernel (Transitioning Prototype to Production)
+1. **Generate Rust bindings from prototype:**
+   ```bash
+   cd src/rux_kernel
+   mix gen.bindings --from 06_INFRA/scripts/tri_cameral_prototype.exs --out telemetry_pipe.rs
+   ```
+2. **Implement zero-copy FFI based on prototype's `RuxTelemetryPipe` simulation:**
+   * Reference: `tri_cameral_prototype.exs` biometric ingestion logic.
+   * Expose raw pointers for zero-serialization transfers directly to the host memory plane.
+3. **Test against simulated workload:**
+   ```bash
+   cargo test -- --nocapture --test-threads=1
+   ```
+
+### Phase 2: Mojo MAX Graph (Transitioning Simulation to ONNX)
+1. **Extract vision model specification from prototype:**
+   * Targets `LocateAnything-3B` utilizing quantized `int8` / `bf16` weights.
+2. **Convert or locate target model:**
+   ```bash
+   mojo run src/mojo_accel/export_vision_model.mojo --output locate_anything_3b.onnx
+   ```
+3. **Implement Mojo engine matching prototype's `MojoVisionEngine` interface:**
+   ```bash
+   mojo test src/mojo_accel/ --test test_vision_engine.mojo
+   ```
+
+### Phase 3: Elixir Supervisor (Transitioning Prototype to Production GenServer)
+1. **Promote prototype GenServer to production module:**
+   ```bash
+   cp 06_INFRA/scripts/tri_cameral_prototype.exs lib/bifrost/tri_cameral_supervisor.ex
+   ```
+2. **Add to Bifrost application supervision tree:**
+   * Modify `lib/bifrost/application.ex` to register children:
+     ```elixir
+     children = [
+       # ... existing children
+       {TriCameralSupervisor, name: TriCameralSupervisor}
+     ]
+     ```
+3. **Test with real Rux FFI (replacing the simulated bridge):**
+   ```bash
+   mix test --only integration
+   ```
+
+### Phase 4: WebGPU Frontend (Transitioning Prototype to Phoenix LiveView)
+1. **Extract WebSocket specification from prototype:**
+   * Establishes Phoenix Channel `coordinate:update` using high-frequency binary frame encoding.
+2. **Generate WebGPU shader from coordinate specification:**
+   ```bash
+   cd assets/webgpu
+   npm run build:shader -- --input coordinate_transform.wgsl
+   ```
+3. **Integrate with LiveView:**
+   ```bash
+   mix phx.gen.live --webui --webgpu CoordinateOverlay
+   ```
+
+---
+
 > [!NOTE]
 > **See Also:**
 > - [322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md) - Rux core systems and kernel paradigms.
 > - [339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md) - Verification gates and tool execution safety.
 > - [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md) - Speculative MTP verification loops.
+
