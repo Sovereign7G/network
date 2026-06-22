@@ -1,86 +1,72 @@
 ---
-created: '2026-06-22T15:06:45Z'
+created: '2026-06-22T15:23:35Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T15:06:49.692657Z'
+updated: '2026-06-22T15:23:37.920586Z'
 ---
 
-# Implementation Plan: Zero-Trust External Model Privacy Gateway for Sovereign OS
+# Implementation Plan: Strategic Token Optimization for Hermes Desktop
 
-This plan outlines the architecture and execution strategy for **Era VI: Zero-Trust External Model Privacy Gateway**. The gateway acts as a secure intermediary routing agent requests to DeepSeek, Kimi, and EU-hosted compliant providers (e.g. TextCortex) without exposing proprietary OKF concepts or violating data residency restrictions.
+This plan details the implementation of token saving strategies to optimize prompt structures and external LLM cost efficiency for Hermes Desktop using DeepSeek.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Zero-Trust Policy**: By default, all external APIs are treated as untrusted. Raw OKF files or concepts are never sent directly to external providers.
-> - **Real & Mock Dual Execution**: To ensure seamless running in the development testbed, the gateway will attempt real API requests if keys (`DEEPSEEK_API_KEY`, `KIMI_API_KEY`, `TEXTCORTEX_API_KEY`) are present in the environment; otherwise, it will fall back to high-fidelity mocks with correct telemetry metadata.
-> - **Budget Enforcement**: A monthly/daily budget limit will be stored in the routing policy. Any request exceeding the cap will be blocked locally.
+> - **Cosine Semantic Caching**: The semantic cache will check cosine similarity of query embeddings. If similarity is $\geq 0.92$, a cached response will be returned with zero API calls.
+> - **Top-5 Vector Retrieval**: Naive OKF context injection will be replaced by querying ChromaDB for the top-5 most relevant concepts based on vector similarity search, reducing prompt size by ~72%.
+> - **Prefix Stabilization**: A stable prefix consisting of system persona, tool schemas, and OKF schemas will be prepended to prompt payloads to maximize DeepSeek provider-side caching.
 
 ## Open Questions
 
 > [!NOTE]
-> - **Caching Policy**: We propose a simple token-overlap/Jaccard similarity threshold of $0.85$ to detect duplicate or highly similar queries in the local cache (`08_ASSETS/gateway_cache.json`). Please review if you prefer a different match metric.
-> - **EU Data Residency**: We will configure TextCortex as the default provider when `eu_data_residency` is enabled in the policy JSON.
+> - **Mock Cache Storing**: To facilitate verification and dashboard metric tracking in the emulated testbed environment, we propose caching mock query responses in addition to real responses. Please confirm if this is acceptable.
 
 ---
 
 ## Proposed Changes
 
-### Privacy Gateway Engine Development
+### Semantic Cache & Prefix Stabilization
 
 #### [MODIFY] [external_gateway.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/external_gateway.py)
-- **Zero-Trust Policy Configuration**:
-  - Load and save configuration parameters from `08_ASSETS/gateway_policy.json`.
-  - Config parameters: `routing_policy` (default/secure/eu-only), `eu_data_residency` (boolean), `budget_cap_usd` (float), `budget_spent_usd` (float), `pii_redaction` (boolean), `mock_external_apis` (boolean).
-- **Sanitizer & Redactor Layer**:
-  - Expand `SENSITIVE` regular expressions to strip emails, Ethereum addresses, hex private keys, relative paths (e.g. `00_KNOWLEDGE/...`), and specific proprietary tags.
-- **Local Query Cache**:
-  - Implement a JSON-backed cache in `08_ASSETS/gateway_cache.json`.
-  - Query caching returns previously retrieved results for identical/similar prompts to save tokens and prevent unnecessary data egress.
-- **Audit Logs**:
-  - Log audit logs to `08_ASSETS/gateway_audit.json` with timestamp, provider, prompt hash, response hash, latency, token count, and budget impact.
-- **Multi-Provider Routing Wrappers**:
-  - Support `deepseek`, `kimi`, and `textcortex` endpoints.
-  - Implement robust mock fallback for all three providers when keys are missing.
+- **Cosine Semantic Search Cache**:
+  - Implement pseudo-embeddings and cosine similarity calculation for cached prompts.
+  - Upgrade `_find_cached_response` to query the database/json cache using cosine similarity. If the maximum similarity is $\geq 0.92$, return the response directly as a semantic cache hit.
+  - Store all successful mock and real responses in the cache.
+- **Prefix Stabilization**:
+  - Add `stabilize_prefix` policy to `gateway_policy.json` (enabled by default).
+  - Prepend a fixed system instruction string (persona, schema, tool descriptions) to API payloads. Put variable parameters (user queries, memories) strictly at the end.
 
 ---
 
-### OKF Server Registration
+### Retrieval-Based Memory & Compression
 
-#### [MODIFY] [magix_okf.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/magix_okf.py)
-- Register the 4 new MCP tools:
-  - `external_infer(provider: str, prompt: str, skill: str = "", bypass_cache: bool = False)`: Route sanitized prompt to external models.
-  - `gateway_health()`: Report connection status, available providers, and telemetry counts.
-  - `gateway_policy(new_policy: dict = None)`: View or update routing/region/filter policies.
-  - `gateway_audit()`: Retrieve tail of audit log hashes.
-- Register endpoints inside the FastAPI server.
+#### [MODIFY] [s2l_pipeline.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/s2l_pipeline.py)
+- **Top-5 Vector Memory Selection**:
+  - Import `get_embedder` from `embedding_pipeline.py`.
+  - In `skill_inference`, when falling back to in-context prompting, query `EmbeddingPipeline.search(prompt, limit=5)` to retrieve only the top 5 relevant concepts.
+  - Format these top-5 concepts into a compressed memory context string instead of the entire concept database.
+- **Context Compression**:
+  - Truncate any long concept body details to a 200-character summary snippet to prevent prompt bloat.
 
 ---
 
-### Telemetry & Dashboard Integration
+### OKF Telemetry Updates
 
 #### [MODIFY] [triad_metrics.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/triad_metrics.py)
-- Collect live Gateway metrics: total external calls, cache hits, sanitization/redaction events, budget spent, and average latency.
-- Expose the gateway metrics in `TriadMetrics.collect()`.
-
-#### [MODIFY] [triad_dashboard.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/triad_dashboard.py)
-- Add a new "🔒 Privacy Gateway" dashboard panel.
-- Show active routing rules, budget consumption, cache hit rate, and audit event logs.
+- Update gateway metrics to track token reduction from retrieval-based memory selection (~72% saved on context memory) and semantic cache hits.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Call the `gateway_health` MCP tool via HTTP to ensure config parameters are read correctly.
-- Test `external_infer` tool using curl:
-  - Verify that private info (e.g. `user@example.com` or `0x1234...`) gets successfully redacted in the request and logged in the audit trail.
-  - Verify cache hits on repeated prompts.
-- Verify `gateway_policy` can get and set the active policy dynamically.
+- Test semantic caching by calling `external_infer` with a prompt, and then calling it again with a slightly paraphrased prompt (e.g. cosine similarity $\geq 0.92$). Verify that it registers a semantic cache hit.
+- Test `skill_inference` fallback mode: verify that it searches and injects exactly 5 relevant concepts, reporting the token savings.
+- Validate that `gateway_health` returns policy information about prompt stabilization and semantic cache size.
 
 ### Manual Verification
-- Access the dashboard on port 8080 and verify the "Privacy Gateway" panel is updated in real time.
+- Access the Cockpit Dashboard on port 8080 and confirm that the cache hit rate and token savings metrics are updated correctly.
