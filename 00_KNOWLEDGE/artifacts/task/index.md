@@ -1,29 +1,25 @@
 ---
-created: '2026-06-22T13:46:00Z'
+created: '2026-06-22T14:53:46Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T13:46:02.231309Z'
+updated: '2026-06-22T14:53:48.552916Z'
 ---
 
-# Integration Checklist
+# S2L Implementation Checklist
 
-- [x] Configuration Repairs
-  - [x] Modify [.vscode/settings.json](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/.vscode/settings.json) to fix legacy paths and server configuration
-  - [x] Modify [orchestrate_sync.ts](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/orchestrate_sync.ts) to correct the output report directory path
-- [x] Layer 1: MCP-Oriented IDE Server Implementation
-  - [x] Add FastAPI and stdio JSON-RPC server capabilities to [magix_okf.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/magix_okf.py)
-  - [x] Add `run-server` option to port 9000
-- [x] Layers 2 & 4: Artifact Sync and Feedback Loop
-  - [x] Create [artifact_okf_sync.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/artifact_okf_sync.py) daemon to monitor artifacts and update OKF
-- [x] Layer 3: Agent Spawning
-  - [x] Expose `spawn_hermes_subagent` as an MCP tool in the server
-- [x] Layer 5: Peer Connection Bridge
-  - [x] Create [okf_peer_bridge.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/okf_peer_bridge.py) WebSocket sync bridge on port 9005
-  - [x] Integrate OKF sync status display in [mcp.js](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/js/mcp.js)
-- [x] Verification
-  - [x] Validate OKF schemas and run endpoints
-  - [x] Start the servers and monitor correct operation
+- [ ] S2L Core Engine Development
+  - [ ] Create `06_INFRA/s2l_pipeline.py` with QLoRA emulation and dataset generation logic
+  - [ ] Add support for generating 64 synthetic training pairs per skill
+- [ ] OKF Server MCP Tools Integration
+  - [ ] Implement `generate_training_data`, `train_adapter`, `load_adapter`, `skill_inference`, and `adapter_status` inside `magix_okf.py`
+  - [ ] Register new tool schemas under `MCP_TOOLS_SCHEMA`
+- [ ] Telemetry & Dashboard Realignment
+  - [ ] Update `triad_metrics.py` to scrape active S2L telemetry
+  - [ ] Modify `triad_dashboard.py` to add S2L status display panel
+- [ ] Verification
+  - [ ] Run test curl requests to verify MCP tool invocation
+  - [ ] Confirm dashboard telemetry loads correctly on port 8080
