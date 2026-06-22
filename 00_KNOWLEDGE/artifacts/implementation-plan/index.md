@@ -1,90 +1,78 @@
 ---
-created: '2026-06-22T19:14:26Z'
+created: '2026-06-22T19:35:44Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T19:14:30.586010Z'
+updated: '2026-06-22T19:35:47.637490Z'
 ---
 
-# AetherDB Multi-Language SDK Implementation Plan
+# Pre-Deployment Validation Suite Implementation Plan
 
-We will implement client SDKs for Elixir, Python, and TypeScript, splitting the classes/modules logically, providing numpy integration, type hints, promise-based API, and automated test suites for validation.
+We will implement the complete Stress Testing, Soak Testing, and Distributed Tracing validation suite. All modules will follow the `AetherDb` (lowercase `b`) namespace casing constraints to align with the rest of the codebase and pass the test suite.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> To compile and run Elixir tests in the `projects/aether_db` directory, we need to copy `mix.exs`, `mix.lock`, `.gitignore`, and `.formatter.exs` from the legacy `aether_db` folder to the target `projects/aether_db` directory.
-> All Elixir code will follow the `AetherDb` namespace (lowercase `b`) to match existing codebase modules.
+> - The soak test runner (`AetherDb.Soak.Runner.run/1`) will automatically detect the test environment using `Mix.env() == :test` and scale down execution periods from 8 hours to 1 millisecond. This ensures the unit tests pass instantly without hanging.
+> - All modules will be compiled as part of the library under `lib/aether_db/` to ensure they compile automatically during `mix compile` and are available in both testing and script runner environments.
 
 ## Proposed Changes
 
-### Configuration Setup
+We will introduce the following new files under `lib/aether_db/`:
 
-We will copy the necessary build/mix configurations to `/media/cherry/4A21-00001/New folder/AGE REPUBLIC/projects/aether_db` to enable compiling and running tests.
+### [Component Name] Stress Testing
 
----
+#### [NEW] [worker.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/stress/worker.ex)
+- Implements `AetherDb.Stress.Worker` as a `GenServer` simulating query load.
+- Supports `start_link/1`, `stop/1`, and `metrics/1`.
+- Performs operations (mixed reads/writes/searches) and updates local latency histograms/counters.
 
-### Elixir SDK (Native)
-We will split the Elixir SDK into clean, modular files inside `lib/aether_db/sdk/` and implement the test suite.
+#### [NEW] [load_generator.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/stress/load_generator.ex)
+- Implements `AetherDb.Stress.LoadGenerator` as a coordinator process.
+- Spawns, monitors, and stops the worker processes.
+- Aggregates and logs metrics periodically.
+- Supports both `start/2` (for test compatibility) and `start_stress/2` APIs.
 
-#### [MODIFY] [client.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/client.ex)
-- Native client wrapper logic.
-- Implements `connect/2`, `disconnect/1`, `get/2`, `get!/2`, `put/3`, `put!/3`, `delete/2`, `delete!/2`, `search/4`, `search!/4`, `insert_vector/5`, `batch_get/2`, `batch_put/2`.
-- Integrates `AetherDb.SDK.Transaction` for transactional execution.
-- Integrates `AetherDb.SDK.Stream` for CDC streaming.
-
-#### [NEW] [transaction.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/transaction.ex)
-- `AetherDb.SDK.Transaction` module containing the transaction struct and logic (`put/3`, `get/2`, `delete/2`, `insert_vector/5`).
-- Supports staging of transactional operations.
-
-#### [NEW] [stream.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/stream.ex)
-- `AetherDb.SDK.Stream` module with pattern subscriptions and event stream handling.
-
-#### [NEW] [elixir_sdk_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/test/sdk/elixir_sdk_test.exs)
-- Extensive testing for `Client`, `Transaction`, and `Stream` functionality, ensuring they compile and pass under `mix test`.
+#### [NEW] [chaos.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/stress/chaos.ex)
+- Implements `AetherDb.Stress.Chaos` to inject simulated hardware, network, and latency faults.
+- Supports `start_link/1`, `start/1`, and `stop/1` APIs.
 
 ---
 
-### Python SDK
-We will split the Python client logic into separate, clean files inside `sdk/python/aetherdb/` to improve maintainability and support type-checking.
+### [Component Name] Soak Testing
 
-#### [NEW] [types.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/types.py)
-- Defines domain datatypes (`VectorClock`, `SearchResult`, `Metric`, `DType`, `Table`, `Operation`, `Filter`).
-- Implements vector clock comparisons and merging.
+#### [NEW] [metrics_collector.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/soak/metrics_collector.ex)
+- Implements `AetherDb.Soak.MetricsCollector` as a tracking GenServer.
+- Collects test status, records daily statistics, and calculates linear trends for RPS and latency.
 
-#### [NEW] [client.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/client.py)
-- Async-native HTTP/WS-based client logic.
-- Implements `AetherDBClient` lifecycle and operations, including `get`, `put`, `delete`, `search`, `insert_vector`, `batch_get`, `batch_put`, `stream`, and `transaction`.
-- Implements `Transaction` context class for multi-operation commits and rollbacks.
-
-#### [NEW] [numpy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/numpy.py)
-- NumPy integration class (`AetherDBNumpy`).
-- Supports batch inserts and vector conversions (`to_tensor`/`from_tensor`).
-
-#### [MODIFY] [__init__.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/__init__.py)
-- Re-exports core classes from `client`, `numpy`, and `types` to preserve clean top-level imports.
-
-#### [NEW] [test_client.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/tests/test_client.py)
-- Python SDK tests covering CRUD, vector operations, batch requests, and transactions.
+#### [NEW] [runner.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/soak/runner.ex)
+- Implements `AetherDb.Soak.Runner` orchestrating daily morning/afternoon/night cycles.
+- Features test-acceleration to prevent hanging during `mix test`.
 
 ---
 
-### TypeScript SDK
-Ensure the TypeScript client covers all specifications including connection pooling/retry strategies.
+### [Component Name] Telemetry & Tracing
 
-#### [MODIFY] [client.ts](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/typescript/src/client.ts)
-- Standardize types and imports.
-- Ensure proper compilation and lint readiness.
+#### [MODIFY] [tracer.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/telemetry/tracer.ex)
+- Update to integrate OpenTelemetry tracer macros if necessary, while preserving all existing span, trace tree serialization, and collector telemetry metrics structures.
+
+---
+
+### [Component Name] Executable Scripts
+
+#### [NEW] [runner.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/test/stress/runner.exs)
+- Script runner for command-line stress testing execution.
+
+#### [NEW] [soak_runner.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/test/soak/soak_runner.exs)
+- Script runner for command-line soak testing execution.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-1. **Elixir SDK**:
-   Run `mix test` inside `/media/cherry/4A21-00001/New folder/AGE REPUBLIC/projects/aether_db` to verify the entire test suite passes.
-2. **Python SDK**:
-   Run `pytest` inside the Python SDK directory to verify tests pass.
+- Run `mix test test/stress_soak_tracing_test.exs` to verify that all stress, soak, and telemetry tests pass successfully.
+- Verify zero compilation warnings.
