@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:13:50Z'
+created: '2026-06-22T21:17:22Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T21:13:55.562720Z'
+updated: '2026-06-22T21:17:26.449027Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -252,3 +252,10 @@ We built a beautiful, zero-dependency dashboard named [dashboard_7g.html](file:/
 - **Beamforming Simulation Canvas**: A real-time Canvas rendering of 128x128 MIMO beam steer sweeps between San Francisco and HCMC nodes.
 - **S7G Telemetry**: Monitors live on-chain staked balances, active node licenses, settled call volumes, and the compound APY.
 - **Interactive Operations**: Buttons to trigger a simulated zone handoff (firing WDM superposition), deploy a mock DEX liquidity pool (BaseSwap), or run loopback test calls.
+
+---
+
+## 🏛️ Cross-Chain Governance & Substrate Architecture (Base ↔ ICP)
+We created a comprehensive architectural blueprint detailing how the EVM contracts coordinate with the ICP canisters (Move VM & Motoko):
+- **Document**: [cross_chain_governance_architecture.md](file:///home/cherry/.gemini/antigravity-ide/brain/acc63587-c2ee-4819-af6a-fd0f04eaecf4/cross_chain_governance_architecture.md)
+- **Scope**: Outlines the cross-chain sequence logic, `move_vm` module registry canister, cycle-based payment flows (`BifrostGateway.mo`), and API credential locking structures (`PrometheusKeyRegistry.mo`).
