@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T20:32:24Z'
+created: '2026-06-22T20:46:19Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T20:32:25.634868Z'
+updated: '2026-06-22T20:46:20.853364Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -94,7 +94,7 @@ We executed the stress-test orchestrator:
 ---
 
 ## 🚀 Silicon Tape-Out Finalized
-The Sovereign 6G Node Constitution was formally written to [sovereign_6g_node_constitution.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sovereign_6g_node_constitution.md), and the Genesis Tape-out Sequence was executed.
+The Sovereign 7G Node Constitution was formally written to [sovereign_7g_node_constitution.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sovereign_7g_node_constitution.md), and the Genesis Tape-out Sequence was executed.
 
 **Master GDSII Merkle Root Hash**:
 `A9F9D8B1BF07F4996392411F1A2DD44A4CDBDB6D7BFC103DE96E0B0A3C80A51D94D9986386885BA3C1665EB885FF60DE1DEACED9A208ACC2D101333CF9A3E2B3`
