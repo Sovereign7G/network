@@ -1,27 +1,29 @@
 ---
-created: '2026-06-22T18:39:55Z'
+created: '2026-06-22T18:45:49Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:39:59.529543Z'
+updated: '2026-06-22T18:45:50.040667Z'
 ---
 
-# AetherDB v2 Phase 1 Week 4: Integration & Benchmarking Checklist
+# Phase 3: CRDT Implementation & Gossip Protocol Checklist
 
-- [x] Configuration Files
-  - [x] Create `config/config.exs`
-  - [x] Create `config/dev.exs`
-  - [x] Create `config/test.exs`
-  - [x] Create `config/prod.exs`
-- [x] Benchmarking Tasks & Modules
-  - [x] Create `lib/mix/tasks/benchmark_toon.ex`
-- [x] Completion Scripts & Reports
-  - [x] Create `bin/phase1_complete.sh`
-  - [x] Create `docs/phase1_completion.md`
-- [x] Verification
-  - [x] Run `mix test` and check tests
-  - [x] Run `mix benchmark_toon --runs=10`
-  - [x] Run `bin/phase1_complete.sh`
+- [ ] Week 1: CRDT Types in Rust/TOON
+  - [ ] Create `native/aetherdb_native/src/crdt.rs`
+  - [ ] Create `native/aetherdb_native/src/crdt_serialize.rs`
+  - [ ] Modify `native/aetherdb_native/src/lib.rs` (NIF registration)
+  - [ ] Modify `lib/aether_db/toon/native.ex` (Elixir stubs)
+  - [ ] Create `lib/aether_db/crdt.ex`
+  - [ ] Create `test/aether_db/crdt_test.exs`
+- [ ] Week 2: CRDT Merge Engine
+  - [ ] Create `lib/aether_db/crdt/merge.ex`
+- [ ] Week 3: Gossip Protocol & Merkle Trees
+  - [ ] Create `lib/aether_db/merkle.ex`
+  - [ ] Create `lib/aether_db/gossip.ex`
+  - [ ] Create `test/aether_db/gossip_test.exs`
+- [ ] Validation & Polish
+  - [ ] Compile library
+  - [ ] Run test suite
