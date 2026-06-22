@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T15:14:28Z'
+created: '2026-06-22T15:15:30Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T15:14:30.313236Z'
+updated: '2026-06-22T15:15:35.544911Z'
 ---
 
 # Era VI: Privacy Gateway Implementation Checklist
@@ -22,6 +22,6 @@ updated: '2026-06-22T15:14:30.313236Z'
 - [x] Telemetry & Dashboard Integration
   - [x] Add gateway statistics scraper in `06_INFRA/triad_metrics.py`
   - [x] Integrate a "Privacy Gateway" UI card in `06_INFRA/triad_dashboard.py`
-- [ ] Verification
-  - [ ] Restart servers and run automated checks using curl
-  - [ ] Validate live metrics update on the Triad dashboard
+- [x] Verification
+  - [x] Restart servers and run automated checks using curl
+  - [x] Validate live metrics update on the Triad dashboard
