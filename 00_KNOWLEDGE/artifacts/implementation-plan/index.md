@@ -1,72 +1,95 @@
 ---
-created: '2026-06-22T21:19:43Z'
+created: '2026-06-22T21:51:39Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T21:19:46.860574Z'
+updated: '2026-06-22T21:51:43.295980Z'
 ---
 
-# Implementation Plan: Cross-Chain Canister Security Fixes
+# Implementation Plan: 7G Network Operational & Design Gap Closure
 
-This plan outlines the concrete code changes required to address the 5 code-level security issues identified during the Cross-Chain Security Audit.
+This plan outlines the concrete code changes and infrastructure additions required to transition the Sovereign 7G Network from a secure logic model into a production-ready, observable, and bridged live network.
+
+---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - We will enforce a strict access control check on `register_module` inside the `move_vm` canister, restricting registrations to a whitelisted controller principal initialized on startup.
-> - We will implement stable memory persistence inside the Rust-based `move_vm` canister to prevent data loss on canister upgrades.
-> - We will implement real cycle transfers in the Motoko billing gateway (`BifrostGateway.mo`) to actually distribute operator and developer shares.
-> - We will adapt the Motoko API key registry (`PrometheusKeyRegistry.mo`) to use standard `ICRC-1`/`ICRC-2` interfaces to match the ICP ledger protocols and prevent runtime traps.
+> - **Private Keys and Gas**: The Python relayer and on-chain integration tests will require access to a wallet private key containing Base Sepolia/Mainnet gas to sign transactions. These keys must be loaded via environment variables (`PRIVATE_KEY` / `RELAYER_KEY`), not hardcoded.
+> - **Safe Multisig Address**: Safe deployments are network-specific. We will document the transfer of `DEFAULT_ADMIN_ROLE` to a generic Safe address. In live operations, this address must be pre-configured.
+> - **On-Chain Transactions in SIP Proxy**: Adding on-chain calls to `SipProxy` increases latency of SIP handling because blockchain transactions take a block time (~2s on Base) to mine. We will implement these calls asynchronously to prevent blocking the UDP socket event loop.
 
 ---
 
 ## Proposed Changes
 
-### Component 1: Move VM Canister (`move_vm`)
+### Component 1: Solidity Smart Contracts
 
-#### [MODIFY] [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/src/move_vm_canister/src/lib.rs)
-- **Access Control on `register_module` (Issue 1)**:
-  - Add a static thread-local `CONTROLLER` of type `String`.
-  - Add an `init()` hook marked with `#[ic_cdk_macros::init]` to store the deployer principal string as the initial controller.
-  - In `register_module`, assert that `caller().to_string() == controller` before registering any new module.
-- **Stable Memory state persistence (Issue 3)**:
-  - Add a `#[ic_cdk_macros::pre_upgrade]` hook that serializes `MODULES`, `PROOFS`, `METRICS`, and `CONTROLLER` into stable memory using `ic_cdk::storage::stable_save`.
-  - Add a `#[ic_cdk_macros::post_upgrade]` hook that restores the state from stable memory using `ic_cdk::storage::stable_restore`.
-- **Verify Proof Cryptographic check (Issue 4)**:
-  - Implement a helper function `verify_zk_proof(statement: &str, proof: &[u8], proof_type: u8) -> bool` to perform standard structure, length, and coupling verification of ZK proofs instead of auto-verifying.
+#### [MODIFY] [NodeLicense.sol](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/contracts/NodeLicense.sol)
+- **Revocation & Recovery (Gap 7)**:
+  - Add `revokeLicense(uint256 tokenId)` restricted to `ISSUER_ROLE`. This sets `licenses[tokenId].isActive = false` and emits a suspension/revocation event.
+  - Add `recoverLicense(uint256 tokenId)` restricted to `ISSUER_ROLE`. This restores `licenses[tokenId].isActive = true` and emits a recovery event.
 
 ---
 
-### Component 2: Motoko Cycle Billing Gateway (`BifrostGateway`)
+### Component 2: Cross-Chain Relayer & Signaling Plane
 
-#### [MODIFY] [BifrostGateway.mo](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/BifrostGateway.mo)
-- **Actual cycle distribution (Issue 2)**:
-  - Import the standard `ExperimentalCycles` base module.
-  - Define a generic `CyclesReceiver` actor type signature exposing `depositCycles() : async ()`.
-  - In `settleInference`, allocate the computed `devShare` and `operatorShare` cycle payouts using `ExperimentalCycles.add()` and invoke the recipients' `depositCycles()` canisters asynchronously.
+#### [NEW] [relayer.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/relayer.py)
+- **Base ↔ ICP Relay (Gap 3)**:
+  - Implement an async Python relayer using `web3.py` and standard HTTP requests.
+  - **Base → ICP**: Listens for `ProposalExecuted` events from `SovereignDAO` on Base, hashes the execution state, and registers modules/calls on the ICP Move VM canister.
+  - **ICP → Base**: Periodically polls the `move_vm` canister for new slash events via `get_pending_slashes()`, and calls `ICPReverseBridge.submitSlash()` on Base.
+  - Implements local nonce caching for replay protection.
+
+#### [MODIFY] [sip_proxy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sip_proxy.py)
+- **On-Chain Settlement Integration (Gap 5)**:
+  - Import `Web3` to connect to Base.
+  - In `handle_invite()`, spawn a background async task to invoke `CallSession.initializeSession()` using the contract ABI.
+  - In `handle_bye()`, spawn a background async task to calculate session durations and packet/latency stats, and call `CallSession.endSession()` followed by `CallSession.settleSession()`.
 
 ---
 
-### Component 3: Prometheus Key Registry (`PrometheusKeyRegistry`)
+### Component 3: Live Verification & Monitoring Infrastructure
 
-#### [MODIFY] [PrometheusKeyRegistry.mo](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/PrometheusKeyRegistry.mo)
-- **ICRC-1 / ICRC-2 Ledger compatibility (Issue 5)**:
-  - Define the standard types for ICRC ledger operations: `Account`, `TransferArgs`, `TransferResult`, `TransferFromArgs`, and `TransferFromResult`.
-  - Update `ageLedger` actor declaration to match the standard ICRC-1 (`icrc1_transfer`) and ICRC-2 (`icrc2_transfer_from`) specifications.
-  - In `registerKey`, perform the deposit using `icrc2_transfer_from` (transferring from `msg.caller`'s approved allowance to the key registry).
-  - In `deactivateKey`, perform the refund using `icrc1_transfer` to refund the operator account.
+#### [NEW] [monitoring/bot.js](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/monitoring/bot.js)
+- **Transaction Monitoring Bot (Gap 1)**:
+  - Create a Node.js daemon using `ethers.js` to subscribe to event logs of the 7 deployed contracts.
+  - Specifically monitor and print alerts for:
+    - `NodeSlashed` and `SlashExecuted` events.
+    - `RoleGranted` and `RoleRevoked` admin actions.
+    - Large token transfer events or failed settlements.
+
+#### [NEW] [test_onchain.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/test_onchain.py)
+- **On-Chain Integration Test Suite (Gap 4)**:
+  - Implement a Python integration test suite using Web3.
+  - Sends actual signed transactions to a local testnet / Base RPC endpoint to verify live node staking, claiming rewards, eSIM registering, and session creation/settlement.
+
+#### [NEW] [emergency_response_plan.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/emergency_response_plan.md)
+- **Key Rotation & Disaster Playbook (Gap 2)**:
+  - Document step-by-step procedures for:
+    - Revoking compromised keys using a Safe multisig wallet.
+    - Transferring contract permissions to a safe multisig.
+    - Pausing staking contract operations under exploit scenarios.
+
+---
+
+### Component 4: DEX Pool Bootstrapping
+
+#### [NEW] [deploy_liquidity.sh](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/scripts/deploy_liquidity.sh)
+- **DEX Pool Deployment Guide (Gap 6)**:
+  - Document the exact shell commands using Forge and Cast to deploy `S7GLiquidityBootstrapper.sol` and seed the S7G/ETH liquidity pool on Uniswap V3.
 
 ---
 
 ## Verification Plan
 
-### Automated Build Checks
-We will run compilation checks on all canisters to ensure that the modifications compile correctly:
-- Run `cargo check` inside `src/move_vm_canister/` to verify Rust code correctness.
-- Run `dfx start --background` and `dfx deploy` on a local replica (if available) to verify canister packaging and deployment paths.
+### Automated Checks
+- Run `forge build` to verify modified contracts compile.
+- Run `cargo check` to verify Rust workspaces.
+- Run `python3 test_sip_proxy.py` to confirm the SIP Proxy signaling plane still passes loopbacks cleanly.
 
 ### Manual Verification
-- We will double check all ledger canister signatures and stable storage serialize/deserialize hooks to guarantee stable upgrades.
+- We will execute the new on-chain tests against a local Anvil fork of Base Mainnet to ensure no real money is spent during validation, while guaranteeing complete E2E on-chain validation of staking and sessions.
