@@ -1,29 +1,33 @@
 ---
-created: '2026-06-22T18:51:18Z'
+created: '2026-06-22T19:14:28Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:51:20.318392Z'
+updated: '2026-06-22T19:14:30.733640Z'
 ---
 
-# Phase 3: CRDT Implementation & Gossip Protocol Checklist
+# AetherDB Multi-Language SDK Checklist
 
-- [x] Week 1: CRDT Types in Rust/TOON
-  - [x] Create `native/aetherdb_native/src/crdt.rs`
-  - [x] Create `native/aetherdb_native/src/crdt_serialize.rs`
-  - [x] Modify `native/aetherdb_native/src/lib.rs` (NIF registration)
-  - [x] Modify `lib/aether_db/toon/native.ex` (Elixir stubs)
-  - [x] Create `lib/aether_db/crdt.ex`
-  - [x] Create `test/aether_db/crdt_test.exs`
-- [x] Week 2: CRDT Merge Engine
-  - [x] Create `lib/aether_db/crdt/merge.ex`
-- [x] Week 3: Gossip Protocol & Merkle Trees
-  - [x] Create `lib/aether_db/merkle.ex`
-  - [x] Create `lib/aether_db/gossip.ex`
-  - [x] Create `test/aether_db/gossip_test.exs`
-- [x] Validation & Polish
-  - [x] Compile library
-  - [x] Run test suite
+- [ ] Prepare Workspace Configuration
+  - [ ] Copy `mix.exs` and `mix.lock` from legacy folder to `projects/aether_db`
+  - [ ] Copy `.gitignore` and `.formatter.exs` to `projects/aether_db`
+- [ ] Implement Elixir SDK (Native)
+  - [ ] Implement `lib/aether_db/sdk/client.ex`
+  - [ ] Implement `lib/aether_db/sdk/transaction.ex`
+  - [ ] Implement `lib/aether_db/sdk/stream.ex`
+  - [ ] Implement `test/sdk/elixir_sdk_test.exs`
+- [ ] Implement Python SDK
+  - [ ] Implement `sdk/python/aetherdb/types.py`
+  - [ ] Implement `sdk/python/aetherdb/client.py`
+  - [ ] Implement `sdk/python/aetherdb/numpy.py`
+  - [ ] Modify `sdk/python/aetherdb/__init__.py` to import from modules
+  - [ ] Implement `sdk/python/tests/test_client.py`
+- [ ] Implement TypeScript SDK
+  - [ ] Verify `sdk/typescript/src/client.ts`
+- [ ] Validation & Verification
+  - [ ] Compile library (`mix compile`)
+  - [ ] Run Elixir tests (`mix test`)
+  - [ ] Run Python tests (`pytest`)
