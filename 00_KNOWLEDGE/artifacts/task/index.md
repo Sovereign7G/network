@@ -1,25 +1,27 @@
 ---
-created: '2026-06-22T14:56:58Z'
+created: '2026-06-22T15:06:50Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T14:57:04.024190Z'
+updated: '2026-06-22T15:06:59.740620Z'
 ---
 
-# S2L Implementation Checklist
+# Era VI: Privacy Gateway Implementation Checklist
 
-- [x] S2L Core Engine Development
-  - [x] Create `06_INFRA/s2l_pipeline.py` with QLoRA emulation and dataset generation logic
-  - [x] Add support for generating 64 synthetic training pairs per skill
-- [x] OKF Server MCP Tools Integration
-  - [x] Implement `generate_training_data`, `train_adapter`, `load_adapter`, `skill_inference`, and `adapter_status` inside `magix_okf.py`
-  - [x] Register new tool schemas under `MCP_TOOLS_SCHEMA`
-- [x] Telemetry & Dashboard Realignment
-  - [x] Update `triad_metrics.py` to scrape active S2L telemetry
-  - [x] Modify `triad_dashboard.py` to add S2L status display panel
-- [x] Verification
-  - [x] Run test curl requests to verify MCP tool invocation
-  - [x] Confirm dashboard telemetry loads correctly on port 8080
+- [ ] Initialize Gateway Configuration & Files
+  - [ ] Create `08_ASSETS/gateway_policy.json` with default values
+  - [ ] Initialize `08_ASSETS/gateway_cache.json` and `08_ASSETS/gateway_audit.json`
+- [ ] Implement Gateway Core Logic
+  - [ ] Update `06_INFRA/external_gateway.py` with sanitization regexes, caching, audit trail logs, policy loading/saving, and mock/real routes
+- [ ] Integrate MCP Tools in OKF Server
+  - [ ] Add `external_infer`, `gateway_health`, `gateway_policy`, `gateway_audit` definitions in `06_INFRA/magix_okf.py`
+  - [ ] Declare tool schemas in `MCP_TOOLS_SCHEMA`
+- [ ] Telemetry & Dashboard Integration
+  - [ ] Add gateway statistics scraper in `06_INFRA/triad_metrics.py`
+  - [ ] Integrate a "Privacy Gateway" UI card in `06_INFRA/triad_dashboard.py`
+- [ ] Verification
+  - [ ] Restart servers and run automated checks using curl
+  - [ ] Validate live metrics update on the Triad dashboard
