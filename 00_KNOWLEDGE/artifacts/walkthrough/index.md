@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T18:20:06Z'
+created: '2026-06-22T18:21:51Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T18:20:09.531375Z'
+updated: '2026-06-22T18:21:55.612520Z'
 ---
 
 # Walkthrough: S2L, Zero-Trust Privacy Gateway & Strategic Token Optimization
@@ -212,3 +212,16 @@ We ran the ExUnit test suite to confirm compile-time native code generation and 
   end
   ```
   Result: `3 passed` (including the doctest and all verification unit tests).
+
+---
+
+## 10. AetherDB v2 — Phase 1 Week 1: TOON Specification & Core Types
+
+We completed the formal specifications mapping the layout of the **TOON Storage Format** binary boundaries.
+
+### 1. Specification Artifacts Created
+Under the `aether_db/priv/` folder, the following documents were written:
+- **[toon_spec_v1.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_spec_v1.md)**: Details the exact byte offsets, types, alignment bounds, and Little-Endian format for the 128-byte header block (Magic `"TOON"`, Version, UUID, Range boundaries, Bloom, and Index offsets).
+- **[toon_token_types.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_token_types.md)**: Defines the sorted Token Index Entry struct (16 bytes containing Type code, Length, absolute Data Offset, and 48-bit xxHash values) and specifies the 10 core type mappings (Null, Bool, Int, Float, String, Binary, Array, Object, Tensor, CRDT).
+- **[toon_variable_data.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_variable_data.md)**: Articulates data section layout mappings, 8-byte boundaries padding constraints, and the strict 64-byte alignment rule for SIMD vector calculations on Tensor payloads.
+- **[toon_schema_registry.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_schema_registry.md)**: Specifies the schema representation schema objects, evolutionary compatibility configurations (Backward, Forward, Full), and runtime payload validation strategies.
