@@ -1,30 +1,21 @@
 ---
-created: '2026-06-22T21:45:21Z'
+created: '2026-06-22T21:51:49Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T21:45:22.365724Z'
+updated: '2026-06-22T21:51:53.399070Z'
 ---
 
-# 7G Network Gap Closure Checklist
+# Checklist: Operational & Design Gap Closure
 
-- [x] Port C++ beam controller to Mojo `beam_controller.mojo` conforming to Mojo 1.0 syntax
-- [x] Implement SIMD vector operations for 4-element MIMO array weight calculations
-- [x] Compile and verify Mojo beam controller execution
-- [x] Build premium HTML/CSS/JS dashboard `dashboard_7g.html`
-- [x] Verify dashboard aesthetics, unique IDs, and interactive canvas
-- [x] Verify entire stack tests (SIP proxy & S7G tokenomics)
-- [x] Implement access control and stable memory persistence in `move_vm/lib.rs`
-- [x] Implement actual cycles distribution in `BifrostGateway.mo`
-- [x] Upgrade `PrometheusKeyRegistry.mo` to support standard ICRC-1/ICRC-2 token ledgers
-- [x] Compile and verify all modified Rust and Motoko canisters
-- [x] Resolve Solidity compilation errors (checksum, Ownable constructor, missing brace)
-- [x] Link CallSession to PhoneNumberRegistry to resolve address-to-bytes32 comparison mismatch
-- [x] Fix SovereignDAO first-staker DOS and move voting power cap to vote()
-- [x] Enforce relayer bonding check in ICPReverseBridge.submitSlash()
-- [x] Prevent eSIM overwrite and orphaned mappings in PhoneNumberRegistry.portNumber()
-- [x] Secure aetherdb_bridge canister with access control, ring buffer capping, and stable memory upgrade hooks
-- [x] Clean dfx.json of non-existent canister references to restore dfx compile safety
+- [ ] Task 1: Add NodeLicense revocation & recovery in `NodeLicense.sol`
+- [ ] Task 2: Create transaction monitoring bot `monitoring/bot.js`
+- [ ] Task 3: Create cross-chain relayer engine `relayer.py`
+- [ ] Task 4: Create on-chain integration test suite `test_onchain.py`
+- [ ] Task 5: Connect SIP proxy to `CallSession` on-chain transactions in `sip_proxy.py`
+- [ ] Task 6: Create DEX liquidity bootstrap deployment script `scripts/deploy_liquidity.sh`
+- [ ] Task 7: Create emergency response playbook `00_KNOWLEDGE/emergency_response_plan.md`
+- [ ] Verification: compile contracts and run loopback tests
