@@ -1,49 +1,64 @@
 ---
-created: '2026-06-22T18:22:36Z'
+created: '2026-06-22T18:36:41Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T18:22:40.709842Z'
+updated: '2026-06-22T18:36:43.858991Z'
 ---
 
-# Goal: AetherDB v2 — Phase 1 Week 2: Rust Library Implementation
+# Implementation Plan — Phase 2: Partition Actor Model
 
-Implement the core TOON storage serialization, deserialization, memory-mapping, and verification library in Rust.
+This plan outlines the design and proposed files for Phase 2: Partition Actor Model in AetherDb.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Memory Layout Alignments**: The serialize and deserialize engines will use binary slices and implement zero-copy/zero-parse lookups by reading the memory-mapped bytes directly using exact offset offsets.
-> - **Error Handling**: Custom Rust errors will be mapped to Elixir terms to support standard error propagation back to BEAM processes.
-
----
+> The modules will use the `AetherDb` namespace (lowercase `b`) instead of the blueprint's `AetherDB` namespace, aligning with the existing `AetherDb.TOON` and `AetherDb.TOONCache` implementations.
+> Both `PartitionSupervisor` and `RouteTable` will be integrated into the application's root supervisor.
 
 ## Proposed Changes
 
-### Rust Native Library (`aetherdb_native`)
+### Core Storage & Routing Layer
 
-#### [MODIFY] [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)
-- Declare `ToonHeader`, `ToonToken`, `ToonType`, and file loading stubs.
-- Define Rustler NIF wrappers:
-  - `serialize_toon(map) -> binary`
-  - `deserialize_toon(binary) -> map`
-  - `read_value(binary, key) -> value`
+---
 
-#### [NEW] [serialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/serialize.rs)
-- Implement `ToonSerializer` to serialize Elixir/Erlang terms into the raw TOON binary bytes layout, including header generation, token index sorting, and variable-length data section alignments.
+#### [NEW] [partition.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition.ex)
+- Implements `AetherDb.Partition` GenServer.
+- Manages partition actor lifecycle, routing registry name via `AetherDb.PartitionRegistry`, mmap resource, token table, and in-memory key-value state database.
+- Implements key/value parsing on startup (`parse_token_table/1`) to reconstruct the sorted token descriptor list and active database keys directly from binary mmap layouts.
 
-#### [NEW] [deserialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/deserialize.rs)
-- Implement zero-copy reader and deserializer decoding fields directly from mapped binary byte buffers.
+#### [NEW] [reader.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition/reader.ex)
+- Implements `AetherDb.Partition.Reader` helper functions.
+- Provides `binary_search/2`, `range_query/4`, `prefix_search/3`, and `batch_get/3` logic on token tables.
 
-#### [NEW] [utils.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/utils.rs)
-- Implement `validate_toon_file` and xxHash fingerprint calculations.
+#### [NEW] [writer.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition/writer.ex)
+- Implements `AetherDb.Partition.Writer` helper functions.
+- Handles updates by merging new key-value pairs into the in-memory map, serializing to a TOON binary via `TOON.serialize/1`, writing to a temp file, executing an atomic rename, and re-opening the file.
+
+#### [NEW] [version.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition/version.ex)
+- Implements `AetherDb.Partition.Version` for incrementing, merging, comparing, and serializing deterministic version vectors.
+
+#### [NEW] [cache.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition/cache.ex)
+- Implements `AetherDb.Partition.Cache` ETS GenServer cache layer with read-through and write-through optimizations.
+
+#### [NEW] [supervisor.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/partition/supervisor.ex)
+- Implements `AetherDb.PartitionSupervisor` to manage partition workers, the unique naming `AetherDb.PartitionRegistry`, the Cache GenServer, and the Routing Table GenServer.
+
+#### [NEW] [route_table.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/route_table.ex)
+- Implements `AetherDb.RouteTable` global routing mapping keys to partition processes.
+
+#### [MODIFY] [application.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/application.ex)
+- Adds `AetherDb.PartitionSupervisor` child specification to the top-level application startup.
+
+#### [NEW] [partition_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/test/aether_db/partition_test.exs)
+- Comprehensive test suite checking writes/reads, sort order, cache operations, supervision restarts, range queries, and version vectors.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `mix test` to verify that our stub functions in Elixir/Rust compiles and passes serialization/deserialization correctness tests.
+- Run `mix test` to confirm compilation and verify that all Phase 2 tests (along with legacy tests) pass.
