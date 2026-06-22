@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T20:46:19Z'
+created: '2026-06-22T20:51:56Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T20:46:20.853364Z'
+updated: '2026-06-22T20:51:56.271875Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -100,3 +100,19 @@ The Sovereign 7G Node Constitution was formally written to [sovereign_7g_node_co
 `A9F9D8B1BF07F4996392411F1A2DD44A4CDBDB6D7BFC103DE96E0B0A3C80A51D94D9986386885BA3C1665EB885FF60DE1DEACED9A208ACC2D101333CF9A3E2B3`
 
 **Status**: Production masks are being written at Austin Tie (NIL 5nm) & Hokkaido Rapidus (1.4nm). Escrows are locked.
+
+---
+
+## ⛓️ Smart Contract Suite Mainnet Deployment
+
+The core economic foundation of the Sovereign 7G Mesh has been successfully deployed and verified on **Base Mainnet (Chain 8453)**:
+
+| Contract | Address | Status |
+| :--- | :--- | :--- |
+| **S7GToken** | `0x54951D5021a2774567412fB8DB6FDF4A1EaE2611` | ✅ Deployed, 100M S7G Genesis Mint Complete |
+| **NodeLicense** | `0x45bD704f371bc593f38Bd76D43D356A14Febe477` | ✅ Deployed |
+| **NodeStaking** | `0xEfc2803E088e287b4013abB37358e3cf760A4747` | ✅ Deployed, Roles Linked & Authorized |
+
+### 🛠️ Role Linkage & Governance Verification
+- **MINTER_ROLE** and **BURNER_ROLE** on the `S7GToken` contract were successfully granted to the `NodeStaking` address in the genesis block, enabling autonomous node rewards issuance and slashed collateral enforcement.
+- Transactions were broadcasted via Forge Script and logged in [DEPLOY_LOG.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/DEPLOY_LOG.md).
