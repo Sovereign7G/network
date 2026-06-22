@@ -1,96 +1,90 @@
 ---
-created: '2026-06-22T18:45:46Z'
+created: '2026-06-22T19:14:26Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T18:45:49.727798Z'
+updated: '2026-06-22T19:14:30.586010Z'
 ---
 
-# Implementation Plan — Phase 3: CRDT Implementation & Gossip Protocol
+# AetherDB Multi-Language SDK Implementation Plan
 
-This phase implements 7 Conflict-Free Replicated Data Types (CRDTs) in Rust, builds a property-based merge engine in Elixir, and implements a gossip protocol using Merkle Trees for state synchronization.
+We will implement client SDKs for Elixir, Python, and TypeScript, splitting the classes/modules logically, providing numpy integration, type hints, promise-based API, and automated test suites for validation.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> To maintain codebase casing consistency with the existing modules, all modules will use the `AetherDb` namespace (lowercase `Db`), e.g., `AetherDb.CRDT`, `AetherDb.Gossip`, etc.
+> To compile and run Elixir tests in the `projects/aether_db` directory, we need to copy `mix.exs`, `mix.lock`, `.gitignore`, and `.formatter.exs` from the legacy `aether_db` folder to the target `projects/aether_db` directory.
+> All Elixir code will follow the `AetherDb` namespace (lowercase `b`) to match existing codebase modules.
 
 ## Proposed Changes
 
-### Rust NIF Crate (`native/aetherdb_native`)
+### Configuration Setup
 
-We will add a CRDT state engine and serialization layers to the Rust NIF crate.
-
----
-
-#### [NEW] [crdt.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/crdt.rs)
-- Defines the `CrdtType` enum (GCounter, PNCounter, GSet, ORSet, LWWRegister, MVRegister, RGA).
-- Implements CRDT state structs with associative, commutative, and idempotent merge semantics.
-- Uses `Option<T>` for the `RGA` elements to represent the sentinel node `(0, 0, None)` without requiring type `T` to have a default value.
-
-#### [NEW] [crdt_serialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/crdt_serialize.rs)
-- Implements `crdt_to_toon` converting Rust CRDT states into `ToonValue`.
-- Implements `toon_to_crdt` reconstructing CRDT states from a `ToonValue`.
-- Fully supports ORSet `adds` and `removes` serialization.
-
-#### [MODIFY] [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)
-- Declares the new `crdt` and `crdt_serialize` modules.
-- Implements NIF wrappers: `crdt_new/1`, `crdt_merge/2`, `crdt_increment/2`, `crdt_decrement/2`, `crdt_add/4`, `crdt_remove/4`, `crdt_set/4`, `crdt_insert/5`, and `crdt_value/1`.
-- Registers these functions under the single NIF initialization entry point.
+We will copy the necessary build/mix configurations to `/media/cherry/4A21-00001/New folder/AGE REPUBLIC/projects/aether_db` to enable compiling and running tests.
 
 ---
 
-### Elixir Codebase (`lib/aether_db`)
+### Elixir SDK (Native)
+We will split the Elixir SDK into clean, modular files inside `lib/aether_db/sdk/` and implement the test suite.
 
-We will add wrapper APIs for CRDTs, property checkers, Merkle trees, and a GenServer-based gossip protocol.
+#### [MODIFY] [client.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/client.ex)
+- Native client wrapper logic.
+- Implements `connect/2`, `disconnect/1`, `get/2`, `get!/2`, `put/3`, `put!/3`, `delete/2`, `delete!/2`, `search/4`, `search!/4`, `insert_vector/5`, `batch_get/2`, `batch_put/2`.
+- Integrates `AetherDb.SDK.Transaction` for transactional execution.
+- Integrates `AetherDb.SDK.Stream` for CDC streaming.
 
----
+#### [NEW] [transaction.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/transaction.ex)
+- `AetherDb.SDK.Transaction` module containing the transaction struct and logic (`put/3`, `get/2`, `delete/2`, `insert_vector/5`).
+- Supports staging of transactional operations.
 
-#### [MODIFY] [native.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/toon/native.ex)
-- Declares the new CRDT NIF stubs so they are loaded from the unified `aetherdb_native` shared library.
+#### [NEW] [stream.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/lib/aether_db/sdk/stream.ex)
+- `AetherDb.SDK.Stream` module with pattern subscriptions and event stream handling.
 
-#### [NEW] [crdt.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/crdt.ex)
-- API wrappers delegating to NIF calls.
-- Adds `set/4` and `insert/5` to support Last-Write-Wins/Multi-Value registers and RGA insertions.
-
-#### [NEW] [merge.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/crdt/merge.ex)
-- Algebraic property testing helpers (associative, commutative, idempotent, monotonic).
-- `merge_many/1` implementation.
-
-#### [NEW] [merkle.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/merkle.ex)
-- Complete Merkle Tree implementation mapping leaves to TOON hashes.
-- Diffing algorithm to locate divergent token indices between two trees in $O(\log N)$ time.
-
-#### [NEW] [gossip.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/gossip.ex)
-- Anti-entropy mesh GenServer running periodic randomized gossip sync rounds.
+#### [NEW] [elixir_sdk_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/test/sdk/elixir_sdk_test.exs)
+- Extensive testing for `Client`, `Transaction`, and `Stream` functionality, ensuring they compile and pass under `mix test`.
 
 ---
 
-### Test Suite (`test/aether_db`)
+### Python SDK
+We will split the Python client logic into separate, clean files inside `sdk/python/aetherdb/` to improve maintainability and support type-checking.
+
+#### [NEW] [types.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/types.py)
+- Defines domain datatypes (`VectorClock`, `SearchResult`, `Metric`, `DType`, `Table`, `Operation`, `Filter`).
+- Implements vector clock comparisons and merging.
+
+#### [NEW] [client.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/client.py)
+- Async-native HTTP/WS-based client logic.
+- Implements `AetherDBClient` lifecycle and operations, including `get`, `put`, `delete`, `search`, `insert_vector`, `batch_get`, `batch_put`, `stream`, and `transaction`.
+- Implements `Transaction` context class for multi-operation commits and rollbacks.
+
+#### [NEW] [numpy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/numpy.py)
+- NumPy integration class (`AetherDBNumpy`).
+- Supports batch inserts and vector conversions (`to_tensor`/`from_tensor`).
+
+#### [MODIFY] [__init__.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/aetherdb/__init__.py)
+- Re-exports core classes from `client`, `numpy`, and `types` to preserve clean top-level imports.
+
+#### [NEW] [test_client.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/python/tests/test_client.py)
+- Python SDK tests covering CRUD, vector operations, batch requests, and transactions.
 
 ---
 
-#### [NEW] [crdt_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/test/aether_db/crdt_test.exs)
-- Comprehensive test coverage for all 7 CRDT types.
-- Validates monotonicity, LWW timestamps, and concurrent/merge logic.
+### TypeScript SDK
+Ensure the TypeScript client covers all specifications including connection pooling/retry strategies.
 
-#### [NEW] [gossip_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/test/aether_db/gossip_test.exs)
-- Gossip GenServer lifecycle testing (peer list, schedule cast).
-- Merkle Tree generation and difference detection testing.
+#### [MODIFY] [client.ts](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/projects/aether_db/sdk/typescript/src/client.ts)
+- Standardize types and imports.
+- Ensure proper compilation and lint readiness.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Compile the Rust NIF and Elixir library:
-  ```bash
-  mix compile
-  ```
-- Run the full test suite (aiming for all 43 original + new tests passing):
-  ```bash
-  mix test
-  ```
+1. **Elixir SDK**:
+   Run `mix test` inside `/media/cherry/4A21-00001/New folder/AGE REPUBLIC/projects/aether_db` to verify the entire test suite passes.
+2. **Python SDK**:
+   Run `pytest` inside the Python SDK directory to verify tests pass.
