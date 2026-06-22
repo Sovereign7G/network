@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T18:39:58Z'
+created: '2026-06-22T18:51:15Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T18:39:59.622503Z'
+updated: '2026-06-22T18:51:20.408992Z'
 ---
 
 # Walkthrough: S2L, Zero-Trust Privacy Gateway & Strategic Token Optimization
@@ -308,3 +308,33 @@ We successfully completed the environment configurations, benchmarking suite, ve
 We ran the complete verification script:
 - Run: `./bin/phase1_complete.sh`
 - Results: **All 43 tests passed successfully** and benchmarks executed correctly. Memory mapped random read speed recorded at **0.72 µs**.
+
+---
+
+## 15. AetherDB v2 — Phase 3: CRDT Implementation & Gossip Protocol
+
+We successfully completed the implementation of **Phase 3 (CRDT & Gossip)**.
+
+### 1. Codebase Modifications
+- **[crdt.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/crdt.rs)**: Implemented states and merge logic for 7 Conflict-Free Replicated Data Types (GCounter, PNCounter, GSet, ORSet, LWWRegister, MVRegister, RGA) in Rust. Used `Option<T>` element representations for RGA sequences to handle sentinel node (`0, 0, None`) initialization without requiring type `T` to implement `Default`.
+- **[crdt_serialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/crdt_serialize.rs)**: Implemented complete mapping between Rust CRDT states and general `ToonValue` variant structures. Fully supports ORSet `adds` and `removes` serialization.
+- **[lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)**: Registered NIF functions (`crdt_new/2`, `crdt_merge/2`, `crdt_increment/2`, `crdt_decrement/2`, `crdt_add/5`, `crdt_remove/5`, `crdt_set/5`, `crdt_insert/6`, `crdt_value/1`) under the unified dynamic registration entry point. Corrected named lifetime parameter specifiers for Env and Term parameters.
+- **[native.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/toon/native.ex)**: Added placeholder NIF stubs for all CRDT actions.
+- **[crdt.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/crdt.ex)**: Exposed high-level Elixir API delegates for CRDT state updates and reads. Formulated the `AetherDb.CRDT` struct in this single module to eliminate redefinition compile-time warnings.
+- **[merge.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/crdt/merge.ex)**: Built algebraic property verification helpers (monotonic, commutative, associative, idempotent).
+- **[merkle.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/merkle.ex)**: Developed binary Merkle Tree builder with bottom-up chunk pairing, sibling proof generation, and tree diffing yielding $O(\log N)$ token divergence checks.
+- **[gossip.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/gossip.ex)**: Formulated GenServer anti-entropy mesh maintaining random peer selections and delta exchanges. Equipped stubs with environment checks to allow compiler optimization coverage of simulation failure handlers.
+
+### 2. Verification Results
+- **Run**: `mix test`
+- **Result**: **All 60 tests passed successfully** in **0.6 seconds** with zero compile warnings.
+- Verified properties:
+  1. G-Counter increment & monotonic merge join.
+  2. PN-Counter bidirectional changes.
+  3. G-Set unique element sets union.
+  4. OR-Set timestamped add/remove tombstones.
+  5. LWW-Register write timestamp overrides.
+  6. MV-Register multi-value concurrent forks.
+  7. RGA sibling-ordering tree nodes.
+  8. Merkle Tree token indices difference detection.
+  9. Gossip peer lifecycle dynamic scheduling.
