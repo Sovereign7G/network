@@ -1,57 +1,45 @@
 ---
-created: '2026-06-22T18:17:05Z'
+created: '2026-06-22T18:21:14Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T18:17:08.601872Z'
+updated: '2026-06-22T18:21:14.784726Z'
 ---
 
-# Goal: AetherDB v2 — Phase 0: Project Skeleton & Rust NIF Bindings
+# Goal: AetherDB v2 — Phase 1 Week 1: TOON Specification & Core Types
 
-Initialize the core AetherDB v2 workspace project, including the Elixir Mix supervision structure, the Rust NIF bindings configuration via Rustler, and verification tests.
+Define and write the complete, byte-level specification files for the TOON zero-copy, zero-parse binary storage layout.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Rustler Dependency Compilation**: The project will configure Rustler (`~> 0.30`) to compile Rust NIF code at Elixir compile time. This requires cargo and rustc on the path (which are verified present).
-> - **Codebase Location**: The AetherDB project will reside at `/media/cherry/4A21-00001/New folder/AGE REPUBLIC/aether_db`.
-
-## Open Questions
-
-> [!NOTE]
-> - **NIF Library Mapping**: We will maps the Rust NIF crate as `aetherdb_native` containing placeholder functions to verify cross-compilation during `mix test`.
+> - **Zero-Copy Specification Boundaries**: Defining the exact layout of the 128-byte Header, 16-byte Token entries, Variable-length data section alignments, and the Schema Registry to ensure binary portability across Rust (native) and Elixir (BEAM).
 
 ---
 
 ## Proposed Changes
 
-### AetherDB Codebase Skeleton
+### TOON Storage Specifications
 
-#### [NEW] [mix.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/mix.exs)
-- Defines the `aether_db` project config and registers dependencies (`rustler`).
+#### [NEW] [toon_spec_v1.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_spec_v1.md)
+- Complete byte-level header specification (128 bytes): Magic, version, range parameters, indices, offsets, traversal pointers, and reserved bits.
 
-#### [NEW] [application.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/application.ex)
-- Defines the default OTP application entry point and supervised worker tree configuration.
+#### [NEW] [toon_token_types.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_token_types.md)
+- Type system mapping: Null, Bool, Int, Float, String, Binary, Array, Object, Tensor, and CRDT types mapped to 2-byte type identifiers.
 
-#### [NEW] [native.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/toon/native.ex)
-- Bridges the Elixir module to the compiled NIF code via Rustler macros.
+#### [NEW] [toon_variable_data.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_variable_data.md)
+- Memory alignment (8-byte boundary, 64-byte boundary for SIMD tensor operations) and structural parsing specifications.
 
-#### [NEW] [Cargo.toml](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/Cargo.toml)
-- Cargo configurations declaring the library properties and compiling the rustler dependency.
-
-#### [NEW] [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)
-- Implements the Rust stubs and exports functions into the beam NIF namespace.
-
-#### [NEW] [aether_db_test.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/test/aether_db_test.exs)
-- Test script to invoke the native NIF functions and verify compiler pipelines.
+#### [NEW] [toon_schema_registry.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_schema_registry.md)
+- Schema validation, registration metadata, and backward/forward evolutionary compatibility rules.
 
 ---
 
 ## Verification Plan
 
-### Automated Tests
-- Navigate to the `aether_db` folder and run `mix test`.
-- Verify that `mix test` compiles the Rust crate and outputs a successful NIF call result.
+### Manual Verification
+- Verify readability of all markdown files.
+- Cross-reference offsets and layouts to ensure no overlaps in binary boundary descriptions.
