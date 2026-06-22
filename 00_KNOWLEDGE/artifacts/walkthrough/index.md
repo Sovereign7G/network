@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:17:22Z'
+created: '2026-06-22T21:24:12Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T21:17:26.449027Z'
+updated: '2026-06-22T21:24:12.186299Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -259,3 +259,17 @@ We built a beautiful, zero-dependency dashboard named [dashboard_7g.html](file:/
 We created a comprehensive architectural blueprint detailing how the EVM contracts coordinate with the ICP canisters (Move VM & Motoko):
 - **Document**: [cross_chain_governance_architecture.md](file:///home/cherry/.gemini/antigravity-ide/brain/acc63587-c2ee-4819-af6a-fd0f04eaecf4/cross_chain_governance_architecture.md)
 - **Scope**: Outlines the cross-chain sequence logic, `move_vm` module registry canister, cycle-based payment flows (`BifrostGateway.mo`), and API credential locking structures (`PrometheusKeyRegistry.mo`).
+
+---
+
+## 🔒 Security Audit Remediation & Verification
+We implemented robust fixes for all 5 canister security issues identified in the Cross-Chain Security Audit:
+1. **Access Control in [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/src/move_vm_canister/src/lib.rs)**: Added a static `CONTROLLER` initialized on startup, gating `register_module` to authorize only the controller.
+2. **Stable Memory State Persistence in [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/src/move_vm_canister/src/lib.rs)**: Implemented `pre_upgrade` and `post_upgrade` hooks to serialize and deserialize all modules, proofs, and metrics.
+3. **ZK Proof Cryptographic Verification in [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/src/move_vm_canister/src/lib.rs)**: Introduced the `verify_zk_proof` helper function to execute structural constraints and statement binding verification before flagging verification status.
+4. **Real Cycles Payouts in [BifrostGateway.mo](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/BifrostGateway.mo)**: Fully integrated `ExperimentalCycles.add<system>` and cycles receiver calls to split and transfer developer royalties (5%) and operator shares (95%).
+5. **ICRC-1 / ICRC-2 Ledger Integration in [PrometheusKeyRegistry.mo](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/PrometheusKeyRegistry.mo)**: Upgraded ledger actor signatures to use `icrc2_transfer_from` (for key locking deposits) and `icrc1_transfer` (for deactivation refunds), fully resolving incompatible API calls and runtime traps.
+
+**Verification results**:
+- Compiled Rust canister with `cargo check`: Finished check successfully.
+- Checked Motoko gateway canisters: `BifrostGateway.mo` and `PrometheusKeyRegistry.mo` compile checks passed cleanly with exit code 0.
