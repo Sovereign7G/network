@@ -1,117 +1,84 @@
 ---
-created: '2026-06-22T20:05:59Z'
+created: '2026-06-22T20:13:01Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T20:06:04.182762Z'
+updated: '2026-06-22T20:13:04.598573Z'
 ---
 
-# Walkthrough: AetherCIM Secure Baseband Processor Simulator
+# Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration
 
-We have designed, implemented, and verified our version of the **AetherCIM Secure Baseband Processor** simulator (inspired by the SNPU and Aether MDU architecture models).
+We have successfully integrated **Fabrika OS** (physical metallurgical simulation) with **AetherCIM** (optoelectronic baseband simulation) to perform comprehensive hardware stress testing.
 
 ---
 
 ## 🛠️ Changes Implemented
 
-1. **Unified Simulator Design**: Created [aether_cim_secure_baseband_sim.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_secure_baseband_sim.exs) which simulates:
-   - **Photonics Conversion**: SiN grating coupling, 16-tile MMI splitting, ring resonance dither, responsivity (0.9 A/W), and Ring Oscillator current-controlled frequency sweeps.
-   - **HPM-PUF Key Generation**: Fuses manufacture variation of optical micro-ring resonators (MRRs) with ReRAM matrix conductance variability to produce a unique 256-bit signature.
-   - **SNPU Hardware-in-the-Loop (HIL) Attestation**: Cryptographically signs ledger blocks using Fiat-Shamir ZKP emulation, reporting execution latency and validation status.
-   - **ReRAM CIM Charge-Domain MAC**: Models passive interposer propagation jitter, row-smearing duty cycle adjustments, ReRAM leakage, and Correlated Double Sampling (CDS) cancellation.
-   - **Aether MDU eSIM Failover Routing**: Monitors SNR quality. Upon sub-12dB degradation, it requests dynamic eSIM leases via system `curl` to local SM-DP+ server (falling back gracefully to offline eSIM generation), updates the eSIM registry, and steers beamforming coefficients dynamically to target the new channel frequency.
-   - **Atlas RISC-V Ternary Instructions**: Emulates custom instructions tfmacc.vv, tpack.vv, and tscale.vv on vector registers.
+1. **Environment Configuration Overrides**:
+   - Modified [aether_cim_secure_baseband_sim.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_secure_baseband_sim.exs) to load parameters from system environment variables (`CIM_TEMP`, `CIM_LASER_POWER`, `CIM_SIGNAL_DEGRADE`).
+   - Added support for physical scaling multipliers: `CIM_JITTER_SCALE` (to scale interposer propagation jitter) and `CIM_LEAKAGE_SCALE` (to scale memristor leakage current).
 
-2. **Warnings & Robustness Cleanup**:
-   - Replaced deprecated Erlang single-quoted charlists with double-quotes/`~c` sigils.
-   - Replaced OTP `:httpc` requests with robust `System.cmd("curl", ...)` helper to make the script independent of Erlang's runtime `:http_util` library versions.
-   - Fixed unused variable warnings and deleted unused module attributes.
+2. **Fabrika OS Integration Script**:
+   - Created the Python orchestrator [aether_cim_fabrika_stress.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_fabrika_stress.py).
+   - Dynamically imports `FabrikaOS` to simulate the fabrication of waveguide silicon (Si), photodetectors (Ge), and heaters/electrodes (Ti).
+   - Translates metallurgical yields into noise coefficients:
+     $$\text{Jitter Scale} = 1.0 + (1.0 - \text{Yield}) \times 8.0$$
+     $$\text{Leakage Scale} = 1.0 + (1.0 - \text{Yield}) \times 10.0$$
+   - Executes a temperature sweep (`25°C`, `50°C`, `85°C`, `105°C`, `125°C`) by spawning the Elixir subprocess.
+   - Cleans ANSI escape sequences from simulator outputs to enable robust regex parsing of colored strings (HPM-PUF Key and CDS Status).
+   - Renders a summary table and final verdict using `rich.table.Table`.
 
 ---
 
-## 🔬 Validation & Verification Results
+## 🔬 Stress Test Execution Results
 
-We verified script execution using `mix run` within the `aether_db` project context.
+We executed the stress-test orchestrator:
+`python3 06_INFRA/scripts/aether_cim_fabrika_stress.py`
 
-### Execution Log Output:
+### Summary Log Output:
 ```text
-================================================================================
- 🧬 AETHER-CIM: SECURE PHOTONIC-MEMRISTOR BASEBAND PROCESSOR SIMULATOR
-================================================================================
-🏛️ [STEP 1] Simulating Photoelectric Grating Couplers & Ring Resonators...
-   ├─ Coupled Fiber Power   : 100.237 mW
-   ├─ Optical Power per Tile: 5.261 mW
-   ├─ Ring Resonance Drift  : [1.0096, 1.0168, 1.0199, 1.0182, ...]
-   ├─ Ring Oscillator (RO)  : 88.052 GHz
-   └─ PWM Target Duty Cycle : 10.0 ns (DTC value: 255/255)
+╭────────────────────────────── FABRIKA METRICS ───────────────────────────────╮
+│ PHYSICAL WAFER BORN-VERIFIED                                                 │
+│ ├─ Average Fabrication Yield: 92.96%                                         │
+│ ├─ Physical Jitter Scale Factor (Interposer): 1.563x                         │
+│ └─ ReRAM Leakage Scale Factor (Crossbar): 1.704x                             │
+╰──────────────────────────────────────────────────────────────────────────────╯
+⚡ Phase 2: Running Temperature Sweep against AetherCIM Accelerator...
+   Testing at Junction Temperature: 25.0°C...
+   Testing at Junction Temperature: 50.0°C...
+   Testing at Junction Temperature: 85.0°C...
+   Testing at Junction Temperature: 105.0°C...
+   Testing at Junction Temperature: 125.0°C...
 
-🏛️ [STEP 2] Generating Hybrid Photonic-Memristor PUF (HPM-PUF)...
-   └─ Generated HPM-PUF Key: 0x8a83665f3798727f14f92ad0e6c99fdab08ee731d6cd644c131223fd2f4fed2a
-
-🏛️ [STEP 3] Performing Cryptographic HIL Attestation (Fiat-Shamir ZKP)...
-   🛡️ [SNPU-428 HARDWARE ATTESTED]
-      ├─ Model Co-Processor : SNPU-428-AETHERCIM-HYBRID-REV1
-      ├─ Fiat-Shamir Proof  : 693c78d21ceb7da88cc912fd12e72169...
-      ├─ Reference Voltage  : 1.2 V
-      ├─ Status Indicator   : ATTESTED_VALID
-      └─ Proof Latency Time : 6.196 ms
-
-🏛️ [STEP 4] Simulating Silicon Interposer Jitter & ReRAM CIM Charge Integration...
-   ├─ Passive Interposer Jitter : 5.5 ps
-   ├─ PWM Row Duty Cycle        : 10.0055 ns
-   ├─ Memristor Leakage (85°C)  : 10.0 nA
-   ├─ Integrated Voltage level  : 19.4666 V
-   └─ Leakage Cancellation (CDS): INACTIVE
-
-🏛️ [STEP 5] Monitoring MIMO Channel Signal Quality...
-   ├─ Signal-to-Noise Ratio (SNR): 37.62 dB
-   ├─ Precision Limit: 6.25 bits
-   └─ Status: DEGRADED (Threshold < 12.0 dB)
-
-🏛️ [STEP 6] Triggering Aether MDU eSIM Profile Morphing...
-   ├─ Step 1: Querying local Aether SM-DP+ server (port 8081)...
-   ├─ SM-DP+ connection failed: {:error, {"||HTTP_STATUS_CODE||000", 7}}. Falling back to local canister / offline simulator...
-   ├─ Generating offline cryptographic eSIM lease...
-   └─ Registry updated: Profile 89049061657347864048 saved to sovereign_esims.json
-   📡 [AETHER MDU SECURE ROUTING ACTIVE]
-      ├─ Connection   : Post-Quantum eSIM Tunnel
-      ├─ ICCID (SIM)   : 89049061657347864048
-      ├─ Phone Number : +1 (415) 555-8646
-      ├─ Provider     : Aether Link Cellular MVNO (Failover)
-      └─ Plan Duration: Unlimited 5G Cellular Data (Dynamic eSIM)
-
-🏛️ [STEP 7] Performing MIMO Beamforming Calibration Re-Steering...
-   ├─ Triggering beamsteering coefficient optimization...
-   └─ MIMO Calibration Synced:
-      ├─ Target Center Freq : 28.5 GHz
-      ├─ Optimal Steering   : 55.8° Azimuth
-      └─ Calibration Status : LUT compensation applied successfully.
-
-🏛️ [STEP 8] Validating RISC-V Atlas custom vector ternary instructions...
-   ├─ Opcode 0x0B01 [tfmacc.vv] (Ternary fused multiply-accumulate):
-      ├─ Input vs1  : [2, 3, -1, 4]
-      ├─ Input vs2  : [1, -1, 0, 1]
-      ├─ Input vd   : ~c"\n\n\n\n"
-      └─ Result vd  : [12, 7, 10, 14]
-   ├─ Opcode 0x0B02 [tpack.vv] (Pack ternary weights -1,0,1 to 2-bit values):
-      ├─ Weights vs1: [-1, 0, 1, 0, 1, -1, 0, 1]
-      └─ Packed Bytes: ["0x64", "0x92"]
-   ├─ Opcode 0x0B03 [tscale.vv] (Scaled ternary accumulation with 16-bit saturation):
-      ├─ Input vs1  : [1000, 5000, 20000, -25000]
-      ├─ Input vs2  : [1, -1, 1, 1]
-      ├─ Input vd   : [15000, -10000, 25000, -12000]
-      └─ Result vd  : [17500, -22500, 32767, -32768]
-
-================================================================================
- 🏁 UNIFIED ACCELERATOR SUMMARY:
-   -> System Junction Temperature   : 85.0°C
-   -> HPM-PUF Attestation Status     : ATTESTED_VALID (HIL Secured)
-   -> eSIM Connection Path          : Aether Link Cellular MVNO (Failover) (Unlimited 5G Cellular Data (Dynamic eSIM))
-   -> Total Power Consumption       : 42.45 W
-   -> Compute Energy Efficiency     : 0.82 pJ/MAC
-   -> System Operational Status     : 🟢 ACTIVE
-================================================================================
+                AetherCIM Optoelectronic Thermal Sweep Dashboard
+┏━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━┓
+┃    Temp ┃ HPM-PUF ┃  Attest ┃     SNR ┃ CDS     ┃ MDU     ┃ Preci… ┃   Power ┃
+┃    (°C) ┃ Key     ┃ Latency ┃    (dB) ┃ Status  ┃ Routing ┃ (Bits) ┃     (W) ┃
+┡━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━┩
+│    25.0 │ 0x8a83… │   7.790 │   59.93 │ INACTI… │ NORMAL  │   9.95 │ 42.04 W │
+│         │         │      ms │      dB │         │         │        │         │
+│    50.0 │ 0x8a83… │   6.723 │   48.68 │ INACTI… │ NORMAL  │   8.09 │ 42.16 W │
+│         │         │      ms │      dB │         │         │        │         │
+│    85.0 │ 0x8a83… │   7.324 │   33.07 │ INACTI… │ NORMAL  │   5.49 │ 42.45 W │
+│         │         │      ms │      dB │         │         │        │         │
+│   105.0 │ 0x8a83… │   5.547 │   46.02 │ ACTIVE  │ NORMAL  │   7.64 │ 51.19 W │
+│         │         │      ms │      dB │         │         │        │         │
+│   125.0 │ 0x8a83… │   7.040 │   46.02 │ ACTIVE  │ NORMAL  │   7.64 │ 51.48 W │
+│         │         │      ms │      dB │         │         │        │         │
+└─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴────────┴─────────┘
+╭──────────────────────────── STRESS TEST VERDICT ─────────────────────────────╮
+│ 🟢 SUCCESS: System maintains baseband precision limits across the entire     │
+│ thermal sweep.                                                               │
+│                                                                              │
+│ Silicon Jitter Noise: 1.563x | Memristor Leakage Noise: 1.704x               │
+│ eSIM Failover Route: Standard WAN stable throughout.                         │
+╰──────────────────────────────────────────────────────────────────────────────╯
 ```
+
+### Analysis:
+- **Resilience under Variation**: Even under 1.563x interposer jitter and 1.704x ReRAM leakage scales, the processor maintained stable HPM-PUF attestation and baseband precision.
+- **CDS Leakage Mitigation**: At 105°C and 125°C, the automatic activation of **Correlated Double Sampling (CDS)** cancelled the elevated leakage charge, restoring precision back to `7.64 bits` from `5.49 bits` at 85°C.
+- **Failover Thresholds**: The channel SNR remained well above the failover threshold (12.0 dB) for all runs, confirming that the baseband array operates stably under standard routing paths.
