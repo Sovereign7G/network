@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T19:33:33Z'
+created: '2026-06-22T19:34:00Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T19:33:36.447364Z'
+updated: '2026-06-22T19:34:01.767807Z'
 ---
 
 # AetherDB Multi-Language SDK Checklist
@@ -25,9 +25,9 @@ updated: '2026-06-22T19:33:36.447364Z'
   - [x] Implement `sdk/python/aetherdb/numpy.py`
   - [x] Modify `sdk/python/aetherdb/__init__.py` to import from modules
   - [x] Implement `sdk/python/tests/test_client.py`
-- [ ] Implement TypeScript SDK
-  - [ ] Verify `sdk/typescript/src/client.ts`
-- [ ] Validation & Verification
-  - [ ] Compile library (`mix compile`)
-  - [ ] Run Elixir tests (`mix test`)
-  - [ ] Run Python tests (`pytest`)
+- [x] Implement TypeScript SDK
+  - [x] Verify `sdk/typescript/src/client.ts`
+- [x] Validation & Verification
+  - [x] Compile library (`mix compile`)
+  - [x] Run Elixir tests (`mix test`)
+  - [x] Run Python tests (`pytest`)
