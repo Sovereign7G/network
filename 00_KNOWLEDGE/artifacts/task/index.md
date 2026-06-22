@@ -1,27 +1,27 @@
 ---
-created: '2026-06-22T15:15:30Z'
+created: '2026-06-22T15:23:47Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T15:15:35.544911Z'
+updated: '2026-06-22T15:23:47.989398Z'
 ---
 
-# Era VI: Privacy Gateway Implementation Checklist
+# Strategic Token Optimization Implementation Checklist
 
-- [x] Initialize Gateway Configuration & Files
-  - [x] Create `08_ASSETS/gateway_policy.json` with default values
-  - [x] Initialize `08_ASSETS/gateway_cache.json` and `08_ASSETS/gateway_audit.json`
-- [x] Implement Gateway Core Logic
-  - [x] Update `06_INFRA/external_gateway.py` with sanitization regexes, caching, audit trail logs, policy loading/saving, and mock/real routes
-- [x] Integrate MCP Tools in OKF Server
-  - [x] Add `external_infer`, `gateway_health`, `gateway_policy`, `gateway_audit` definitions in `06_INFRA/magix_okf.py`
-  - [x] Declare tool schemas in `MCP_TOOLS_SCHEMA`
-- [x] Telemetry & Dashboard Integration
-  - [x] Add gateway statistics scraper in `06_INFRA/triad_metrics.py`
-  - [x] Integrate a "Privacy Gateway" UI card in `06_INFRA/triad_dashboard.py`
-- [x] Verification
-  - [x] Restart servers and run automated checks using curl
-  - [x] Validate live metrics update on the Triad dashboard
+- [ ] Core Semantic Caching & Prefix Stabilization
+  - [ ] Implement cosine similarity vector caching in `06_INFRA/external_gateway.py`
+  - [ ] Support caching of successful mock/real inferences
+  - [ ] Implement prompt prefix stabilization (system schema prepend) in `external_gateway.py`
+- [ ] Retrieval-Based Memory & Truncation
+  - [ ] Integrate ChromaDB vector search in `06_INFRA/s2l_pipeline.py`'s `skill_inference` fallback path
+  - [ ] Select only top-5 relevant concepts for in-context fallback prompt injection
+  - [ ] Compress large concepts using truncation snippets
+- [ ] Telemetry & Dashboard Integration
+  - [ ] Update `triad_metrics.py` to count token saving stats
+  - [ ] Ensure servers are restarted and running
+- [ ] Verification
+  - [ ] Run curl tests to verify semantic cache hits (similarity >= 0.92)
+  - [ ] Verify retrieval-based fallback loads exactly 5 relevant memories
