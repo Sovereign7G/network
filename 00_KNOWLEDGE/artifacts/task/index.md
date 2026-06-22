@@ -1,26 +1,23 @@
 ---
-created: '2026-06-22T19:37:32Z'
+created: '2026-06-22T20:04:03Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T19:37:33.259685Z'
+updated: '2026-06-22T20:04:03.968213Z'
 ---
 
-# Stress, Soak, and Tracing Implementation Checklist
+# AetherCIM Secure Baseband Processor Checklist
 
-- [x] Implement Stress Testing Modules
-  - [x] Implement `lib/aether_db/stress/worker.ex`
-  - [x] Implement `lib/aether_db/stress/load_generator.ex`
-  - [x] Implement `lib/aether_db/stress/chaos.ex`
-- [x] Implement Soak Testing Modules
-  - [x] Implement `lib/aether_db/soak/metrics_collector.ex`
-  - [x] Implement `lib/aether_db/soak/runner.ex`
-- [x] Create Script Runners
-  - [x] Create `test/stress/runner.exs`
-  - [x] Create `test/soak/soak_runner.exs`
-- [x] Verification
-  - [x] Compile library (`mix compile`)
-  - [x] Run stress, soak, and tracing tests (`mix test test/stress_soak_tracing_test.exs`)
+- [ ] Implement `AetherDb.Cim.SecureBasebandSimulator` in `06_INFRA/scripts/aether_cim_secure_baseband_sim.exs`
+  - [ ] Implement photonic MRR variation & photoelectric conversion
+  - [ ] Implement interposer dispersion & ReRAM CIM matrix computations
+  - [ ] Implement Hybrid Photonic-Memristor PUF (HPM-PUF) signature generation
+  - [ ] Implement SNPU-style block attestation with ZKP/Fiat-Shamir timing emulation
+  - [ ] Implement Aether MDU eSIM provisioning (HTTP requests to SM-DP+ on port 8081 with local mock fallback)
+  - [ ] Implement dynamic beamforming steering & calibration LUT re-steering
+  - [ ] Implement Atlas RISC-V vector ternary operations (`tfmacc.vv`, `tpack.vv`, `tscale.vv`)
+- [ ] Verify script execution and telemetry logging output
+- [ ] Create walkthrough documenting changes and validation results
