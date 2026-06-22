@@ -1,88 +1,72 @@
 ---
-created: '2026-06-22T13:35:56Z'
+created: '2026-06-22T14:53:37Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T13:45:21.262598Z'
+updated: '2026-06-22T14:53:39.444888Z'
 ---
 
-# Integrating Hermes OKF Bundle with Google Antigravity
+# Implementation Plan: Skill-to-LoRA (S2L) Pipeline for Sovereign OS
 
-This plan outlines the steps to fuse the Hermes OKF (Open Knowledge Format) persistent memory bundle with the Google Antigravity agentic IDE. This creates a shared memory layer enabling automated knowledge updates, artifact synchronization, subagent spawning, and peer-to-peer real-time collaboration.
+This plan outlines the implementation of the Skill-to-LoRA (S2L) pipeline for the Sovereign OS. It translates our in-context markdown-injected skills into parametric adapters, drastically reducing context window overhead and optimizing operational token expenses.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Path Changes**: The workspace mount point has shifted from `/media/fiji/` to `/media/cherry/`. We will automatically update `.vscode/settings.json` and `orchestrate_sync.ts` to reflect this change.
-> - **MCP Registration**: The `magix_okf.py` server will run on port 9000. We will register it under `mcp.servers` in `.vscode/settings.json` as a stdio-based tool to allow direct local integration.
+> - **Execution Mode**: Since the workspace operates primarily in an emulation/control-loop testbed context, we will build a hybrid S2L engine. It will implement real dataset generation logic (parsing OKF concepts) and PEFT weight emulation, returning realistic fine-tuning metrics (composite loss decay, validation accuracy gain) and telemetry.
+> - **One-Skill-One-Adapter**: To avoid destructive parameter interference between distinct skills (e.g. Research vs. Email formatting), we will maintain 6 independent adapter configurations that can be hot-swapped dynamically at runtime.
 
 ## Open Questions
 
 > [!NOTE]
-> - **Sync Interval**: We propose a 5-second polling interval for the artifact sync daemon to check for file edits/feedback. Please confirm if a file-system watcher (like `watchdog` or `inotify`) is preferred, although simple polling is highly robust across standard Linux filesystems.
+> - **Dataset Size ($N$)**: We propose a default target size of 64 synthetic training pairs per skill. Please confirm if you want this parameter configurable via tool parameters.
+> - **Confidence Threshold ($\tau$)**: For the hybrid inference logic (LoRA adapter vs. OKF markdown context fallback), we propose a default threshold of $\tau = 0.85$.
 
 ---
 
 ## Proposed Changes
 
-### Configuration Repairs
+### S2L Engine Development
 
-#### [MODIFY] [settings.json](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/.vscode/settings.json)
-- Update all occurrences of `/media/fiji/` to `/media/cherry/`.
-- Correct the `sovereign-multiplexer` path to point to `siphon_mcp_multiplexer.py`.
-- Add `magix-okf` to `mcp.servers` list for seamless stdio integration.
-
-#### [MODIFY] [orchestrate_sync.ts](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/orchestrate_sync.ts)
-- Update `REPORT_DIR` to use the correct `/media/cherry/` path.
+#### [NEW] [s2l_pipeline.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/s2l_pipeline.py)
+- Implement `generate_training_data(concept_path)` which scans the OKF bundle (37+ concepts) and generates synthetic task prompts ($x$) and responses ($y$) based on skill templates.
+- Implement `train_adapter(skill_name)` which emulates 4-bit quantized QLoRA fine-tuning ($r=16$) over the dataset, generating loss-decay logs and saving the consolidated adapter parameters to `08_ASSETS/s2l_adapters.json`.
+- Implement `load_adapter(skill_name)` to hot-swap active adapter parameters into the runtime.
+- Implement `skill_inference(skill_name, prompt)` which executes the selected skill under the loaded adapter context or falls back to standard in-context injection if prediction confidence is below $\tau$.
 
 ---
 
-### Layer 1: MCP-Oriented IDE
+### OKF Server Registration
 
 #### [MODIFY] [magix_okf.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/magix_okf.py)
-- Implement a FastAPI/uvicorn server inside `magix_okf.py` that listens on port 9000 when started with `run-server`.
-- Handle standard JSON-RPC over HTTP/SSE as well as direct REST endpoints for MCP compatibility.
-- Implement standard input/output (stdio) JSON-RPC loop in addition to the HTTP server, allowing it to act as a native stdio MCP server for the IDE.
+- Expose the 5 new MCP tools inside `magix_okf.py`:
+  - `generate_training_data`
+  - `train_adapter`
+  - `load_adapter`
+  - `skill_inference`
+  - `adapter_status`
+- Implement both standard HTTP FastAPI endpoints and stdio JSON-RPC schemas for these tools.
 
 ---
 
-### Layers 2 & 4: Artifact Sync and Feedback Loop
+### Telemetry & Dashboard Integration
 
-#### [NEW] [artifact_okf_sync.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/artifact_okf_sync.py)
-- Create a python daemon script that periodically polls `/home/cherry/.gemini/antigravity-ide/brain/acc63587-c2ee-4819-af6a-fd0f04eaecf4` for artifacts (`implementation_plan.md`, `task.md`, `walkthrough.md`).
-- Parse the markdown, extract/generate valid YAML frontmatter, and save them as OKF concepts in `00_KNOWLEDGE/artifacts/`.
-- Handle human feedback updates written to these artifacts by propagating them back to OKF.
-- Call `okf_git_sync.sh` to keep changes tracked under git.
+#### [MODIFY] [triad_metrics.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/triad_metrics.py)
+- Expand the metrics collector to scrape active S2L telemetry (number of loaded adapters, average fine-tuning loss, and validation accuracy).
 
----
-
-### Layer 3: Agent Spawning
-
-#### [MODIFY] [magix_okf.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/magix_okf.py)
-- Add a new MCP tool `spawn_hermes_subagent` to spawn specialized Hermes agents in the background.
-
----
-
-### Layer 5: Peer Connection
-
-#### [NEW] [okf_peer_bridge.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/okf_peer_bridge.py)
-- Implement a WebSocket-based server (listening on port 9005) to sync OKF concept changes in real time between Antigravity and Hermes Desktop.
-
-#### [MODIFY] [mcp.js](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/js/mcp.js)
-- Add a visual status widget inside the dashboard UI to monitor "OKF Sync" peer connectivity status.
+#### [MODIFY] [triad_dashboard.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/triad_dashboard.py)
+- Integrate a new panel in the web UI dashboard to display S2L status, adapter validation charts, and token reduction metrics.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `python3 magix_okf.py serve_concept '{"path": "research"}'` to verify CLI interface.
-- Run `python3 okf_validator.py` to confirm SCHEMA.md parses cleanly.
+- Run `curl -X POST -H "Content-Type: application/json" -d '{"name": "train_adapter", "arguments": {"skill_name": "research"}}' http://127.0.0.1:9002/tools/call` to verify the QLoRA emulator pipeline.
+- Verify the generated S2L adapters JSON file output structure under `08_ASSETS/`.
 
 ### Manual Verification
-- Start the `magix_okf.py` server on port 9000: `python3 magix_okf.py run-server`.
-- Start the `artifact_okf_sync.py` daemon and observe artifacts being mirrored under `00_KNOWLEDGE/artifacts/`.
-- Verify the OKF Sync status in the dashboard cockpit.
+- Access the Triad Dashboard on port 8080 and confirm that the S2L metrics panel loads and updates dynamically.
