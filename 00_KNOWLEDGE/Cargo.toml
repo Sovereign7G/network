@@ -1,0 +1,7 @@
+[package]
+name = "age-constants"
+version = "1.0.0"
+edition = "2021"
+description = "Eternal Cosmic Constants for the AGE Protocol"
+
+[dependencies]

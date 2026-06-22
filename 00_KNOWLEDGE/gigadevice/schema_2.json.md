@@ -1,0 +1,2 @@
+# Siphoned from https://www.gigadevice.com/en/products//api/schema_2.json
+Sovereign data captured.

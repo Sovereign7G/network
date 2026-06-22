@@ -1,0 +1,14 @@
+{
+  "target": "agency",
+  "mission": "mission_agency",
+  "timestamp": "20260526_183850",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 0.5014448165893555,
+    "samples": 1,
+    "cpu_time": 0.0013374880000000255
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}

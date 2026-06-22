@@ -1,0 +1,42 @@
+# 🏛️ AGE REPUBLIC :: SWAY 1.12 COMPOSITOR CONFIGURATION
+# Location: /media/fiji/4A21-00001/New folder/AGE REPUBLIC/00_KNOWLEDGE/Sway/config
+
+### 1. Variables & Performance Hardening
+set $mod Mod4
+set $left h
+set $down j
+set $up k
+set $right l
+
+# Force Vulkan Renderer & HDR Support
+# Launched via: env WLR_RENDERER=vulkan SWAY_UNSUPPORTED_GPU=1 sway
+color_management_v1 enabled
+device_primaries edid
+
+### 2. Aesthetics & Color Palette (Sovereign Gold & Obsidian)
+client.focused          #f59e0b #0d0e12 #f59e0b #f59e0b #f59e0b
+client.focused_inactive #9ca3af #0d0e12 #9ca3af #9ca3af #9ca3af
+client.unfocused        #374151 #0d0e12 #374151 #374151 #374151
+client.urgent           #ef4444 #0d0e12 #ef4444 #ef4444 #ef4444
+
+default_border pixel 2
+gaps inner 12
+gaps outer 6
+
+### 3. Window Capture & Sandbox Restraints
+# Restrict global screen recording; only allow window-level captures for authorized enclaves
+for_window [title=".*"] inhibit_idle open
+for_window [app_id="sovereign_cockpit"] border none, floating enable
+
+### 4. Keybindings & Enclave Controls
+bindsym $mod+Return exec kitty --directory "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/"
+bindsym $mod+d exec dmenu_run
+bindsym $mod+Shift+q kill
+
+# Launch Sovereign Glance Homepage
+bindsym $mod+Shift+h exec xdg-open http://localhost:8086
+
+# Media Controls (Sway 1.12 playerctl bindings)
+bindsym XF86AudioPlay exec playerctl play-pause
+bindsym XF86AudioNext exec playerctl next
+bindsym XF86AudioPrev exec playerctl previous

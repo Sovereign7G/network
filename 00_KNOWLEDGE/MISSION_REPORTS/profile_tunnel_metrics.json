@@ -1,0 +1,14 @@
+{
+  "target": "tunnel",
+  "mission": "mission_tunnel",
+  "timestamp": "20260526_183903",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 1.4260854721069336,
+    "samples": 20,
+    "cpu_time": 0.06061546499999998
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}

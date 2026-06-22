@@ -124,4 +124,4 @@ A system that depends on a distant, centralized cloud for its daily cognition is
 ---
 
 > [!NOTE]
-> **Cross-Reference:** Principle 3 (Verification Over Generation) aligns directly with the tool-calling safety gates and verification loops documented in [339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md).
+> **Cross-Reference:** Principle 3 (Verification Over Generation) aligns directly with the tool-calling safety gates and verification loops documented in [339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md).

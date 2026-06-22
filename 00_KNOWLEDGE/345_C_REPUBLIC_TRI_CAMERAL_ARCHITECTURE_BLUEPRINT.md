@@ -46,13 +46,13 @@ graph TD
 Rux is responsible for zero-overhead, memory-safe low-level systems programming. It guards the entry points and enforces boundaries.
 *   **Role**: Enforces on-the-wire protocols, manages telemetry pipe states, and provides security-safe rails for external integrations (such as the Sui ledger connector).
 *   **Key Abstraction**: Uses a native first-class **Telemetry Pipe** to ingest high-frequency biometrics (HRV, heart rate, somatic responses) directly from edge devices with zero heap allocation.
-*   **Cross-Reference**: Extends the memory-safety rules defined in [322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md).
+*   **Cross-Reference**: Extends the memory-safety rules defined in [322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md).
 
 ### 2. Mojo: The AI Accelerator (MAX Engine)
 Mojo provides native metal optimization for target execution without Python interpreter overhead.
 *   **Role**: Directly compiles and runs AI models (LocateAnything-3B, Gemma 4, Liquid FFM) on the local GPU/TPU substrate.
 *   **Key Abstraction**: Compiles models directly via Modular's **MAX Engine**. Employs specialized, hardware-attuned dequantization kernels that bypass the Global Interpreter Lock (GIL) completely to maintain sub-millisecond latencies.
-*   **Cross-Reference**: Powers the speculative target verification loops documented in [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md).
+*   **Cross-Reference**: Powers the speculative target verification loops documented in [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md).
 
 ### 3. Elixir: The Reactive Mesh Orchestrator
 Elixir manages high-concurrency, fault-tolerant interactions across the BEAM VM.
@@ -151,7 +151,7 @@ For client-side execution, the browser acts as a sovereign model runner using We
 
 > [!NOTE]
 > **See Also:**
-> - [322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md) - Rux core systems and kernel paradigms.
-> - [339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md) - Verification gates and tool execution safety.
-> - [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md) - Speculative MTP verification loops.
+> - [322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/322_REPUBLIC_RMUX_WISDOM_MANIFOLD.md) - Rux core systems and kernel paradigms.
+> - [339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/339_B_REPUBLIC_GEMMA4_TOOL_CALLING_ANALYSIS_WISDOM.md) - Verification gates and tool execution safety.
+> - [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md) - Speculative MTP verification loops.
 

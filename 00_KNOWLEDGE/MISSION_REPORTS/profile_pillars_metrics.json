@@ -1,0 +1,14 @@
+{
+  "target": "pillars",
+  "mission": "mission_pillars",
+  "timestamp": "20260526_183850",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 2.4211878776550293,
+    "samples": 266,
+    "cpu_time": 1.416333346
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}

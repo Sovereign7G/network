@@ -1,0 +1,2 @@
+# Siphoned from https://www.hisilicon.com/en/products/api/schema_2.json
+Sovereign data captured.

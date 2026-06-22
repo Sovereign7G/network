@@ -1,0 +1,14 @@
+{
+  "target": "consensus",
+  "mission": "mission_consensus",
+  "timestamp": "20260526_183855",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 4.124490737915039,
+    "samples": 133,
+    "cpu_time": 0.11365574099999998
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "target": "barter",
+  "mission": "mission_barter",
+  "timestamp": "20260526_183850",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 0.002354860305786133,
+    "samples": 1,
+    "cpu_time": 0.0023472810000000066
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}

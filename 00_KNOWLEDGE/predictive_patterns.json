@@ -1,0 +1,7 @@
+{
+  "peak_hour": 9,
+  "prewarm_targets": [
+    "s3:ListBuckets"
+  ],
+  "last_audit_epoch": 1779889958
+}

@@ -1,0 +1,14 @@
+{
+  "target": "chaos",
+  "mission": "mission_chaos",
+  "timestamp": "20260526_183904",
+  "async_mode": "enabled",
+  "metrics": {
+    "duration_seconds": 0.7968518733978271,
+    "samples": 22,
+    "cpu_time": 0.09604458900000001
+  },
+  "metadata": {
+    "version": "3.0"
+  }
+}
