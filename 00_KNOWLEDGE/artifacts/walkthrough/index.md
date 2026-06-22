@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T18:26:08Z'
+created: '2026-06-22T18:35:50Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T18:26:13.073280Z'
+updated: '2026-06-22T18:35:53.583241Z'
 ---
 
 # Walkthrough: S2L, Zero-Trust Privacy Gateway & Strategic Token Optimization
@@ -254,3 +254,20 @@ We ran the ExUnit test suite to confirm complete correctness and precision acros
   8. Object (complex maps)
   9. Tensor (aligned 64-byte f32 float vectors)
   10. CRDT (PN-Counter, G-Counter records with timestamps & node-IDs)
+
+---
+
+## 12. AetherDB v2 — Phase 1 Week 3: Elixir Wrapper & NIF Bindings
+
+We successfully completed the Elixir wrapper API, optimized Rust NIF integration, and ETS-based caching system.
+
+### 1. Codebase Modifications
+- **[lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)**: Implemented static atom registry utilizing the `rustler::atoms!` macro to achieve zero string allocations for atom conversion and matching. Replaced dynamic tuple wrapping with tuple terms in NIF returns (`toon_open`, `toon_deserialize`, `toon_get_value`) to map seamlessly to Elixir wrapper pattern checks. Added `#[allow(unused_variables)]` to eliminate compilation warnings.
+- **[toon.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/toon.ex)**: Fixed binary pattern match offsets and UUID extraction to use little-endian byte ordering (`little-32`, `little-64`, `little-128`) to properly align with Rust output values. Modified `record_count_from_binary/1` to return root-level collection items (or 1 for scalars) by reading the root token. Deduplicated documentation blocks and applied the pin operator (`^`) to binary patterns.
+- **[toon_cache.ex](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/lib/aether_db/toon_cache.ex)**: Completed a GenServer providing read-through and write-through caching over ETS tables with hits/misses telemetry tracking.
+
+### 2. Verification Results
+We ran the full ExUnit test suite (combining both legacy core roundtrips and new wrapper integration tests):
+- Run: `mix test`
+- Results: `33 passed`
+- Total execution time: **0.4 seconds** (well within the < 500ms target performance threshold for 10k serialization/deserialization cycles).
