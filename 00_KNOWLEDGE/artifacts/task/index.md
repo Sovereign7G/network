@@ -1,26 +1,27 @@
 ---
-created: '2026-06-22T18:35:54Z'
+created: '2026-06-22T18:36:45Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:35:58.676941Z'
+updated: '2026-06-22T18:36:48.958076Z'
 ---
 
-# AetherDB v2 Phase 1 Week 3 implementation Checklist
+# AetherDB v2 Phase 2: Partition Actor Model Checklist
 
-- [x] NIF Module Setup & Resource Management
-  - [x] Register `ToonResource` and `ToonMmapResource` in load/2 callback.
-  - [x] Export `toon_new`, `toon_open`, `toon_serialize`, `toon_deserialize`, `toon_get_value`, `toon_record_count`, `toon_checksum`, and `toon_validate` NIFs.
-  - [x] Optimize term conversion with static `rustler::atoms!` registry.
-- [x] Elixir Wrapper API
-  - [x] Match wrapper signatures with native implementation returns (`{:ok, T}` and `{:error, reason}`).
-  - [x] Standardize pattern match parsing of file headers (schema ID, version, record counts) to use little-endian byte ordering.
-- [x] ETS Cache Integration
-  - [x] Implement read-through caching in `TOONCache`.
-  - [x] Integrate cache server into Supervision tree.
-- [x] Verification
-  - [x] Run `mix test` and confirm all 33 legacy and integration tests pass successfully.
-  - [x] Optimize benchmark loops to execute under the 500ms threshold (achieved ~400ms).
+- [ ] Core Partition Struct & Reader/Writer
+  - [ ] Implement `AetherDb.Partition.Reader` (`reader.ex`)
+  - [ ] Implement `AetherDb.Partition.Writer` (`writer.ex`)
+  - [ ] Implement `AetherDb.Partition` GenServer (`partition.ex`)
+- [ ] Version Vectors & Cache Layer
+  - [ ] Implement `AetherDb.Partition.Version` (`version.ex`)
+  - [ ] Implement `AetherDb.Partition.Cache` (`cache.ex`)
+- [ ] Supervisors & Routing Table
+  - [ ] Implement `AetherDb.RouteTable` (`route_table.ex`)
+  - [ ] Implement `AetherDb.PartitionSupervisor` (`supervisor.ex`)
+  - [ ] Update `AetherDb.Application` to start `PartitionSupervisor` (`application.ex`)
+- [ ] Integration Testing
+  - [ ] Implement `AetherDb.PartitionTest` (`partition_test.exs`)
+  - [ ] Run `mix test` and verify compile and test success
