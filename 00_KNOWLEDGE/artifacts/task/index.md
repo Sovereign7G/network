@@ -1,20 +1,25 @@
 ---
-created: '2026-06-22T18:21:47Z'
+created: '2026-06-22T18:22:43Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:21:50.473538Z'
+updated: '2026-06-22T18:22:45.921929Z'
 ---
 
-# AetherDB v2 Phase 1 Week 1 implementation Checklist
+# AetherDB v2 Phase 1 Week 2 implementation Checklist
 
-- [x] Initialize Specifications Directory
-  - [x] Ensure `aether_db/priv` directory is present
-- [x] Create TOON specifications
-  - [x] Write `toon_spec_v1.md` (Header Layout)
-  - [x] Write `toon_token_types.md` (Token Type Mapping)
-  - [x] Write `toon_variable_data.md` (Variable Length & Tensor Layouts)
-  - [x] Write `toon_schema_registry.md` (Schema Evolution Rules)
+- [ ] Core Rust Structures
+  - [ ] Implement `ToonHeader`, `ToonToken`, `ToonType`, and `ToonFile` in Rust.
+- [ ] Serialization Engine
+  - [ ] Implement `serialize.rs` logic with proper alignment and token mapping.
+- [ ] Zero-Copy Deserialization
+  - [ ] Implement `deserialize.rs` for zero-copy field reads.
+- [ ] Helpers and NIF Interface
+  - [ ] Implement validation and hashing in `utils.rs`.
+  - [ ] Update `lib.rs` and NIF exports to expose `serialize_toon` and `deserialize_toon`.
+  - [ ] Implement wrapper stubs in `lib/aether_db/toon/native.ex`.
+- [ ] Verification
+  - [ ] Run `mix test` and confirm compilation and roundtrip tests pass.
