@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T20:51:56Z'
+created: '2026-06-22T20:55:22Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T20:51:56.271875Z'
+updated: '2026-06-22T20:55:26.600134Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -107,11 +107,20 @@ The Sovereign 7G Node Constitution was formally written to [sovereign_7g_node_co
 
 The core economic foundation of the Sovereign 7G Mesh has been successfully deployed and verified on **Base Mainnet (Chain 8453)**:
 
+### 1. Sovereign Suite (Base Core)
 | Contract | Address | Status |
 | :--- | :--- | :--- |
 | **S7GToken** | `0x54951D5021a2774567412fB8DB6FDF4A1EaE2611` | ✅ Deployed, 100M S7G Genesis Mint Complete |
 | **NodeLicense** | `0x45bD704f371bc593f38Bd76D43D356A14Febe477` | ✅ Deployed |
 | **NodeStaking** | `0xEfc2803E088e287b4013abB37358e3cf760A4747` | ✅ Deployed, Roles Linked & Authorized |
+
+### 2. Telephony & Governance Suite
+| Contract | Address | Status |
+| :--- | :--- | :--- |
+| **PhoneNumberRegistry** | `0x2606fEbB30deE751DfFbCa538df20Eed5E379410` | ✅ Deployed |
+| **SovereignDAO** | `0xC5aF1EE3d5812a7255C27ff11579Fe49E7454588` | ✅ Deployed |
+| **CallSession** | `0x6afd8D26dF226980a932439948DEefBd33301bf6` | ✅ Deployed |
+| **RoamingSettlement** | `0x367d9481CfF6e7E18fAE5b11aA524dbbE139f443` | ✅ Deployed |
 
 ### 🛠️ Role Linkage & Governance Verification
 - **MINTER_ROLE** and **BURNER_ROLE** on the `S7GToken` contract were successfully granted to the `NodeStaking` address in the genesis block, enabling autonomous node rewards issuance and slashed collateral enforcement.
