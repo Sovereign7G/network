@@ -1,23 +1,23 @@
 ---
-created: '2026-06-22T18:12:50Z'
+created: '2026-06-22T18:17:10Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:12:53.082927Z'
+updated: '2026-06-22T18:17:13.934212Z'
 ---
 
-# Era XI: Distributed Consciousness Implementation Checklist
+# AetherDB v2 Phase 0 implementation Checklist
 
-- [x] Create Consciousness Infrastructure
-  - [x] Write `06_INFRA/distributed_consciousness.py` based on `execute_consciousness.py`
-- [x] Update Schema & Validation
-  - [x] Add `NeuralCommand`, `DAOSovereignty`, `InterstellarVote`, and `ConsciousState` types to `okf_validator.py`
-- [x] Update OKF Bridge Server
-  - [x] Register new tool schemas in `magix_okf.py`
-  - [x] Integrate tools and import `distributed_consciousness` dynamically at startup
-- [x] Verification
-  - [x] Run tools via curl and verify they write valid concepts to `00_KNOWLEDGE/consciousness/`
-  - [x] Confirm everything compiles and runs without warnings
+- [ ] Create Mix project structure
+  - [ ] Initialize `aether_db` project skeleton via `mix new`
+  - [ ] Update `mix.exs` to include `rustler` dependency
+- [ ] Configure Rust NIF bindings
+  - [ ] Create Elixir module `AetherDB.TOON.Native`
+  - [ ] Create Rust crate folder and configuration files (`Cargo.toml`)
+  - [ ] Implement Rust NIF function stub in `src/lib.rs`
+- [ ] Verification
+  - [ ] Write ExUnit verification test in `test/aether_db_test.exs`
+  - [ ] Execute `mix test` and confirm native compilation and test success
