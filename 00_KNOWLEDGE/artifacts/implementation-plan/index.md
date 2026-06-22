@@ -1,45 +1,49 @@
 ---
-created: '2026-06-22T18:21:14Z'
+created: '2026-06-22T18:22:36Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T18:21:14.784726Z'
+updated: '2026-06-22T18:22:40.709842Z'
 ---
 
-# Goal: AetherDB v2 — Phase 1 Week 1: TOON Specification & Core Types
+# Goal: AetherDB v2 — Phase 1 Week 2: Rust Library Implementation
 
-Define and write the complete, byte-level specification files for the TOON zero-copy, zero-parse binary storage layout.
+Implement the core TOON storage serialization, deserialization, memory-mapping, and verification library in Rust.
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Zero-Copy Specification Boundaries**: Defining the exact layout of the 128-byte Header, 16-byte Token entries, Variable-length data section alignments, and the Schema Registry to ensure binary portability across Rust (native) and Elixir (BEAM).
+> - **Memory Layout Alignments**: The serialize and deserialize engines will use binary slices and implement zero-copy/zero-parse lookups by reading the memory-mapped bytes directly using exact offset offsets.
+> - **Error Handling**: Custom Rust errors will be mapped to Elixir terms to support standard error propagation back to BEAM processes.
 
 ---
 
 ## Proposed Changes
 
-### TOON Storage Specifications
+### Rust Native Library (`aetherdb_native`)
 
-#### [NEW] [toon_spec_v1.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_spec_v1.md)
-- Complete byte-level header specification (128 bytes): Magic, version, range parameters, indices, offsets, traversal pointers, and reserved bits.
+#### [MODIFY] [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/lib.rs)
+- Declare `ToonHeader`, `ToonToken`, `ToonType`, and file loading stubs.
+- Define Rustler NIF wrappers:
+  - `serialize_toon(map) -> binary`
+  - `deserialize_toon(binary) -> map`
+  - `read_value(binary, key) -> value`
 
-#### [NEW] [toon_token_types.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_token_types.md)
-- Type system mapping: Null, Bool, Int, Float, String, Binary, Array, Object, Tensor, and CRDT types mapped to 2-byte type identifiers.
+#### [NEW] [serialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/serialize.rs)
+- Implement `ToonSerializer` to serialize Elixir/Erlang terms into the raw TOON binary bytes layout, including header generation, token index sorting, and variable-length data section alignments.
 
-#### [NEW] [toon_variable_data.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_variable_data.md)
-- Memory alignment (8-byte boundary, 64-byte boundary for SIMD tensor operations) and structural parsing specifications.
+#### [NEW] [deserialize.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/deserialize.rs)
+- Implement zero-copy reader and deserializer decoding fields directly from mapped binary byte buffers.
 
-#### [NEW] [toon_schema_registry.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/priv/toon_schema_registry.md)
-- Schema validation, registration metadata, and backward/forward evolutionary compatibility rules.
+#### [NEW] [utils.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/aether_db/native/aetherdb_native/src/utils.rs)
+- Implement `validate_toon_file` and xxHash fingerprint calculations.
 
 ---
 
 ## Verification Plan
 
-### Manual Verification
-- Verify readability of all markdown files.
-- Cross-reference offsets and layouts to ensure no overlaps in binary boundary descriptions.
+### Automated Tests
+- Run `mix test` to verify that our stub functions in Elixir/Rust compiles and passes serialization/deserialization correctness tests.
