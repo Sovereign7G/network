@@ -1,23 +1,18 @@
 ---
-created: '2026-06-22T20:12:57Z'
+created: '2026-06-22T20:14:16Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T20:12:59.497531Z'
+updated: '2026-06-22T20:14:19.992357Z'
 ---
 
-# Fabrika OS Stress Testing Checklist
+# Refactoring & Organizing Checklist (Under 400 Lines)
 
-- [x] Modify `06_INFRA/scripts/aether_cim_secure_baseband_sim.exs` for env-variable support
-  - [x] Parse `CIM_TEMP`, `CIM_LASER_POWER`, `CIM_SIGNAL_DEGRADE`
-  - [x] Add `CIM_JITTER_SCALE` and `CIM_LEAKAGE_SCALE` multipliers
-- [x] Implement `06_INFRA/scripts/aether_cim_fabrika_stress.py`
-  - [x] Import `FabrikaOS` and run metallurgy fabrication
-  - [x] Parse yields to compute `CIM_JITTER_SCALE` and `CIM_LEAKAGE_SCALE`
-  - [x] Run Elixir simulator across 25°C, 50°C, 85°C, 105°C, and 125°C sweep
-  - [x] Aggregate logs and print unified metrics dashboard
-- [x] Execute and verify stress test results
-- [x] Create walkthrough documenting implementation and verification logs
+- [ ] Create `06_INFRA/scripts/aether_cim_ternary_ops.exs`
+- [ ] Create `06_INFRA/scripts/aether_cim_esim_helper.exs`
+- [ ] Refactor `06_INFRA/scripts/aether_cim_secure_baseband_sim.exs` (reducing to <400 lines)
+- [ ] Execute and verify stress test results
+- [ ] Create walkthrough documenting changes
