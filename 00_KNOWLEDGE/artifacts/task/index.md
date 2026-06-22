@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:19:47Z'
+created: '2026-06-22T21:23:59Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T21:19:51.971926Z'
+updated: '2026-06-22T21:24:02.094556Z'
 ---
 
 # 7G Network Gap Closure Checklist
@@ -17,7 +17,7 @@ updated: '2026-06-22T21:19:51.971926Z'
 - [x] Build premium HTML/CSS/JS dashboard `dashboard_7g.html`
 - [x] Verify dashboard aesthetics, unique IDs, and interactive canvas
 - [x] Verify entire stack tests (SIP proxy & S7G tokenomics)
-- [ ] Implement access control and stable memory persistence in `move_vm/lib.rs`
-- [ ] Implement actual cycles distribution in `BifrostGateway.mo`
-- [ ] Upgrade `PrometheusKeyRegistry.mo` to support standard ICRC-1/ICRC-2 token ledgers
-- [ ] Compile and verify all modified Rust and Motoko canisters
+- [x] Implement access control and stable memory persistence in `move_vm/lib.rs`
+- [x] Implement actual cycles distribution in `BifrostGateway.mo`
+- [x] Upgrade `PrometheusKeyRegistry.mo` to support standard ICRC-1/ICRC-2 token ledgers
+- [x] Compile and verify all modified Rust and Motoko canisters
