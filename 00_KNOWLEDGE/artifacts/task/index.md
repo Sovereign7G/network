@@ -1,27 +1,24 @@
 ---
-created: '2026-06-22T15:47:22Z'
+created: '2026-06-22T16:14:15Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T15:47:24.511708Z'
+updated: '2026-06-22T16:14:17.722164Z'
 ---
 
-# Strategic Token Optimization Implementation Checklist
+# Antigravity IDE Integration & Benchmark Suite Checklist
 
-- [x] Core Semantic Caching & Prefix Stabilization
-  - [x] Implement cosine similarity vector caching in `06_INFRA/external_gateway.py`
-  - [x] Support caching of successful mock/real inferences
-  - [x] Implement prompt prefix stabilization (system schema prepend) in `external_gateway.py`
-- [x] Retrieval-Based Memory & Truncation
-  - [x] Integrate ChromaDB vector search in `06_INFRA/s2l_pipeline.py`'s `skill_inference` fallback path
-  - [x] Select only top-5 relevant concepts for in-context fallback prompt injection
-  - [x] Compress large concepts using truncation snippets
-- [x] Telemetry & Dashboard Integration
-  - [x] Update `triad_metrics.py` to count token saving stats
-  - [x] Ensure servers are restarted and running
-- [x] Verification
-  - [x] Run curl tests to verify semantic cache hits (similarity >= 0.92)
-  - [x] Verify retrieval-based fallback loads exactly 5 relevant memories
+- [ ] Core Benchmark Script Development
+  - [ ] Create `06_INFRA/antigravity_benchmark.py` with latency, token savings, and end-to-end workflow benchmarking
+  - [ ] Correct tool call names from `hybrid_infer` to `skill_inference`
+  - [ ] Implement write out capability using OKF's `write_concept` helper
+- [ ] OKF Server MCP Tools Integration
+  - [ ] Register `run_benchmark` and `benchmark_status` in `06_INFRA/magix_okf.py`'s `TOOLS` mapping
+  - [ ] Declare schemas in `MCP_TOOLS_SCHEMA`
+  - [ ] Restart servers to reload tools
+- [ ] Run & Verify benchmarks
+  - [ ] Execute `python3 06_INFRA/antigravity_benchmark.py` and inspect output JSON
+  - [ ] Call `run_benchmark` via curl and verify reports are saved in `00_KNOWLEDGE/system/benchmarks/`
