@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T15:28:25Z'
+created: '2026-06-22T15:34:00Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T15:28:28.831343Z'
+updated: '2026-06-22T15:34:03.965720Z'
 ---
 
 # Strategic Token Optimization Implementation Checklist
@@ -19,9 +19,9 @@ updated: '2026-06-22T15:28:28.831343Z'
   - [x] Integrate ChromaDB vector search in `06_INFRA/s2l_pipeline.py`'s `skill_inference` fallback path
   - [x] Select only top-5 relevant concepts for in-context fallback prompt injection
   - [x] Compress large concepts using truncation snippets
-- [ ] Telemetry & Dashboard Integration
-  - [ ] Update `triad_metrics.py` to count token saving stats
-  - [ ] Ensure servers are restarted and running
+- [x] Telemetry & Dashboard Integration
+  - [x] Update `triad_metrics.py` to count token saving stats
+  - [x] Ensure servers are restarted and running
 - [ ] Verification
   - [ ] Run curl tests to verify semantic cache hits (similarity >= 0.92)
   - [ ] Verify retrieval-based fallback loads exactly 5 relevant memories
