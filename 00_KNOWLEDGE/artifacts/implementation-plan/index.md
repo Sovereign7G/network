@@ -1,63 +1,81 @@
 ---
-created: '2026-06-22T20:14:10Z'
+created: '2026-06-22T21:01:03Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T20:14:14.692620Z'
+updated: '2026-06-22T21:01:04.614423Z'
 ---
 
-# Simulator Refactoring & Organizing Plan (Under 400 Lines)
+# SIP over 7G Beam Signaling Plane Implementation
 
-We will refactor the **AetherCIM Secure Baseband Processor** simulator script to bring it under the 400-line constraint while keeping it highly modular and structured.
+We will implement the signaling plane for the Sovereign 7G Network by building a Session Initiation Protocol (SIP) Proxy integrated with the on-chain identity layer (Base Mainnet) and the 7G photonic beam controller.
+
+## User Review Required
+
+> [!IMPORTANT]
+> The telephony contracts are already deployed on Base Mainnet. We will configure their real mainnet addresses in `sip_proxy.py`:
+> - `S7GToken`: `0x54951D5021a2774567412fB8DB6FDF4A1EaE2611`
+> - `PhoneNumberRegistry`: `0x2606fEbB30deE751DfFbCa538df20Eed5E379410`
+> - `CallSession`: `0x6afd8D26dF226980a932439948DEefBd33301bf6`
+> - `NodeLicense`: `0x45bD704f371bc593f38Bd76D43D356A14Febe477`
+> - `NodeStaking`: `0xEfc2803E088e287b4013abB37358e3cf760A4747`
+
+> [!TIP]
+> We will implement a custom, pure-python `sip.py` library containing the `Message`, `Via`, `Contact`, and `URI` classes to support RFC 3261 parsing and serialization. This ensures zero external binary dependencies (such as PJSUA2 or PJSIP compilation requirements) and guarantees 100% deterministic success in execution and testing.
+
+## Open Questions
+
+None at this stage. All required smart contract addresses are resolved and live on Base Mainnet.
 
 ---
 
 ## Proposed Changes
 
-We will extract logic into two new Elixir helper modules and update the main script:
+### SIP Core Protocol Components
 
-### 1. Custom Ternary Operations Helper
+#### [NEW] [sip.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sip.py)
+- A pure-python lightweight SIP message parser and serializer.
+- Class `URI`: Parsers and represents a standard SIP URI (`sip:user@host:port`).
+- Class `Via`: Parses and represents the `Via` header, handling branch IDs, rport, and transport parameters.
+- Class `Contact`: Represents a SIP `Contact` header with expiry parameters.
+- Class `Message`:
+  - Parses raw bytes/strings into request/response objects (headers, body, start-line).
+  - Serializes messages to raw bytes for UDP/TCP transmission.
+  - Implements header getters/setters (`get_header`, `set_header`, `set_body`).
 
-#### [NEW] [aether_cim_ternary_ops.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_ternary_ops.exs)
-- **Module**: `AetherDb.Cim.TernaryInstructionSet`
-- Contains:
-  - `validate_instructions/1`: Validates ternary calculations.
-  - `exec_tfmacc/3`: Emulates the ternary MAC vector operation.
-  - `exec_tpack/1`: Emulates the ternary packaging vector operation.
-  - `exec_tscale/3`: Emulates the ternary scaling vector operation.
+### Telephony Signaling Plane
 
-### 2. eSIM Provisioning & Registry Helper
+#### [NEW] [onchain_resolver.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/onchain_resolver.py)
+- Implements `OnChainResolver` querying the `PhoneNumberRegistry` and other naming services on Base Mainnet.
+- Resolves E.164 phone numbers (`+14155551234`) and handles `.eth`, `.sol`, `.6g` resolution down to eSIM identities.
 
-#### [NEW] [aether_cim_esim_helper.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_esim_helper.exs)
-- **Module**: `AetherDb.Cim.EsimHelper`
-- Contains:
-  - `curl_post/3`: Direct CLI system `curl` requester.
-  - `parse_esim_profile/2` and `format_profile_map/1`: eSIM parsers.
-  - `offline_provision_esim/1`: Generates fallback eSIM.
-  - `write_esim_registry/3`: Appends active profiles to `sovereign_esims.json`.
+#### [NEW] [beam_controller.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/beam_controller.py)
+- Implements `BeamController` communicating with the 7G photonic beamforming engine.
+- Models 128x128 MIMO spatial parameters, WDM super-position for zone crossings, and SRTP key exchange.
 
-### 3. Main Simulator Script Refactoring
-
-#### [MODIFY] [aether_cim_secure_baseband_sim.exs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/scripts/aether_cim_secure_baseband_sim.exs)
-- Loads helper files dynamically:
-  ```elixir
-  Code.require_file("aether_cim_ternary_ops.exs", Path.dirname(__ENV__.file))
-  Code.require_file("aether_cim_esim_helper.exs", Path.dirname(__ENV__.file))
-  ```
-- Deletes the extracted functions.
-- Integrates the helper calls (`AetherDb.Cim.TernaryInstructionSet.validate_instructions/1`, `AetherDb.Cim.EsimHelper.curl_post/3`, etc.).
-- Reduces the line count of the main script from `570` lines to `~365` lines (well under the 400-line constraint).
+#### [NEW] [sip_proxy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sip_proxy.py)
+- Main entry point for the SIP registrar and proxy server.
+- Registers user agents, parses custom headers (`X-7G-Node`, `X-7G-Location`), resolves callee identities on-chain, establishes 7G beams, and generates SDP offers with negotiated SRTP keys.
 
 ---
 
 ## Verification Plan
 
-### Automated Run
-- Run the python integration orchestrator script:
+### Automated Tests
+- We will write a complete test suite:
+  #### [NEW] [test_sip_proxy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/test_sip_proxy.py)
+  - Simulates registration and call setup between two virtual UAs (Alice and Bob) over UDP loopback.
+  - Verifies:
+    1. **REGISTER**: Success on valid on-chain eSIM lookup.
+    2. **INVITE**: Successful resolving, beam creation, and SDP/SRTP key generation.
+    3. **BYE**: Correct session teardown and beam release.
+- Execution command:
   ```bash
-  python3 06_INFRA/scripts/aether_cim_fabrika_stress.py
+  python3 test_sip_proxy.py
   ```
-- Verify that it compiles, executes all temperature sweeps, validates the ternary outputs, and completes successfully with zero warnings.
+
+### Manual Verification
+- Verify output logs to confirm successful message routing and correct SIP response codes (100 Trying, 180 Ringing, 200 OK, 200 BYE).
