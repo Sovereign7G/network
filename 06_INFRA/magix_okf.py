@@ -11,6 +11,12 @@ import json, os, sys, yaml, re, subprocess
 from pathlib import Path
 from datetime import datetime
 
+# Import SCHEMA.md validator
+import sys
+_OKF_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, _OKF_DIR)
+from okf_validator import validate as schema_validate, list_types as schema_list_types
+
 # ── Configuration ───────────────────────────────────────────────
 
 KNOWLEDGE_ROOT = Path(os.environ.get(
@@ -19,11 +25,8 @@ KNOWLEDGE_ROOT = Path(os.environ.get(
 )).expanduser()
 
 SCHEMA_PATH = KNOWLEDGE_ROOT / "SCHEMA.md"
-VALID_TYPES = [
-    "KnowledgeBundle", "TelemetryReport", "ResearchFinding",
-    "ModelComparison", "EmailThread", "EmailDraft", "Document",
-    "SystemConfig", "ChatSession", "Note"
-]
+
+# (valid types loaded dynamically from SCHEMA.md via okf_validator)
 
 
 # ── OKF parsing ─────────────────────────────────────────────────
@@ -52,18 +55,9 @@ def render_okf(frontmatter: dict, body: str) -> str:
 # ── Schema validation ───────────────────────────────────────────
 
 def validate_concept(frontmatter: dict) -> dict:
-    """Validate frontmatter against SCHEMA.md requirements."""
-    errors = []
-    if not frontmatter.get("type"):
-        errors.append("Missing required field: type")
-    elif frontmatter["type"] not in VALID_TYPES:
-        errors.append(f"Invalid type '{frontmatter['type']}'. Must be one of: {', '.join(VALID_TYPES)}")
-
-    if not frontmatter.get("title"):
-        errors.append("Missing required field: title (will be auto-set)")
-
-    result = {"valid": len(errors) == 0, "errors": errors}
-    return result
+    """Validate frontmatter against SCHEMA.md via okf_validator."""
+    valid, errors = schema_validate(frontmatter)
+    return {"valid": valid, "errors": errors}
 
 
 # ── Path utilities ──────────────────────────────────────────────
