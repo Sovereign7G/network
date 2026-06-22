@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:24:12Z'
+created: '2026-06-22T21:45:28Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T21:24:12.186299Z'
+updated: '2026-06-22T21:45:32.635233Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
@@ -271,5 +271,27 @@ We implemented robust fixes for all 5 canister security issues identified in the
 5. **ICRC-1 / ICRC-2 Ledger Integration in [PrometheusKeyRegistry.mo](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/06_INFRA/PrometheusKeyRegistry.mo)**: Upgraded ledger actor signatures to use `icrc2_transfer_from` (for key locking deposits) and `icrc1_transfer` (for deactivation refunds), fully resolving incompatible API calls and runtime traps.
 
 **Verification results**:
-- Compiled Rust canister with `cargo check`: Finished check successfully.
+- Compiled Solidity contracts with `forge build`: Finished compilation check successfully.
+- Compiled Rust canisters (`move_vm` and `aetherdb_bridge`) with `cargo check`: Finished check successfully.
 - Checked Motoko gateway canisters: `BifrostGateway.mo` and `PrometheusKeyRegistry.mo` compile checks passed cleanly with exit code 0.
+- Ran complete Python-based tokenomics, telephony, and enclaves stress test suite: `python3 test_s7g_tokenomics_stress.py` completed with 100% success.
+
+---
+
+## 🔒 Additional Multi-Chain Security Patches & Verification
+
+We successfully remediated all Solidity compilation errors, linked registries, and resolved the final AetherDB bridge canister vulnerability findings:
+
+1. **AetherDB Bridge Canister (Access Control & Cache Limits)**:
+   - Added an `only_controller()` guard to `aetherdb_put`, `relay_event`, and `cache_put` in [lib.rs](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/src/aetherdb_bridge/src/lib.rs) to restrict updates to authorized principals and controllers.
+   - Enforced a 10,000 element limit on the `EVENTS` logs vector using an eviction-based ring buffer to prevent cycle exhaustion and OOM vulnerabilities.
+   - Implemented standard candid state serialization and deserialization hooks (`pre_upgrade`/`post_upgrade`) to prevent state loss on upgrade.
+2. **SovereignDAO Refinements**:
+   - Removed the first-staker DOS check from `stakeVotes` in [SovereignDAO.sol](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/contracts/SovereignDAO.sol).
+   - Moved the voting power cap (max 10% of total staked votes) dynamically to the `vote()` call, preventing lockups.
+   - Enforced target/selector whitelist validation during proposal creation in `createProposal` to prevent dead or malicious proposals early.
+3. **CallSession Registry Mapping**:
+   - Defined `IPhoneNumberRegistry` interface in [CallSession.sol](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/contracts/CallSession.sol) and linked to the live phone registry canister to resolve comparing `address` to `bytes32` directly, restoring full compile security.
+4. **Deploy Scripts & Config Cleanups**:
+   - Updated [DeployTelephonySuite.s.sol](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/contracts/scripts/DeployTelephonySuite.s.sol) to retrieve the treasury address from environmental variables using `vm.envOr`.
+   - Cleaned up [dfx.json](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/dfx.json) to remove references to the 5 non-existent legacy canisters, restoring deploy pipeline integrity.
