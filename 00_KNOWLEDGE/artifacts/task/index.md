@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:23:59Z'
+created: '2026-06-22T21:45:21Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T21:24:02.094556Z'
+updated: '2026-06-22T21:45:22.365724Z'
 ---
 
 # 7G Network Gap Closure Checklist
@@ -21,3 +21,10 @@ updated: '2026-06-22T21:24:02.094556Z'
 - [x] Implement actual cycles distribution in `BifrostGateway.mo`
 - [x] Upgrade `PrometheusKeyRegistry.mo` to support standard ICRC-1/ICRC-2 token ledgers
 - [x] Compile and verify all modified Rust and Motoko canisters
+- [x] Resolve Solidity compilation errors (checksum, Ownable constructor, missing brace)
+- [x] Link CallSession to PhoneNumberRegistry to resolve address-to-bytes32 comparison mismatch
+- [x] Fix SovereignDAO first-staker DOS and move voting power cap to vote()
+- [x] Enforce relayer bonding check in ICPReverseBridge.submitSlash()
+- [x] Prevent eSIM overwrite and orphaned mappings in PhoneNumberRegistry.portNumber()
+- [x] Secure aetherdb_bridge canister with access control, ring buffer capping, and stable memory upgrade hooks
+- [x] Clean dfx.json of non-existent canister references to restore dfx compile safety
