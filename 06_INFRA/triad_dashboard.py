@@ -21,6 +21,7 @@ from pathlib import Path
 # Import metrics collector
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from triad_metrics import TriadMetrics
+from era2_phase2 import graph_data, OKFKnowledgeGraph, OKFRecommender
 
 PORT = int(sys.argv[1]) if len(sys.argv) > 1 else 8080
 metrics = TriadMetrics()
@@ -234,6 +235,10 @@ class DashboardHandler(BaseHTTPRequestHandler):
                         "rest_calls": metrics.request_counts["rest"],
                         "mcp_errors": metrics.errors["mcp"],
                         "rest_errors": metrics.errors["rest"]})
+        elif self.path == "/api/graph":
+            self._json(graph_data({}))
+        elif self.path == "/api/semantic":
+            self._html(SEMANTIC_HTML)
         else:
             self._html(HTML)
 
@@ -269,6 +274,46 @@ def seed_events():
     metrics.add_event("Odysseus", "REST endpoints ready on port 9010")
     metrics.add_event("OKF", "Knowledge bundle initialized — 11 types, schema validation active")
     metrics.add_event("Antigravity", "MCP bridge connected to port 9000")
+
+
+# ── Semantic Dashboard (Era II) ─────────────────────────────────
+
+SEMANTIC_HTML = """<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OKF Knowledge Graph — Semantic View</title>
+<style>
+  body{background:#0d1117;color:#e6edf3;font-family:system-ui,monospace;margin:0;padding:20px}
+  h1{font-size:1.2rem;margin-bottom:20px}
+  .layout{display:flex;gap:20px;height:calc(100vh-80px)}
+  .graph-panel{flex:1;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;overflow:hidden;position:relative}
+  .side-panel{width:320px;background:#161b22;border:1px solid #30363d;border-radius:8px;padding:16px;overflow-y:auto}
+  .stat{margin:8px 0;padding:8px;background:#0d1117;border-radius:6px;display:flex;justify-content:space-between}
+  .stat .label{color:#8b949e;font-size:0.8rem}
+  .stat .value{font-weight:600}
+  canvas{width:100%;height:calc(100% - 40px)}
+  .recos{margin-top:16px}
+  .reco-item{padding:6px 8px;margin:4px 0;border-radius:6px;cursor:pointer;font-size:0.85rem}
+  .reco-item:hover{background:rgba(88,166,255,0.15)}
+  .reco-item .sim{color:#8b949e;font-size:0.75rem}
+  .tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:0.7rem;margin-right:4px;background:#30363d;color:#8b949e}
+</style></head><body>
+<h1>🧠 OKF Knowledge Graph <span style="color:#8b949e;font-size:0.8rem;font-weight:normal;margin-left:10px" id="stats"></span></h1>
+<div class="layout">
+<div class="graph-panel">
+  <canvas id="graph"></canvas>
+</div>
+<div class="side-panel">
+  <h3 style="font-size:0.75rem;text-transform:uppercase;letter-spacing:1px;color:#8b949e">Recommendations</h3>
+  <div id="recos" class="recos"><p style="color:#8b949e;font-size:0.85rem">Loading...</p></div>
+</div>
+</div>
+<script>
+async function init(){const r=await fetch('/api/graph');const d=await r.json();renderGraph(d);renderRecos(d)}
+function renderGraph(d){document.getElementById('stats').textContent=`${d.nodes.length} concepts, ${d.edges.length} connections`;const c=document.getElementById('graph');const ctx=c.getContext('2d');c.width=c.parentElement.clientWidth-32;c.height=c.parentElement.clientHeight-80;const cx=c.width/2;const cy=c.height/2;const r=Math.min(cx,cy)*0.75;const pos={};d.nodes.forEach((n,i)=>{const a=(i/d.nodes.length)*2*Math.PI-Math.PI/2;pos[n.id]={x:cx+r*Math.cos(a),y:cy+r*Math.sin(a)}});ctx.clearRect(0,0,c.width,c.height);d.edges.forEach(e=>{ctx.strokeStyle='rgba(48,54,61,0.5)';ctx.lineWidth=e.weight*3;ctx.beginPath();ctx.moveTo(pos[e.source].x,pos[e.source].y);ctx.lineTo(pos[e.target].x,pos[e.target].y);ctx.stroke()});const colors={'ResearchFinding':'#bc8cff','EmailThread':'#58a6ff','EmailDraft':'#58a6ff','Document':'#3fb950','ModelComparison':'#d29922','Note':'#8b949e','CalendarEvent':'#f85149','SystemConfig':'#f0883e','KnowledgeBundle':'#e6edf3','KnowledgeIndex':'#6e7681'};d.nodes.forEach(n=>{ctx.beginPath();ctx.arc(pos[n.id].x,pos[n.id].y,8,0,2*Math.PI);ctx.fillStyle=colors[n.type]||'#8b949e';ctx.fill();ctx.strokeStyle='#0d1117';ctx.lineWidth=2;ctx.stroke();ctx.fillStyle='#e6edf3';ctx.font='11px system-ui';ctx.textAlign='center';const label=n.title.length>20?n.title.slice(0,20)+'...':n.title;ctx.fillText(label,pos[n.id].x,pos[n.id].y-14)})}
+function renderRecos(d){if(!d.nodes.length)return;const seen=new Set();const el=document.getElementById('recos');el.innerHTML='';const sample=d.nodes.slice(0,10);sample.forEach(n=>{const div=document.createElement('div');div.className='reco-item';div.innerHTML=`<span>${n.title}</span> <span class="tag">${n.type}</span><br><span class="sim">${n.path}</span>`;div.onclick=()=>{fetch('/api/status').then(r=>r.json()).then(data=>{document.getElementById('stats').textContent=`Selected: ${n.path} | ${data.systems.okf.total_concepts} total concepts`})};el.appendChild(div)})}
+init();setInterval(()=>fetch('/api/graph').then(r=>r.json()).then(d=>{renderGraph(d);renderRecos(d)}),10000);
+</script></body></html>"""
 
 
 if __name__ == "__main__":
