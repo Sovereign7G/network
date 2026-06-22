@@ -1,25 +1,26 @@
 ---
-created: '2026-06-22T18:26:03Z'
+created: '2026-06-22T18:35:54Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-22T18:26:06.026487Z'
+updated: '2026-06-22T18:35:58.676941Z'
 ---
 
-# AetherDB v2 Phase 1 Week 2 implementation Checklist
+# AetherDB v2 Phase 1 Week 3 implementation Checklist
 
-- [x] Core Rust Structures
-  - [x] Implement `ToonHeader`, `ToonToken`, `ToonType`, and `ToonFile` in Rust.
-- [x] Serialization Engine
-  - [x] Implement `serialize.rs` logic with proper alignment and token mapping.
-- [x] Zero-Copy Deserialization
-  - [x] Implement `deserialize.rs` for zero-copy field reads.
-- [x] Helpers and NIF Interface
-  - [x] Implement validation and hashing in `utils.rs`.
-  - [x] Update `lib.rs` and NIF exports to expose `serialize_toon` and `deserialize_toon`.
-  - [x] Implement wrapper stubs in `lib/aether_db/toon/native.ex`.
+- [x] NIF Module Setup & Resource Management
+  - [x] Register `ToonResource` and `ToonMmapResource` in load/2 callback.
+  - [x] Export `toon_new`, `toon_open`, `toon_serialize`, `toon_deserialize`, `toon_get_value`, `toon_record_count`, `toon_checksum`, and `toon_validate` NIFs.
+  - [x] Optimize term conversion with static `rustler::atoms!` registry.
+- [x] Elixir Wrapper API
+  - [x] Match wrapper signatures with native implementation returns (`{:ok, T}` and `{:error, reason}`).
+  - [x] Standardize pattern match parsing of file headers (schema ID, version, record counts) to use little-endian byte ordering.
+- [x] ETS Cache Integration
+  - [x] Implement read-through caching in `TOONCache`.
+  - [x] Integrate cache server into Supervision tree.
 - [x] Verification
-  - [x] Run `mix test` and confirm compilation and roundtrip tests pass.
+  - [x] Run `mix test` and confirm all 33 legacy and integration tests pass successfully.
+  - [x] Optimize benchmark loops to execute under the 500ms threshold (achieved ~400ms).
