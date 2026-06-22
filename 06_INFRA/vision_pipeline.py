@@ -34,18 +34,14 @@ def _ts() -> str:
 
 
 def _write_okf(path, fm, body, msg=None):
-    try:
-        from magix_okf import write_concept
-        return write_concept(path=path, frontmatter=fm, body=body, commit_message=msg)
-    except Exception:
-        target = KNOWLEDGE_ROOT / path.strip("/") / "index.md"
-        target.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            import yaml
-            target.write_text(f"---\n{yaml.dump(fm, default_flow_style=False).strip()}\n---\n\n{body.strip()}\n")
-        except Exception:
-            target.write_text(body)
-        return {"path": path, "written": True, "fallback": True}
+    """Write OKF concept directly (avoids subprocess PATH issues)."""
+    import yaml
+    target = KNOWLEDGE_ROOT / path.strip("/") / "index.md"
+    target.parent.mkdir(parents=True, exist_ok=True)
+    fm_yaml = yaml.dump(fm, default_flow_style=False, allow_unicode=True).strip()
+    content = f"---\n{fm_yaml}\n---\n\n{body.strip()}\n"
+    target.write_text(content)
+    return {"path": path, "written": True}
 
 
 # ── Hash-based image embedding (no CLIP dependency) ─────────────
