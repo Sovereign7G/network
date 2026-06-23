@@ -3,13 +3,14 @@
 Covers: voice, messaging, nodes, beamforming, analytics, identity,
         LoRA IoT, ICP mesh, cross-chain, AI spec KB, and Virtual DSA.
 """
+__version__ = "2.4.0"
 import json, os, time, hmac, hashlib
 from decimal import Decimal
 from http.client import HTTPSConnection
 from typing import Dict, List, Optional, Callable, Any
 
 API_BASE = os.getenv("S7G_API", "https://api.7g.sol")
-# Fallback: read from .env or SERVEO_URL env var (updated on serveo restart)
+
 def _resolve_serveo() -> str:
     url = os.getenv("SERVEO_URL") or os.getenv("SERVEO_FALLBACK")
     if url: return url
@@ -44,6 +45,7 @@ def _ic_call(canister: str, method: str, args: list) -> Optional[dict]:
 
 def _sip_message(to: str, msg: str, host: str = "127.0.0.1", port: int = 5060):
     try:
+        import socket
         body = (f"MESSAGE sip:{to}@{host} SIP/2.0\r\n"
                 f"From: <sip:sdk@{host}>;tag={hashlib.md5(msg.encode()).hexdigest()[:8]}\r\n"
                 f"To: <sip:{to}@{host}>\r\nCall-ID: sdk-{int(time.time())}\r\n"
@@ -54,8 +56,6 @@ def _sip_message(to: str, msg: str, host: str = "127.0.0.1", port: int = 5060):
         return True
     except Exception:
         return False
-
-
 
 # ── S7G Types ───────────────────────────────────────────────────
 
@@ -75,31 +75,24 @@ class S7GCall:
 
 class S7GClient:
     """Sovereign 7G SDK v2 — covers all S7G network capabilities."""
-
     def __init__(self, identity: str = "", secret: str = "", network: str = "base"):
         self.identity = identity; self.secret = secret or os.getenv("S7G_SECRET","")
-        self.network = network
-        self.base = self._resolve_api_endpoint() or API_BASE
+        self.network = network; self.base = self._resolve_api_endpoint() or API_BASE
 
     def _resolve_api_endpoint(self) -> Optional[str]:
-        # Priority 1: SNS resolution (api.7g.sol via SSIMesh)
         try:
             from identity.ssi_mesh import SSIMesh
-            ssi = SSIMesh()
-            url = ssi.resolve_url("api.7g.sol")
+            url = SSIMesh().resolve_url("api.7g.sol")
             if url: return url
         except Exception:
             pass
-        # Priority 2: Environment variable
         url = os.getenv("S7G_API_URL")
         if url: return url
-        # Priority 3: SERVEO_FALLBACK (from .env or env var)
         url = os.getenv("SERVEO_URL") or os.getenv("SERVEO_FALLBACK")
         if url: return url
-        return None  # let caller use API_BASE default
+        return None
 
     def _sign(self, path: str, data: str = "") -> str:
-        """HMAC sign a request — raises only when actually signing."""
         secret = self.secret or os.getenv("S7G_SECRET")
         if not secret:
             raise RuntimeError("S7G_SECRET required for signing requests")
@@ -173,11 +166,9 @@ class S7GClient:
     # ═══════════════════════════════════════════════════════════════
 
     def icp_store(self, key: str, value: str) -> Optional[dict]:
-        """Store a value in aetherdb_bridge."""
         return _ic_call(AETHERDB, "aetherdb_put", [key, list(value.encode("utf-8"))])
 
     def icp_get(self, key: str) -> Optional[str]:
-        """Get a value from aetherdb_bridge."""
         r = _ic_call(AETHERDB, "aetherdb_get", [key])
         if not r: return None
         data = r.get("result") or r.get("Ok")
@@ -185,7 +176,6 @@ class S7GClient:
         return data
 
     def icp_list_type(self, prefix: str) -> list:
-        """List keys by type prefix."""
         r = _ic_call(AETHERDB, "list_by_type", [prefix])
         if not r: return []
         return r.get("result") or r.get("Ok") or []
@@ -202,15 +192,13 @@ class S7GClient:
 
     # ── Relayer Status ────────────────────────────────────────────
     def relayer_status(self) -> Optional[dict]:
-        primary = self.icp_get("relayer:primary")
-        return {"primary": primary}
+        return {"primary": self.icp_get("relayer:primary")}
 
     # ═══════════════════════════════════════════════════════════════
     # LoRA IOT
     # ═══════════════════════════════════════════════════════════════
 
     def lora_register_device(self, dev_eui: str, location: str = "") -> Optional[dict]:
-        """Register a LoRA device by DevEUI."""
         return _ic_call(AETHERDB, "aetherdb_put",
             [f"lora:device:{dev_eui}", json.dumps({"devEUI":dev_eui,"location":location,"ts":time.time()})])
 
@@ -218,11 +206,10 @@ class S7GClient:
         return self.icp_get(f"lora:device:{dev_eui}")
 
     def lora_get_telemetry(self, dev_eui: str) -> list:
-        """Get recent telemetry for a LoRA device."""
         return self.icp_list_type(f"lora:{dev_eui}")
 
-    def lora_alert(self, dev_eui: str, alert_type: str, location: str, contact: str = "+15551234") -> bool:
-        """Send a LoRA alert via SIP."""
+    def lora_alert(self, dev_eui: str, alert_type: str, location: str,
+                   contact: str = "+155****1234") -> bool:
         msg = f"[LoRA] {alert_type.upper()} at {dev_eui} ({location})"
         return _sip_message(contact, msg)
 
@@ -232,44 +219,35 @@ class S7GClient:
 
     def dsa_observe(self, target: str, freq_hz: float, bandwidth: float,
                     nodes: Optional[List[str]] = None, duration_s: int = 30) -> Dict:
-        """Schedule a radio observation across mesh nodes."""
         return self._request("POST","/api/dsa/observe",{
             "target":target,"freq_hz":freq_hz,"bandwidth":bandwidth,
             "nodes":nodes or [],"duration_s":duration_s})
 
     def dsa_frb_recent(self, minutes: int = 60) -> Dict:
-        """Get recent Fast Radio Burst detections."""
         return self._request("GET",f"/api/dsa/frb?minutes={minutes}")
 
     def dsa_pulsar(self, name: str) -> Dict:
-        """Get pulsar timing data."""
         return self._request("GET",f"/api/dsa/pulsar?name={name}")
 
     def dsa_rfi_report(self, node_id: Optional[str] = None) -> Dict:
-        """Get RFI monitoring report."""
         path = f"/api/dsa/rfi?node_id={node_id}" if node_id else "/api/dsa/rfi"
         return self._request("GET", path)
 
     def dsa_rfi_alert(self, band: str, power_dbm: float, node_id: str,
                       contact: str = "astronomer@7g.network") -> bool:
-        """Send RFI alert via SIP."""
-        msg = f"[DSA RFI] {band}: {power_dbm:.1f} dBm at {node_id}"
-        return _sip_message(contact, msg)
+        return _sip_message(contact, f"[DSA RFI] {band}: {power_dbm:.1f} dBm at {node_id}")
 
     # ═══════════════════════════════════════════════════════════════
     # AI / 3GPP SPEC KNOWLEDGE
     # ═══════════════════════════════════════════════════════════════
 
     def spec_get_context(self, spec_id: str, clause: Optional[str] = None) -> Dict:
-        """Get 3GPP spec context for AI agent debugging."""
         return self._request("GET",f"/api/spec/context?spec={spec_id}&clause={clause or ''}")
 
     def spec_search(self, query: str) -> Dict:
-        """Search 3GPP specs."""
         return self._request("GET",f"/api/spec/search?q={query}")
 
     def spec_for_component(self, component: str) -> Dict:
-        """Get spec context for a specific S7G component."""
         return self._request("GET",f"/api/spec/component?name={component}")
 
     # ═══════════════════════════════════════════════════════════════
@@ -277,15 +255,12 @@ class S7GClient:
     # ═══════════════════════════════════════════════════════════════
 
     def test_health(self) -> Dict:
-        """Run health check — 7 contracts on Base Mainnet."""
         return self._request("GET","/api/test/health")
 
     def test_soak(self, hours: int = 1) -> Dict:
-        """Trigger soak test."""
         return self._request("POST","/api/test/soak",{"hours":hours})
 
     def test_stress(self, requests: int = 100, workers: int = 10) -> Dict:
-        """Trigger stress test."""
         return self._request("POST","/api/test/stress",{"requests":requests,"workers":workers})
 
     # ═══════════════════════════════════════════════════════════════
@@ -320,160 +295,61 @@ class S7GClient:
             "ku_band": (12.0e9, 12.75e9),
         }
 
-    # ═══════════════════════════════════════════════════════════════
-    # POS DONGLE
-    # ═══════════════════════════════════════════════════════════════
-
-    def pos_settle(self, agent_did: str, merchant_id: str, amount: int,
-                   corridor: str = "base_usdc", credential: str = "0x") -> Dict:
-        """Settle a POS transaction through the S7G network."""
-        return self._request("POST", "/api/pos/settle", {
-            "agent_did": agent_did, "merchant_id": merchant_id,
-            "amount": amount, "corridor": corridor, "credential": credential,
-        })
-
-    def pos_verify(self, agent_did: str, amount: int, corridor: str,
-                   proof_hash: str) -> Dict:
-        """Verify a POS settlement proof."""
-        return self._request("POST", "/api/pos/verify", {
-            "agent_did": agent_did, "amount": amount,
-            "corridor": corridor, "proof_hash": proof_hash,
-        })
-
-    def pos_status(self) -> Dict:
-        """Get POS integration status."""
-        return self._request("GET", "/api/pos/status")
-
-    @property
-    def POS_PLATFORMS(self):
-        return ["zavo", "razorpay", "airwallex"]
-
-    @property
-    def POS_CORRIDORS(self):
-        return ["base_usdc", "base_eurc", "esc_ela", "icp_cycles"]
-
-    # ── Court Operations (S7G v2.2) ──────────────────────────────
-
-    def court_executive_pause(self, agent_name: str) -> Dict:
-        """ExecutiveCourt: pause an agent (3-of-5 judges)."""
-        return self._request("POST", "/api/court/executive/pause", {"agent": agent_name})
-
-    def court_executive_freeze(self, corridor: str) -> Dict:
-        """ExecutiveCourt: freeze a stablecoin corridor."""
-        return self._request("POST", "/api/court/executive/freeze", {"corridor": corridor})
-
-    def court_arbitration_file(self, defendant: str, evidence: str) -> Dict:
-        """ArbitrationCourt: file a dispute (requires 1,000 S7G bond)."""
-        return self._request("POST", "/api/court/arbitration/file",
-                             {"defendant": defendant, "evidence": evidence})
-
-    def court_arbitration_status(self, case_id: int) -> Dict:
-        """ArbitrationCourt: check case status."""
-        return self._request("GET", f"/api/court/arbitration/{case_id}")
-
-    def court_governance_params(self, agent: str = "", param: str = "") -> Dict:
-        """AgentGovernance: get or set agent parameters."""
-        return self._request("GET", f"/api/court/governance/params?agent={agent}&param={param}")
-
-    def court_governance_propose(self, agent: str, param: str, value: int) -> Dict:
-        """AgentGovernance: propose a parameter change (7-day optimistic)."""
-        return self._request("POST", "/api/court/governance/propose",
-                             {"agent": agent, "param": param, "value": value})
-
-    # ── Agent Swarm ──────────────────────────────────────────────
-
-    def swarm_status(self) -> Dict:
-        """Get status of all 26 agents."""
-        return self._request("GET", "/api/swarm/status")
-
-    def swarm_agent_info(self, name: str) -> Dict:
-        """Get detailed info for a specific agent."""
-        return self._request("GET", f"/api/swarm/agent/{name}")
-
-    def swarm_logs(self, agent: str = "", hours: int = 1) -> Dict:
-        """Read agent logs from aetherdb_bridge."""
-        return self._request("GET", f"/api/swarm/logs?agent={agent}&hours={hours}")
-
-    # ── Stablecoin Engine ────────────────────────────────────────
-
-    def cctp_bridge_status(self, chain: str = "base") -> Dict:
-        """CCTP Bridge: check cross-chain USDC bridge status."""
-        return self._request("GET", f"/api/stablecoin/cctp?chain={chain}")
-
-    def cctp_transfer(self, amount: int, source: str, dest: str) -> Dict:
-        """CCTP Bridge: transfer USDC cross-chain with CCTP."""
-        return self._request("POST", "/api/stablecoin/cctp/transfer",
-                             {"amount": amount, "source": source, "dest": dest})
-
-    def multi_yield_vault(self, action: str = "stats", asset: str = "USDC") -> Dict:
-        """MultiYieldVault: deposit, withdraw, or check yields."""
-        return self._request("POST", f"/api/stablecoin/vault/{action}", {"asset": asset})
-
-    def stablecoin_routes(self) -> Dict:
-        """Get current stablecoin routing table (all corridors)."""
-        return self._request("GET", "/api/stablecoin/routes")
-
-    def global_rate_card(self, currency: str = "USD") -> Dict:
-        """GlobalRateCard: get per-minute rate for any currency."""
-        return self._request("GET", f"/api/stablecoin/rates?currency={currency}")
-
     # ── Emergency Response ───────────────────────────────────────
-
     def emergency_dispatch(self, inc_id: str) -> Dict:
-        """Dispatch responders to an incident."""
-        return self._request("POST", "/api/emergency/dispatch", {"incident_id": inc_id})
+        return self._request("POST","/api/emergency/dispatch",{"incident_id": inc_id})
 
     def emergency_fund(self, inc_id: str, amount: int) -> Dict:
-        """Fund an emergency response from the S7G pool."""
-        return self._request("POST", "/api/emergency/fund",
+        return self._request("POST","/api/emergency/fund",
                              {"incident_id": inc_id, "amount": amount})
 
     # ── AIOps & Federated Learning ───────────────────────────────
-
     def aiops_anomalies(self, hours: int = 24) -> Dict:
-        """Get recent AIOps anomaly detections."""
-        return self._request("GET", f"/api/aiops/anomalies?hours={hours}")
+        return self._request("GET",f"/api/aiops/anomalies?hours={hours}")
 
     def aiops_patches(self, status: str = "open") -> Dict:
-        """Get AI-generated patches from AIOps."""
-        return self._request("GET", f"/api/aiops/patches?status={status}")
+        return self._request("GET",f"/api/aiops/patches?status={status}")
 
     def federated_round(self) -> Dict:
-        """Get current federated learning round state."""
-        return self._request("GET", "/api/federated/round")
+        return self._request("GET","/api/federated/round")
 
     # ── Global Mesh ──────────────────────────────────────────────
-
     def mesh_routes(self) -> Dict:
-        """Get current global mesh routes and fallback status."""
-        return self._request("GET", "/api/mesh/routes")
+        return self._request("GET","/api/mesh/routes")
 
     # ── GTME: Market & Adoption ──────────────────────────────────
-
     def adoption_metrics(self) -> Dict:
-        """Get developer adoption funnel metrics."""
-        return self._request("GET", "/api/gtme/adoption")
+        return self._request("GET","/api/gtme/adoption")
 
     def competitive_intel(self, competitor: str = "") -> Dict:
-        """Get competitive intelligence report."""
-        return self._request("GET", f"/api/gtme/intel?competitor={competitor}")
+        return self._request("GET",f"/api/gtme/intel?competitor={competitor}")
 
-    # ── Constants v2.2 ───────────────────────────────────────────
 
-    @property
-    def AGENTS(self):
-        return {"total": 26, "ka_sem": 5, "execution": 12, "security": 3,
-                "governance": 2, "gtme": 4}
+# ═══════════════════════════════════════════════════════════════════
+# Domain method injection — extracted into sdk/py/s7g/domains/
+# ═══════════════════════════════════════════════════════════════════
 
-    @property
-    def COURTS(self):
-        return {"executive": "ExecutiveCourt.sol", "arbitration": "ArbitrationCourt.sol",
-                "governance": "AgentGovernance.sol"}
+from .domains.bridge import (
+    pos_settle, pos_verify, pos_status, POS_PLATFORMS, POS_CORRIDORS,
+    court_executive_pause, court_executive_freeze,
+    court_arbitration_file, court_arbitration_status,
+    court_governance_params, court_governance_propose,
+    cctp_bridge_status, cctp_transfer, stablecoin_routes,
+    global_rate_card, solana_cctp_settle,
+)
+from .domains.yield_router import multi_yield_vault
+from .domains.solana import (
+    solana_validator_info, solana_validator_stake, solana_validator_unstake,
+    solana_validator_rewards, solana_swap, solana_balance, solana_transfer,
+    solana_moneygram_track, solana_network_stats, solana_depin_projects,
+)
+from .domains.agents import (
+    swarm_status, swarm_agent_info, swarm_logs,
+    AGENTS, COURTS, STABLECOINS, CHAINS,
+)
 
-    @property
-    def STABLECOINS(self):
-        return ["USDC", "EURC", "USDT", "DAI", "LUSD", "BOLD", "PYUSD"]
-
-    @property
-    def CHAINS(self):
-        return ["base", "arbitrum", "solana", "ethereum", "polygon", "tron"]
+for _name, _val in list(locals().items()):
+    if _name.startswith(('pos_', 'court_', 'cctp_', 'stablecoin_', 'global_rate_',
+                         'solana_', 'multi_yield_vault', 'swarm_',
+                         'POS_', 'AGENTS', 'COURTS', 'STABLECOINS', 'CHAINS')):
+        setattr(S7GClient, _name, _val)
