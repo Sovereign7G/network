@@ -1,95 +1,98 @@
 ---
-created: '2026-06-22T21:51:39Z'
+created: '2026-06-23T02:22:45Z'
 tags:
 - antigravity
 - artifact
 - plan
 title: 'Antigravity Artifact: Implementation Plan'
 type: Note
-updated: '2026-06-22T21:51:43.295980Z'
+updated: '2026-06-23T02:22:45.305181Z'
 ---
 
-# Implementation Plan: 7G Network Operational & Design Gap Closure
+# Implementation Plan: Sovereign 7G CI/CD Pipelines & Workflows Activation
 
-This plan outlines the concrete code changes and infrastructure additions required to transition the Sovereign 7G Network from a secure logic model into a production-ready, observable, and bridged live network.
+This plan outlines the deployment of automated pipelines to build, test, deploy, and monitor the Sovereign 7G Network across all environments.
 
 ---
 
 ## User Review Required
 
 > [!IMPORTANT]
-> - **Private Keys and Gas**: The Python relayer and on-chain integration tests will require access to a wallet private key containing Base Sepolia/Mainnet gas to sign transactions. These keys must be loaded via environment variables (`PRIVATE_KEY` / `RELAYER_KEY`), not hardcoded.
-> - **Safe Multisig Address**: Safe deployments are network-specific. We will document the transfer of `DEFAULT_ADMIN_ROLE` to a generic Safe address. In live operations, this address must be pre-configured.
-> - **On-Chain Transactions in SIP Proxy**: Adding on-chain calls to `SipProxy` increases latency of SIP handling because blockchain transactions take a block time (~2s on Base) to mine. We will implement these calls asynchronously to prevent blocking the UDP socket event loop.
+> - **GitHub Secrets**: The deployment jobs in `.github/workflows/ci.yml` depend on secrets: `BASE_RPC_URL`, `DFX_IDENTITY_PEM`, `DOCKER_USERNAME`, `DOCKER_TOKEN`, and `DEPLOYER_PRIVATE_KEY`. These must be set up in the GitHub Repository settings prior to running the deploy step of the action.
+> - **Mojo Compiler**: The `.pre-commit-config.yaml` formats `.mojo` files using the `mojo fmt` command, which expects `mojo` to be available locally in the user's path.
+> - **DFX Setup**: The DFX installer is structured for deployment. Make sure your local and CI environments are configured with appropriate Candid service files.
 
 ---
 
 ## Proposed Changes
 
-### Component 1: Solidity Smart Contracts
+### Component 1: Development Pipeline & Tooling
 
-#### [MODIFY] [NodeLicense.sol](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/contracts/NodeLicense.sol)
-- **Revocation & Recovery (Gap 7)**:
-  - Add `revokeLicense(uint256 tokenId)` restricted to `ISSUER_ROLE`. This sets `licenses[tokenId].isActive = false` and emits a suspension/revocation event.
-  - Add `recoverLicense(uint256 tokenId)` restricted to `ISSUER_ROLE`. This restores `licenses[tokenId].isActive = true` and emits a recovery event.
+#### [NEW] [.pre-commit-config.yaml](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/.pre-commit-config.yaml)
+- Define default pre-commit hooks (whitespace, end of files, yaml, json, toml validation).
+- Add `ruff` hooks for Python style enforcement and type checking.
+- Integrate `mypy` for static typing.
+- Configure local system hooks for:
+  - `forge fmt` for Solidity code.
+  - `cargo fmt` for Rust files.
+  - `mojo fmt` for Mojo files.
 
----
-
-### Component 2: Cross-Chain Relayer & Signaling Plane
-
-#### [NEW] [relayer.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/relayer.py)
-- **Base ↔ ICP Relay (Gap 3)**:
-  - Implement an async Python relayer using `web3.py` and standard HTTP requests.
-  - **Base → ICP**: Listens for `ProposalExecuted` events from `SovereignDAO` on Base, hashes the execution state, and registers modules/calls on the ICP Move VM canister.
-  - **ICP → Base**: Periodically polls the `move_vm` canister for new slash events via `get_pending_slashes()`, and calls `ICPReverseBridge.submitSlash()` on Base.
-  - Implements local nonce caching for replay protection.
-
-#### [MODIFY] [sip_proxy.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/sip_proxy.py)
-- **On-Chain Settlement Integration (Gap 5)**:
-  - Import `Web3` to connect to Base.
-  - In `handle_invite()`, spawn a background async task to invoke `CallSession.initializeSession()` using the contract ABI.
-  - In `handle_bye()`, spawn a background async task to calculate session durations and packet/latency stats, and call `CallSession.endSession()` followed by `CallSession.settleSession()`.
+#### [NEW] [Makefile](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/Makefile)
+- Create a Makefile supporting development commands:
+  - `install`: Install Python requirements/SDK, Forge submodules, Rust Move VM, and Mojo beam controller.
+  - `lint`: Run `ruff`, `mypy`, `forge fmt`, `cargo fmt`, and `mojo fmt` formatting checks.
+  - `test`: Invoke `./run_all_tests.sh`.
+  - `test-onchain`: Invoke on-chain tests.
+  - `test-stress`, `test-chaos`, `test-soak`: Run specific suite subsets.
+  - `build`: Compile Solidity, Rust canister, Mojo controller, and Docker images.
+  - `deploy`: Execute liquid deployment and contract deploy script.
+  - `clean`: Remove caches and build targets.
 
 ---
 
-### Component 3: Live Verification & Monitoring Infrastructure
+### Component 2: Continuous Integration & Deployment (CI/CD)
 
-#### [NEW] [monitoring/bot.js](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/monitoring/bot.js)
-- **Transaction Monitoring Bot (Gap 1)**:
-  - Create a Node.js daemon using `ethers.js` to subscribe to event logs of the 7 deployed contracts.
-  - Specifically monitor and print alerts for:
-    - `NodeSlashed` and `SlashExecuted` events.
-    - `RoleGranted` and `RoleRevoked` admin actions.
-    - Large token transfer events or failed settlements.
+#### [MODIFY] [.github/workflows/ci.yml](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/.github/workflows/ci.yml)
+- Overwrite existing workflow with a comprehensive 7-job pipeline:
+  - **lint**: Ruff, Mypy, Forge format check, Cargo format check.
+  - **build**: Compile Solidity contracts, Rust canister, and Mojo beam controller. Upload build artifacts.
+  - **test**: Run on-chain tests, stress tests, chaos tests. Upload test reports.
+  - **security**: Python static analysis with `bandit`, Solidity contract checks via `slither`.
+  - **deploy-icp**: dfx deployment on ICP Mainnet (restricted to `main` branch).
+  - **push-docker**: Build and push Docker images for `sip-proxy` and `beam-controller` (restricted to `main` branch).
+  - **deploy-base**: Deploy Solidity contracts to Base Mainnet using Forge scripting (restricted to `main` branch).
 
-#### [NEW] [test_onchain.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/test_onchain.py)
-- **On-Chain Integration Test Suite (Gap 4)**:
-  - Implement a Python integration test suite using Web3.
-  - Sends actual signed transactions to a local testnet / Base RPC endpoint to verify live node staking, claiming rewards, eSIM registering, and session creation/settlement.
+#### [MODIFY] [dfx.json](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/dfx.json)
+- Align with the ICP canister configuration format for `move_vm`, `aetherdb_bridge`, and `swarm_brain`.
 
-#### [NEW] [emergency_response_plan.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/emergency_response_plan.md)
-- **Key Rotation & Disaster Playbook (Gap 2)**:
-  - Document step-by-step procedures for:
-    - Revoking compromised keys using a Safe multisig wallet.
-    - Transferring contract permissions to a safe multisig.
-    - Pausing staking contract operations under exploit scenarios.
+#### [NEW] [scripts/deploy_icp.sh](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/scripts/deploy_icp.sh)
+- Automate deployment of all three ICP canisters (`move_vm`, `aetherdb_bridge`, `swarm_brain`).
+- Invoke `grant_access` candid methods to connect `move_vm` and `swarm_brain` to `aetherdb_bridge`.
+
+#### [NEW] [scripts/run_tests.sh](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/scripts/run_tests.sh)
+- Implement a test pipeline automation script that:
+  - Runs Python on-chain verification tests.
+  - Runs pytest unit tests with code coverage checks.
+  - Runs stress tests with configurable iteration counts.
+  - Runs chaos tests for resilience checking.
+  - Optionally runs soak tests if `--soak` and duration are passed.
+  - Runs security scans.
 
 ---
 
-### Component 4: DEX Pool Bootstrapping
+### Component 3: Monitoring Pipeline
 
-#### [NEW] [deploy_liquidity.sh](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/scripts/deploy_liquidity.sh)
-- **DEX Pool Deployment Guide (Gap 6)**:
-  - Document the exact shell commands using Forge and Cast to deploy `S7GLiquidityBootstrapper.sol` and seed the S7G/ETH liquidity pool on Uniswap V3.
+#### [NEW] [monitoring/prometheus/prometheus.yml](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/monitoring/prometheus/prometheus.yml)
+- Add scrape configs for `sip-proxy`, `beam-controller`, `aether-mdu`, and `conceptron`.
+
+#### [NEW] [monitoring/grafana/dashboards/sovereign_7g.json](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/monitoring/grafana/dashboards/sovereign_7g.json)
+- Configure Grafana dashboard visual panels for: Active Calls, Call Quality (MOS), Online Nodes, Slash Rate, and Revenue metrics.
 
 ---
 
 ## Verification Plan
 
 ### Automated Checks
-- Run `forge build` to verify modified contracts compile.
-- Run `cargo check` to verify Rust workspaces.
-- Run `python3 test_sip_proxy.py` to confirm the SIP Proxy signaling plane still passes loopbacks cleanly.
-
-### Manual Verification
-- We will execute the new on-chain tests against a local Anvil fork of Base Mainnet to ensure no real money is spent during validation, while guaranteeing complete E2E on-chain validation of staking and sessions.
+- Verify Makefile tasks (`lint` and `test`) execute cleanly.
+- Verify pre-commit hooks run configuration tests.
+- Ensure monitoring and dashboard configuration files are valid JSON/YAML.
