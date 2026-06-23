@@ -33,7 +33,7 @@ defmodule TriCameralPrototype do
     # Server Callbacks
     @impl true
     def init(state) do
-      Logger.info("🟢 [Phase 3] Elixir Supervisor: Sovereign Orchestrator Initialized.")
+      Logger.info("🟢 [Phase 3] Elixir Supervisor: Siphon Orchestrator Initialized.")
       {:ok, state}
     end
 
@@ -62,7 +62,7 @@ defmodule TriCameralPrototype do
   def run do
     IO.puts(String.duplicate("=", 80))
     IO.puts("     🏛️  AGE REPUBLIC: TRI-CAMERAL ARCHITECTURE SIMULATION")
-    IO.puts("     ERA 226.0 — THE SOVEREIGN FORGE")
+    IO.puts("     ERA 226.0 — THE SIPHON FORGE")
     IO.puts(String.duplicate("=", 80))
 
     # Phase 3: Start Elixir Supervisor

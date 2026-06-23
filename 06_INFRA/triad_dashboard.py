@@ -60,9 +60,7 @@ HTML = """<!DOCTYPE html>
   body { background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', monospace; padding: 20px; }
   h1 { font-size: 1.4rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
   h1 .sub { font-size: 0.8rem; color: var(--dim); font-weight: normal; margin-left: auto; }
-  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-  @media (max-width: 900px) { .grid { grid-template-columns: repeat(2, 1fr); } }
-  @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; margin-bottom: 16px; }
   .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
   .card h3 { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: var(--dim); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
   .card .row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 0.85rem; }
@@ -132,8 +130,8 @@ function renderSystems(data) {
       {label:'MD Files', val: v => v.md_artifacts},
     ]},
     {name:'⚡ Hermes', key:'hermes', color:'var(--blue)', fields:[
-      {label:'MCP Port 9000', val: v => v.mcp_port_9000 ? '✅ Up' : '❌ Down', cls: v => v.mcp_port_9000 ? 'green' : 'red'},
-      {label:'REST Port 9001', val: v => v.rest_port_9001 ? '✅ Up' : '❌ Down', cls: v => v.rest_port_9001 ? 'green' : 'red'},
+      {label:'MCP Port 9002', val: v => v.mcp_port_9002 ? '✅ Up' : '❌ Down', cls: v => v.mcp_port_9002 ? 'green' : 'red'},
+      {label:'REST Port 9002', val: v => v.rest_port_9002 ? '✅ Up' : '❌ Down', cls: v => v.rest_port_9002 ? 'green' : 'red'},
       {label:'Skills', val: v => v.skills},
       {label:'MCP Tools', val: v => v.mcp_total_tools},
     ]},
@@ -148,6 +146,23 @@ function renderSystems(data) {
       {label:'Git Commits', val: v => v.git_commits},
       {label:'Size', val: v => v.bundle_size_kb + ' KB'},
       {label:'Schema Validation', val: v => v.schema_validation ? '✅ Active' : '❌ Inactive', cls: v => v.schema_validation ? 'green' : 'red'},
+    ]},
+    {name:'🧬 S2L Adapters', key:'s2l', color:'var(--blue)', fields:[
+      {label:'Active Adapter', val: v => v.active_adapter ? '🟢 ' + v.active_adapter : '⚪ None'},
+      {label:'Parameters', val: v => v.active_parameters ? (v.active_parameters / 1000000).toFixed(2) + 'M' : '0M'},
+      {label:'Trained Skills', val: v => v.trained_adapters ? v.trained_adapters.join(', ') : 'None'},
+      {label:'Base Model', val: v => v.base_model || 'Unknown'},
+      {label:'Avg Token Saving', val: v => v.token_saving_average ? v.token_saving_average + '%' : '0%'},
+    ]},
+    {name:'🔒 Privacy Gateway', key:'gateway', color:'var(--purple)', fields:[
+      {label:'Active Policy', val: v => v.active_policy || 'default'},
+      {label:'EU Data Residency', val: v => v.eu_data_residency ? '✅ Enabled' : '❌ Disabled', cls: v => v.eu_data_residency ? 'green' : 'dim'},
+      {label:'Budget Cap', val: v => '$' + (v.budget_cap_usd || 50.0).toFixed(2)},
+      {label:'Budget Spent', val: v => '$' + (v.budget_spent_usd || 0.0).toFixed(4), cls: v => (v.budget_spent_usd >= v.budget_cap_usd) ? 'red' : 'green'},
+      {label:'PII Redaction', val: v => v.pii_redaction ? '✅ Active' : '❌ Inactive', cls: v => v.pii_redaction ? 'green' : 'dim'},
+      {label:'Calls / Redacts', val: v => (v.total_calls || 0) + ' / ' + (v.total_redactions || 0)},
+      {label:'Cache Hits / Rate', val: v => (v.cache_hits || 0) + ' (' + (v.cache_hit_rate_pct || 0.0) + '%)'},
+      {label:'Avg Latency', val: v => (v.average_latency_ms || 0.0) + ' ms'}
     ]},
   ];
 

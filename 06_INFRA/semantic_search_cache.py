@@ -39,7 +39,7 @@ class SemanticSearchCache:
                       metadata: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Index a session for both FTS5 and semantic retrieval."""
         content = self._serialize_messages(messages)
-        embedding = json.dumps(self._compute_embedding(content))
+        embedding = self._compute_embedding(content)
         summary = self._summarize(messages)
 
         cursor = self.conn.cursor()

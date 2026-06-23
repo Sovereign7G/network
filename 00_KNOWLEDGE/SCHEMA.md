@@ -64,6 +64,21 @@ Shared persistent institutional memory for the Sovereign OS ecosystem, bridging 
   - `summary`: text block summarizing conversation
   - `checkpoints`: list of checkpoint commit hashes
 
+### 7. `CalendarEvent`
+- **Path**: `calendar/`
+- **Fields**:
+  - `type`: `CalendarEvent`
+  - `title`: string, the event title
+  - `date`: string, date in YYYY-MM-DD format
+  - `status`: scheduled | completed | cancelled
+  - `updated`: ISO timestamp
+
+### 8. `Note`
+- **Path**: `notes/`
+- **Fields**:
+  - `title`: string, the note title
+  - `tags`: array of string tags for categorization
+
 ---
 
 ## 🏷️ Tag Taxonomy

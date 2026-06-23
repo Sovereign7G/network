@@ -16,6 +16,8 @@ import json
 import time
 import random
 
+import sqlite3
+
 class JobPriority(Enum):
     GENESIS = 0      # Highest - founders, core contributors
     PLATINUM = 1     # High Merit burn rate
@@ -38,12 +40,32 @@ class FabricationJob:
     estimated_duration: float = field(default=0.0, compare=False)
 
 class JobQueue:
-    def __init__(self):
+    def __init__(self, db_path="merienda_ledger.db"):
         self.queue = []
         self.active_job = None
         self.job_history = []
         self.lock = threading.Lock()
         self.job_counter = 0
+        self.db_path = db_path
+        self._init_db()
+        
+    def _init_db(self):
+        with sqlite3.connect(self.db_path) as conn:
+            cursor = conn.cursor()
+            cursor.execute('''
+                CREATE TABLE IF NOT EXISTS completed_jobs (
+                    job_id TEXT PRIMARY KEY,
+                    user_id TEXT,
+                    job_type TEXT,
+                    priority INTEGER,
+                    hil_amount REAL,
+                    merit_burn INTEGER,
+                    status TEXT,
+                    proof_hash TEXT,
+                    completed_at REAL
+                )
+            ''')
+            conn.commit()
         
     def priority_from_tier(self, user_tier: str) -> int:
         """Convert social tier to priority integer."""
@@ -117,14 +139,34 @@ class JobQueue:
             return None
     
     def complete_job(self, job_id: str, success: bool, proof_hash: str = None):
-        """Mark job as complete and archive."""
+        """Mark job as complete, archive, and persist to SQLite."""
         with self.lock:
             if self.active_job and self.active_job.job_id == job_id:
                 self.active_job.status = "completed" if success else "failed"
                 self.active_job.completed_at = datetime.now().timestamp()
                 self.job_history.append(self.active_job)
                 
-                print(f"   ✅ Job {job_id} {'succeeded' if success else 'failed'}")
+                # Persist to SQLite Database
+                with sqlite3.connect(self.db_path) as conn:
+                    cursor = conn.cursor()
+                    cursor.execute('''
+                        INSERT INTO completed_jobs 
+                        (job_id, user_id, job_type, priority, hil_amount, merit_burn, status, proof_hash, completed_at)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    ''', (
+                        self.active_job.job_id,
+                        self.active_job.user_id,
+                        self.active_job.job_type,
+                        self.active_job.priority,
+                        self.active_job.hil_amount,
+                        self.active_job.merit_burn,
+                        self.active_job.status,
+                        proof_hash or "",
+                        self.active_job.completed_at
+                    ))
+                    conn.commit()
+                
+                print(f"   ✅ Job {job_id} {'succeeded' if success else 'failed'} & persisted to {self.db_path}")
                 if proof_hash:
                     print(f"   🔐 PoPW: {proof_hash[:16]}...")
                 

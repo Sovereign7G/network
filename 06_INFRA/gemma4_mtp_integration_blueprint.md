@@ -1,6 +1,6 @@
-# 🌉 Sovereign Integration Blueprint: Gemma 4 & Multi-Token Prediction (MTP)
+# 🌉 Siphon Integration Blueprint: Gemma 4 & Multi-Token Prediction (MTP)
 
-This blueprint outlines the deployment and integration of **Gemma 4**'s newly released **Multi-Token Prediction (MTP)** drafter architecture into the **AGE REPUBLIC Sovereign Mesh**. By leveraging speculative decoding on local hardware (e.g., the Storm-Breaker Node), this upgrade provides a **~3x latency reduction** while maintaining the reasoning fidelity of senior-class target models.
+This blueprint outlines the deployment and integration of **Gemma 4**'s newly released **Multi-Token Prediction (MTP)** drafter architecture into the **AGE REPUBLIC Siphon Mesh**. By leveraging speculative decoding on local hardware (e.g., the Storm-Breaker Node), this upgrade provides a **~3x latency reduction** while maintaining the reasoning fidelity of senior-class target models.
 
 ---
 
@@ -15,7 +15,7 @@ Google's release of **Gemma 4 MTP Drafters** changes this dynamic:
 
 ```mermaid
 graph TD
-    UserPrompt[User Prompt / Biometric Telemetry] -->|Ingest| Bifrost[Sovereign Bifrost Gateway]
+    UserPrompt[User Prompt / Biometric Telemetry] -->|Ingest| Bifrost[Siphon Bifrost Gateway]
     Bifrost -->|Routing Plan| SpecEngine[Speculative Engine]
     
     subgraph Speculative Decoding Loop
@@ -35,7 +35,7 @@ graph TD
 ### 1. KV-Cache & Activation Sharing
 Standard speculative decoding requires running two independent models, which usually consumes double the memory and duplicates the key-value context calculation. Gemma 4 MTP models solve this via native **KV-Cache Sharing**:
 
-| Layer Type | Resource Profile | Role in Sovereign Mesh |
+| Layer Type | Resource Profile | Role in Siphon Mesh |
 | :--- | :--- | :--- |
 | **Target Model (31B/26B)** | High VRAM, Core Reasoning | Retains master weight representations; executes parallel validation. |
 | **MTP Drafter** | Ultra-lightweight, Activation-Linked | Runs inside idle GPU execution blocks; predicts next $N$ tokens. |
@@ -78,7 +78,7 @@ The current `bifrost_config.yml` uses the legacy `gemma:2b` model for embedding 
 
 ## 🎨 Somatic Telemetry & Streamer Overlay Impact
 
-A key asset in the workspace is `/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/early_access_streamer_checklist.md`, which is used by `fiji` for "Impossible Performance" streams. The overlay and somatic calibration loops (Phase 2 & 3) require **instantaneous reaction loops** to trigger biological penalty overlays (Cyan Flash, Exhaustion Pulse) based on real-time HRV heart rate data.
+A key asset in the workspace is `/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/early_access_streamer_checklist.md`, which is used by `fiji` for "Impossible Performance" streams. The overlay and somatic calibration loops (Phase 2 & 3) require **instantaneous reaction loops** to trigger biological penalty overlays (Cyan Flash, Exhaustion Pulse) based on real-time HRV heart rate data.
 
 ### Latency Profiles: Standard vs. MTP Speculative
 
@@ -112,5 +112,5 @@ Gemma 4 MTP Speculative Loop:
 ---
 
 > [!NOTE]
-> **See Also:** [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-0000/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md) - Philosophical foundation and conceptual codex for speculative decoding in local-first nodes.
+> **See Also:** [345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md](file:///media/fiji/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/345_B_REPUBLIC_GEMMA4_MTP_WISDOM_AND_PHILOSOPHY.md) - Philosophical foundation and conceptual codex for speculative decoding in local-first nodes.
 

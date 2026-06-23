@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # 📊 AGE REPUBLIC: BIFROST SPECULATIVE INFRASTRUCTURE BENCHMARK
 # File: 06_INFRA/benchmark_speculative.py
-# Era: 226.0 — The Sovereign Forge
+# Era: 226.0 — The Siphon Forge
 
 import os
 import sys
@@ -90,7 +90,7 @@ def main():
     
     print("=" * 65)
     print("    🏛️  AGE REPUBLIC: BIFROST SPECULATIVE DECODING BENCHMARK")
-    print("    ERA: 226.0 — THE SOVEREIGN FORGE")
+    print("    ERA: 226.0 — THE SIPHON FORGE")
     if log_cache:
         print("    METRIC: [KV Cache Hit Ratio Logging Enabled]")
     print("=" * 65)

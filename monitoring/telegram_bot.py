@@ -6,8 +6,36 @@ from urllib.parse import urlencode, parse_qs
 
 TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "")
 CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "")
+# Fallback: load from .env if env vars not set
+if not TOKEN or not CHAT_ID:
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+    if os.path.exists(env_path):
+        with open(env_path) as f:
+            for line in f:
+                if line.startswith("TELEGRAM_BOT_TOKEN="):
+                    TOKEN = line.strip().split("=", 1)[1]
+                elif line.startswith("TELEGRAM_CHAT_ID="):
+                    CHAT_ID = line.strip().split("=", 1)[1]
+
+def send_discord(text: str):
+    """Send message to Discord via webhook."""
+    import urllib.request
+    import json
+    webhook = os.getenv("DISCORD_WEBHOOK_URL", "")
+    if not webhook:
+        return
+    data = json.dumps({"content": text}).encode()
+    req = urllib.request.Request(webhook, data=data,
+        headers={"Content-Type": "application/json"})
+    try: urllib.request.urlopen(req, timeout=5)
+    except: pass
+
+_orig_send = send_telegram
 
 def send_telegram(text: str):
+    result = _orig_send(text)
+    send_discord(text)
+    return result
     if not TOKEN or not CHAT_ID:
         return {"error": "TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID not set"}
     try:

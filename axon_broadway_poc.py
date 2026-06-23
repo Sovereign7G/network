@@ -41,7 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-DB_PATH = "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/.age_republic/memory/memory_index.db"
+DB_PATH = "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/.age_republic/memory/memory_index.db"
 
 # Minimalistic HTML5 Canvas Client for Broadway GDK WebSocket Ingress
 INDEX_HTML = """

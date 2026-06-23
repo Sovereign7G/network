@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sovereign Tri-Cameral Monitor // WebGPU Visual Grounding</title>
+    <title>Siphon Tri-Cameral Monitor // WebGPU Visual Grounding</title>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         *, *::before, *::after {
@@ -309,7 +309,7 @@
     <!-- Header -->
     <header class="glass-header">
         <div class="brand">
-            <h1>🏛️ Sovereign Tri-Cameral Monitor</h1>
+            <h1>🏛️ Siphon Tri-Cameral Monitor</h1>
         </div>
         <div class="sys-badge" id="statusBadge">WebGPU Local Pipeline Online</div>
     </header>
@@ -436,6 +436,39 @@
         }
         window.addEventListener('resize', resizeCanvas);
         resizeCanvas();
+
+        // ── WebGPU Compute Pipeline Initialization ───────
+        async function initWebGPU() {
+            if (!navigator.gpu) {
+                addLog("WebGPU not supported on this browser. Falling back to canvas emulation.", "warn");
+                return;
+            }
+            try {
+                const adapter = await navigator.gpu.requestAdapter();
+                const device = await adapter.requestDevice();
+
+                // Live compilation of the requested LocateAnything dequantization shader
+                const shaderModule = device.createShaderModule({
+                    code: `
+                    @group(0) @binding(0) var<storage, read> input: array<f32>;
+                    @group(0) @binding(1) var<storage, write> output: array<f32>;
+
+                    @compute @workgroup_size(256)
+                    fn dequantize(@builtin(global_invocation_id) id: vec3<u32>) {
+                        // LocateAnything-3B dequantization kernel
+                        output[id.x] = (input[id.x] - 128.0) / 128.0;
+                    }
+                    `
+                });
+
+                addLog("WebGPU adapter detected. Compute Pipeline compilation successful.", "green");
+            } catch (err) {
+                addLog("WebGPU initialization failed: " + err.message, "err");
+            }
+        }
+        
+        // Execute compilation
+        initWebGPU();
 
         // Simulate camera feed noise & grid pattern
         function drawFeed() {

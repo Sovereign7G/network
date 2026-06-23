@@ -35,8 +35,8 @@ gateway:
     allow_env_access: false
     allow_filesystem: true
     allowed_paths:
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/data"
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/reports"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/data"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/reports"
       - "/tmp/bifrost"
 
 # 🧠 Adaptive Model Cascading Routing Plane
@@ -51,6 +51,22 @@ llm_routing:
       max_tokens: 128000
       temperature: 0.1              # Low temperature for precise tool calling
       roles: ["tool_calling", "complex_reasoning", "portfolio_rebalancing"]
+
+    - name: "ollama-mellum2-thinking"
+      url: "http://localhost:11434"
+      model: "mellum2:12b-instruct-thinking"
+      priority: 2
+      max_tokens: 32768
+      temperature: 0.2
+      roles: ["code_generation", "tool_calling", "complex_reasoning"]
+
+    - name: "ollama-mellum2-base"
+      url: "http://localhost:11434"
+      model: "mellum2:12b-instruct"
+      priority: 4
+      max_tokens: 32768
+      temperature: 0.2
+      roles: ["fast_retrieval", "context_compression", "summarization"]
 
     - name: "ollama-gemma"
       url: "http://localhost:11434"
@@ -104,8 +120,8 @@ llm_routing:
       latency_sla_ms: 2000
       
     - match: { intent: "code_generation" }
-      route_to: "lm-studio-reasoning"
-      fallback_to: "ollama-gemma4-mtp"
+      route_to: "ollama-mellum2-thinking"
+      fallback_to: "lm-studio-reasoning"
       latency_sla_ms: 1000
 
     - match: { intent: "somatic_overlay_reaction" }
@@ -113,8 +129,8 @@ llm_routing:
       latency_sla_ms: 300
 
     - match: { intent: "complex_reasoning" }
-      route_to: "lm-studio-reasoning"
-      fallback_to: "antigravity-cloud"
+      route_to: "ollama-mellum2-thinking"
+      fallback_to: "lm-studio-reasoning"
       latency_sla_ms: 5000
 
 # 🔌 Registered Model Context Protocol (MCP) Server Clusters
@@ -124,10 +140,10 @@ mcp_servers:
     transport: "stdio"
     command: "python3"
     args: 
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/lancedb_state_manager.py"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/lancedb_state_manager.py"
     env:
       LANCEDB_PATH: "/tmp/age_republic_lancedb"
-      PYTHONPATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+      PYTHONPATH: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC"
     auto_discover: true
     
   # 2. Sovereign Trading Desk Substrate
@@ -135,9 +151,9 @@ mcp_servers:
     transport: "stdio"
     command: "python3"
     args:
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/mcp_server.py"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/04_SUBSTRATES/SOVEREIGN_TRADING/mcp_server.py"
     env:
-      PYTHONPATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+      PYTHONPATH: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC"
     auto_discover: true
 
   # 3. AnythingLLM Document ingest & RAG Bridge
@@ -167,8 +183,8 @@ mcp_servers:
     args: 
       - "-y"
       - "@modelcontextprotocol/server-filesystem"
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/data"
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/reports"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/data"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/reports"
     auto_discover: true
 
   # 6. ESP32 Hardware Bridge — Physical device flashing & telemetry
@@ -176,22 +192,33 @@ mcp_servers:
     transport: "stdio"
     command: "node"
     args:
-      - "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/esp32_mcp_bridge.js"
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/esp32_mcp_bridge.js"
     env:
-      NODE_PATH: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC"
+      NODE_PATH: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC"
+    auto_discover: true
+
+  # 7. OmniRail JIT Webhook & Settlement Gateway
+  - name: "omnirail-gateway"
+    transport: "stdio"
+    command: "python3"
+    args:
+      - "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/omnirail_auth_engine.py"
+      - "--mcp"
+    env:
+      PYTHONPATH: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC"
     auto_discover: true
 
 protobuf:
   enabled: true
-  schema_path: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/bifrost_protobuf.proto"
-  serializer: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/bifrost_proto_serializer.py"
+  schema_path: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/bifrost_protobuf.proto"
+  serializer: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/bifrost_proto_serializer.py"
   use_binary: true
 
 monitoring:
   metrics_port: 9090
   logs:
     level: "info"
-    output: "/media/fiji/4A21-0000/New folder/AGE REPUBLIC/06_INFRA/logs/bifrost_gateway.log"
+    output: "/media/fiji/4A21-00001/New folder/AGE REPUBLIC/06_INFRA/logs/bifrost_gateway.log"
   health_check:
     endpoint: "/health"
     interval_seconds: 30

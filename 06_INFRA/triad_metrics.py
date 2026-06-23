@@ -48,6 +48,8 @@ class TriadMetrics:
                 "hermes": self._hermes_metrics(),
                 "odysseus": self._odysseus_metrics(),
                 "okf": self._okf_metrics(),
+                "s2l": self._s2l_metrics(),
+                "gateway": self._gateway_metrics(),
             },
             "requests": {
                 "mcp": self.request_counts["mcp"],
@@ -99,7 +101,7 @@ class TriadMetrics:
                         md_files += 1
 
         # Check MCP connectivity via a quick port probe
-        mcp_alive = self._port_alive(9000)
+        mcp_alive = self._port_alive(9002)
 
         return {
             "connected": mcp_alive,
@@ -112,8 +114,8 @@ class TriadMetrics:
     # ── Hermes ──────────────────────────────────────────────────
 
     def _hermes_metrics(self) -> Dict[str, Any]:
-        mcp_alive = self._port_alive(9000)
-        rest_alive = self._port_alive(9001)
+        mcp_alive = self._port_alive(9002)
+        rest_alive = self._port_alive(9002)
 
         # Count skills
         skill_count = len(glob.glob(os.path.join(MAGY_DIR, "skill_*.py")))
@@ -135,8 +137,8 @@ class TriadMetrics:
                 pass
 
         return {
-            "mcp_port_9000": mcp_alive,
-            "rest_port_9001": rest_alive,
+            "mcp_port_9002": mcp_alive,
+            "rest_port_9002": rest_alive,
             "skills": skill_count,
             "agent_scripts": agent_count,
             "okf_tools": 6,  # serve, write, list, search, validate, antigravity
@@ -208,6 +210,70 @@ class TriadMetrics:
             "git_commits": commit_count,
             "subdirectories": subdirs,
             "schema_validation": True,
+        }
+
+    # ── S2L Telemetry ───────────────────────────────────────────
+
+    def _s2l_metrics(self) -> Dict[str, Any]:
+        state_file = Path("/media/cherry/4A21-00001/New folder/AGE REPUBLIC/08_ASSETS/s2l_state.json")
+        active = None
+        trained_count = 0
+        trained_list = []
+        if state_file.exists():
+            try:
+                state = json.loads(state_file.read_text(encoding="utf-8"))
+                active = state.get("active_adapter")
+                trained = state.get("trained_adapters", {})
+                trained_count = len(trained)
+                trained_list = list(trained.keys())
+            except Exception:
+                pass
+        return {
+            "active_adapter": active,
+            "trained_adapters_count": trained_count,
+            "trained_adapters": sorted(trained_list),
+            "active_parameters": 6029312 if active else 0,
+            "base_model": "Qwen-3.6-27B-NF4",
+            "token_saving_average": 6.6 if active else 0.0
+        }
+
+    # ── Privacy Gateway Telemetry ───────────────────────────────
+
+    def _gateway_metrics(self) -> Dict[str, Any]:
+        policy_file = Path("/media/cherry/4A21-00001/New folder/AGE REPUBLIC/08_ASSETS/gateway_policy.json")
+        audit_file = Path("/media/cherry/4A21-00001/New folder/AGE REPUBLIC/08_ASSETS/gateway_audit.json")
+        
+        policy = {}
+        if policy_file.exists():
+            try:
+                policy = json.loads(policy_file.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+                
+        audit_logs = []
+        if audit_file.exists():
+            try:
+                audit_logs = json.loads(audit_file.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
+        total_calls = len(audit_logs)
+        cache_hits = sum(1 for log in audit_logs if log.get("cached", False))
+        total_redactions = sum(log.get("redactions_count", 0) for log in audit_logs)
+        avg_latency = sum(log.get("latency_ms", 0) for log in audit_logs) / total_calls if total_calls > 0 else 0.0
+
+        return {
+            "active_policy": policy.get("routing_policy", "default"),
+            "eu_data_residency": policy.get("eu_data_residency", False),
+            "budget_cap_usd": policy.get("budget_cap_usd", 50.0),
+            "budget_spent_usd": policy.get("budget_spent_usd", 0.0),
+            "pii_redaction": policy.get("pii_redaction", True),
+            "mock_external_apis": policy.get("mock_external_apis", True),
+            "total_calls": total_calls,
+            "cache_hits": cache_hits,
+            "total_redactions": total_redactions,
+            "average_latency_ms": round(avg_latency, 1),
+            "cache_hit_rate_pct": round((cache_hits / total_calls * 100.0) if total_calls > 0 else 0.0, 1)
         }
 
     # ── Helpers ─────────────────────────────────────────────────

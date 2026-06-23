@@ -116,6 +116,105 @@ FALLBACK_SCHEMAS = {
             "tags": {"type": "array", "items": {"type": "string"}},
         }
     },
+    "CalendarEvent": {
+        "type": "object",
+        "required": ["type", "title", "date", "status"],
+        "properties": {
+            "type": {"const": "CalendarEvent"},
+            "title": {"type": "string"},
+            "date": {"type": "string"},
+            "status": {"enum": ["scheduled", "completed", "cancelled"]},
+            "updated": {"type": "string"},
+        }
+    },
+    "AntigravityBenchmark": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "AntigravityBenchmark"},
+            "title": {"type": "string"},
+        }
+    },
+    "QuantumEntanglement": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "QuantumEntanglement"},
+            "title": {"type": "string"},
+        }
+    },
+    "QuantumKeyDistribution": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "QuantumKeyDistribution"},
+            "title": {"type": "string"},
+        }
+    },
+    "QuantumLearning": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "QuantumLearning"},
+            "title": {"type": "string"},
+        }
+    },
+    "QuantumGenerated": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "QuantumGenerated"},
+            "title": {"type": "string"},
+        }
+    },
+    "QuantumOptimization": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "QuantumOptimization"},
+            "title": {"type": "string"},
+        }
+    },
+    "KeccakPatch": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "KeccakPatch"},
+            "title": {"type": "string"},
+        }
+    },
+    "NeuralCommand": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "NeuralCommand"},
+            "title": {"type": "string"},
+        }
+    },
+    "DAOSovereignty": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "DAOSovereignty"},
+            "title": {"type": "string"},
+        }
+    },
+    "InterstellarVote": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "InterstellarVote"},
+            "title": {"type": "string"},
+        }
+    },
+    "ConsciousState": {
+        "type": "object",
+        "required": ["type", "title"],
+        "properties": {
+            "type": {"const": "ConsciousState"},
+            "title": {"type": "string"},
+        }
+    },
 }
 
 
@@ -213,9 +312,17 @@ def validate(frontmatter: dict) -> Tuple[bool, List[str]]:
     # Check enum constraints
     enum_fields = {"status": ["new", "triaged", "needs_reply", "replied", "archived",
                               "document_created", "draft", "sent", "editing",
-                              "review", "approved"],
+                              "review", "approved", "scheduled", "completed", "cancelled"],
                    "winner": ["A", "B", "tie"],
                    "priority": ["low", "medium", "high", "urgent"]}
+    # Also merge per-schema status enums into the master list
+    for type_name, schema in schemas.items():
+        raw_status = schema.get("status")
+        if isinstance(raw_status, str) and "|" in raw_status:
+            for s in raw_status.split("|"):
+                s = s.strip()
+                if s and s not in enum_fields["status"]:
+                    enum_fields["status"].append(s)
     for field, valid_values in enum_fields.items():
         if field in frontmatter and frontmatter[field] not in valid_values:
             errors.append(f"Invalid '{field}': '{frontmatter[field]}'. Valid: {valid_values}")

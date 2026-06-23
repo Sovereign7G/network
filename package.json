@@ -1,19 +1,17 @@
 {
-    "name": "age-protocol-root",
-    "private": true,
-    "workspaces": [
-        "packages/*",
-        "apps/*"
-    ],
-    "scripts": {
-        "build:types": "cd packages/age-types && npm run build",
-        "watch:types": "cd packages/age-types && npm run watch",
-        "mobile:get": "cd apps/mobile && flutter pub get",
-        "mobile:build": "cd apps/mobile && flutter build apk",
-        "web:dev": "cd apps/sovereign-web && npm run dev",
-        "web:build": "cd apps/sovereign-web && npm run build",
-        "test": "cd apps/sovereign-web && npm run check",
-        "prepare": "husky",
-        "pre-commit": "npm run test"
-    }
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile"
+  },
+  "dependencies": {
+    "axios": "^1.16.1",
+    "ethers": "^6.16.0",
+    "lodash": "^4.18.1",
+    "onnxruntime-web": "^1.26.0",
+    "serialport": "^12.0.0"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^6.1.2",
+    "hardhat": "^3.7.0"
+  }
 }

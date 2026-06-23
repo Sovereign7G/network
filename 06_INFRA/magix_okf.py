@@ -4,7 +4,7 @@ magix/okf/__init__.py — Unified OKF module for magix MCP toolset.
 
 Merges okf_bridge.py + kiro_mcp.py into one canonical interface.
 All OKF interactions go through this single module.
-Serves: serve_concept, write_concept, list_concepts on port 9000.
+Serves: serve_concept, write_concept, list_concepts on port 9002.
 """
 
 import json, os, sys, yaml, re, subprocess
@@ -16,6 +16,31 @@ import sys
 _OKF_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _OKF_DIR)
 from okf_validator import validate as schema_validate, list_types as schema_list_types
+
+# Import S2L Pipeline
+try:
+    import s2l_pipeline
+except ImportError:
+    s2l_pipeline = None
+
+# Import Era VI Gateway
+try:
+    from external_gateway import Gateway
+    external_gateway = Gateway()
+except ImportError:
+    external_gateway = None
+
+# Import Antigravity Benchmark
+try:
+    import antigravity_benchmark
+except ImportError:
+    antigravity_benchmark = None
+
+quantum_reasoning = None
+quantum_security = None
+quantum_learning = None
+keccak_integration = None
+distributed_consciousness = None
 
 # Import Era II embedding pipeline
 _EMBEDDER = None
@@ -285,17 +310,71 @@ def get_embedding_stats() -> dict:
         return {"status": "error", "error": str(e)}
 
 
-# ── CLI entry point ─────────────────────────────────────────────
-
-def get_embedding_stats() -> dict:
-    """Get embedding pipeline statistics."""
-    embedder = _get_embedder()
-    if not embedder:
-        return {"status": "error", "error": "Embedding pipeline not available"}
+def spawn_hermes_subagent(concept_path: str, prompt: str) -> dict:
+    """Spawn a Hermes subagent in the background targeting an OKF concept path."""
+    target_dir = KNOWLEDGE_ROOT / concept_path.strip("/")
+    target_dir.mkdir(parents=True, exist_ok=True)
+    
+    log_file = target_dir / "subagent_run.log"
+    cmd = [
+        "/home/cherry/.local/bin/hermes",
+        "chat",
+        "-q", prompt,
+        "--yolo",
+        "--accept-hooks"
+    ]
+    
     try:
-        return {"status": "ok", "stats": embedder.stats()}
+        # Open log file for stdout and stderr
+        log_fh = open(log_file, "w", encoding="utf-8")
+        
+        # Start background subprocess
+        process = subprocess.Popen(
+            cmd,
+            cwd=target_dir,
+            stdout=log_fh,
+            stderr=subprocess.STDOUT,
+            start_new_session=True  # Detach process group
+        )
+        
+        try:
+            rel_log = str(log_file.relative_to(KNOWLEDGE_ROOT))
+        except ValueError:
+            rel_log = str(log_file)
+            
+        return {
+            "status": "ok",
+            "concept_path": concept_path,
+            "pid": process.pid,
+            "log_path": rel_log,
+            "command": " ".join(cmd),
+            "message": f"Hermes subagent spawned successfully in background (PID: {process.pid}). Log: {log_file.name}"
+        }
     except Exception as e:
-        return {"status": "error", "error": str(e)}
+        return {
+            "status": "error",
+            "error": str(e)
+        }
+
+
+# Import Quantum Modules & Apply Keccak Hotfix
+try:
+    import quantum_reasoning
+    import quantum_security
+    import quantum_learning
+    import keccak_integration
+    # Apply hotfix patches automatically on startup
+    keccak_integration.patch_all()
+    print("[magix-okf] Era X Quantum Intelligence loaded & Keccak-256 hotfix applied.", file=sys.stderr, flush=True)
+except Exception as e:
+    print(f"[magix-okf] Warning: Failed to load Era X modules or apply Keccak-256 hotfix: {e}", file=sys.stderr, flush=True)
+
+# Import Era XI Distributed Consciousness
+try:
+    import distributed_consciousness
+    print("[magix-okf] Era XI Distributed Consciousness loaded.", file=sys.stderr, flush=True)
+except Exception as e:
+    print(f"[magix-okf] Warning: Failed to load Era XI distributed consciousness: {e}", file=sys.stderr, flush=True)
 
 
 # ── MCP tool registry & schemas ─────────────────────────────────
@@ -312,6 +391,37 @@ TOOLS = {
     "semantic_search": lambda args: semantic_search(args.get("query", ""), args.get("limit", 10)),
     "embedding_stats": lambda args: get_embedding_stats(),
     "spawn_hermes_subagent": lambda args: spawn_hermes_subagent(args.get("concept_path", ""), args.get("prompt", "")),
+    "generate_training_data": lambda args: s2l_pipeline.generate_training_data(args.get("concept_path", "")) if s2l_pipeline else {"status": "error", "error": "s2l_pipeline not imported"},
+    "train_adapter": lambda args: s2l_pipeline.train_adapter(args.get("skill_name", "")) if s2l_pipeline else {"status": "error", "error": "s2l_pipeline not imported"},
+    "load_adapter": lambda args: s2l_pipeline.load_adapter(args.get("skill_name", "")) if s2l_pipeline else {"status": "error", "error": "s2l_pipeline not imported"},
+    "skill_inference": lambda args: s2l_pipeline.skill_inference(args.get("skill_name", ""), args.get("prompt", ""), args.get("threshold", 0.85)) if s2l_pipeline else {"status": "error", "error": "s2l_pipeline not imported"},
+    "adapter_status": lambda args: s2l_pipeline.adapter_status() if s2l_pipeline else {"status": "error", "error": "s2l_pipeline not imported"},
+    "external_infer": lambda args: external_gateway.infer(args.get("provider", "deepseek"), args.get("prompt", ""), args.get("skill", ""), 1024, args.get("bypass_cache", False)) if external_gateway else {"status": "error", "error": "external_gateway not imported"},
+    "gateway_health": lambda args: external_gateway.health() if external_gateway else {"status": "error", "error": "external_gateway not imported"},
+    "gateway_policy": lambda args: external_gateway.update_policy(args.get("new_policy")) if args.get("new_policy") is not None else (external_gateway.get_policy() if external_gateway else {"status": "error", "error": "external_gateway not imported"}),
+    "gateway_audit": lambda args: external_gateway.get_audit_logs(args.get("limit", 20)) if external_gateway else {"status": "error", "error": "external_gateway not imported"},
+    "run_benchmark": lambda args: antigravity_benchmark.run_benchmark() if antigravity_benchmark else {"status": "error", "error": "antigravity_benchmark not imported"},
+    "benchmark_status": lambda args: antigravity_benchmark.benchmark_status() if antigravity_benchmark else {"status": "error", "error": "antigravity_benchmark not imported"},
+    "quantum_embed": lambda args: quantum_reasoning.quantum_embed(args.get("concept_path", "")) if quantum_reasoning else {"status": "error", "error": "quantum_reasoning not imported"},
+    "quantum_entangle": lambda args: quantum_reasoning.quantum_entangle(args.get("concept_paths", [])) if quantum_reasoning else {"status": "error", "error": "quantum_reasoning not imported"},
+    "quantum_search": lambda args: quantum_reasoning.quantum_search(args.get("query", ""), args.get("limit", 10)) if quantum_reasoning else {"status": "error", "error": "quantum_reasoning not imported"},
+    "quantum_reason": lambda args: quantum_reasoning.quantum_reason(args.get("problem", ""), args.get("concepts", [])) if quantum_reasoning else {"status": "error", "error": "quantum_reasoning not imported"},
+    "qkd_generate_key": lambda args: quantum_security.qkd_generate_key(args.get("key_id", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "qkd_distribute": lambda args: quantum_security.qkd_distribute(args.get("sender", ""), args.get("receiver", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "qkd_sign": lambda args: quantum_security.qkd_sign(args.get("data", ""), args.get("key_id", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "qkd_verify": lambda args: quantum_security.qkd_verify(args.get("data", ""), args.get("signature", ""), args.get("key_id", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "qkd_encrypt": lambda args: quantum_security.qkd_encrypt(args.get("data", ""), args.get("public_key", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "qkd_decrypt": lambda args: quantum_security.qkd_decrypt(args.get("encrypted_data", ""), args.get("private_key", "")) if quantum_security else {"status": "error", "error": "quantum_security not imported"},
+    "ql_reinforce": lambda args: quantum_learning.ql_reinforce(args.get("skill", ""), args.get("state", ""), args.get("action", ""), args.get("reward", 0.0), args.get("next_state", "")) if quantum_learning else {"status": "error", "error": "quantum_learning not imported"},
+    "ql_generate": lambda args: quantum_learning.ql_generate(args.get("context", ""), args.get("max_length", 500)) if quantum_learning else {"status": "error", "error": "quantum_learning not imported"},
+    "ql_optimize": lambda args: quantum_learning.ql_optimize(args.get("problem", {})) if quantum_learning else {"status": "error", "error": "quantum_learning not imported"},
+    "keccak_hash": lambda args: keccak_integration.keccak_hash(args.get("data", "")) if keccak_integration else {"status": "error", "error": "keccak_integration not imported"},
+    "keccak_patch_status": lambda args: keccak_integration.keccak_patch_status() if keccak_integration else {"status": "error", "error": "keccak_integration not imported"},
+    "keccak_verify_hash": lambda args: keccak_integration.keccak_verify_hash(args.get("data", ""), args.get("hash_hex", "")) if keccak_integration else {"status": "error", "error": "keccak_integration not imported"},
+    "bci_decode_intent": lambda args: distributed_consciousness.bci_decode_intent(args.get("raw_eeg")) if distributed_consciousness else {"status": "error", "error": "distributed_consciousness not imported"},
+    "dao_legal_status": lambda args: distributed_consciousness.dao_legal_status() if distributed_consciousness else {"status": "error", "error": "distributed_consciousness not imported"},
+    "interstellar_consensus_vote": lambda args: distributed_consciousness.interstellar_consensus_vote(args.get("proposal", "")) if distributed_consciousness else {"status": "error", "error": "distributed_consciousness not imported"},
+    "calculate_consciousness_phi": lambda args: distributed_consciousness.calculate_consciousness_phi() if distributed_consciousness else {"status": "error", "error": "distributed_consciousness not imported"},
 }
 
 MCP_TOOLS_SCHEMA = [
@@ -381,6 +491,359 @@ MCP_TOOLS_SCHEMA = [
                 "prompt": {"type": "string", "description": "Task prompt for the subagent"}
             },
             "required": ["concept_path", "prompt"]
+        }
+    },
+    {
+        "name": "generate_training_data",
+        "description": "Extract concepts and format training data for S2L fine-tuning.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "concept_path": {"type": "string", "description": "Optional relative path to subset concepts"}
+            }
+        }
+    },
+    {
+        "name": "train_adapter",
+        "description": "Fine-tune a skill adapter via QLoRA simulation.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {"type": "string", "description": "Name of the skill to train (research, email, document, compare, calendar, notes)"}
+            },
+            "required": ["skill_name"]
+        }
+    },
+    {
+        "name": "load_adapter",
+        "description": "Load a pre-trained LoRA adapter into active memory.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {"type": "string", "description": "Name of the skill adapter to load"}
+            },
+            "required": ["skill_name"]
+        }
+    },
+    {
+        "name": "skill_inference",
+        "description": "Execute a skill under the parametric adapter or fallback to in-context prompting.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill_name": {"type": "string", "description": "Name of the skill to execute"},
+                "prompt": {"type": "string", "description": "Operational task prompt"},
+                "threshold": {"type": "number", "description": "Fallback confidence threshold (default 0.85)"}
+            },
+            "required": ["skill_name", "prompt"]
+        }
+    },
+    {
+        "name": "adapter_status",
+        "description": "Retrieve status of all trained and loaded S2L adapters.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "external_infer",
+        "description": "Send a sanitized prompt to DeepSeek, Kimi, or TextCortex EU gateway.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "provider": {"type": "string", "description": "The target model provider (deepseek, kimi, textcortex)"},
+                "prompt": {"type": "string", "description": "The input task query prompt to execute"},
+                "skill": {"type": "string", "description": "Optional skill name category"},
+                "bypass_cache": {"type": "boolean", "description": "Bypass the local similarity query cache"}
+            },
+            "required": ["provider", "prompt"]
+        }
+    },
+    {
+        "name": "gateway_health",
+        "description": "Check the health and connection status of the Zero-Trust Privacy Gateway.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "gateway_policy",
+        "description": "Get or update routing and region policy configurations for the Privacy Gateway.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "new_policy": {
+                    "type": "object",
+                    "description": "Optional updated policy properties"
+                }
+            }
+        }
+    },
+    {
+        "name": "gateway_audit",
+        "description": "Retrieve audit log event entries for tracking requests and responses.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "limit": {"type": "number", "description": "Maximum number of audit events to return (default 20)"}
+            }
+        }
+    },
+    {
+        "name": "run_benchmark",
+        "description": "Execute the complete Antigravity benchmark suite to measure latency, cache hits, and token savings.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "benchmark_status",
+        "description": "Retrieve status of historical Antigravity benchmarks and run metrics.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "quantum_embed",
+        "description": "Create quantum embedding for a concept.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "concept_path": {"type": "string", "description": "Relative path to concept"}
+            },
+            "required": ["concept_path"]
+        }
+    },
+    {
+        "name": "quantum_entangle",
+        "description": "Entangle multiple concepts into a superposition.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "concept_paths": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Paths to concepts to entangle"
+                }
+            },
+            "required": ["concept_paths"]
+        }
+    },
+    {
+        "name": "quantum_search",
+        "description": "Quantum-inspired semantic search.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "Search query"},
+                "limit": {"type": "integer", "description": "Max results to return"}
+            },
+            "required": ["query"]
+        }
+    },
+    {
+        "name": "quantum_reason",
+        "description": "Quantum-inspired reasoning.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "problem": {"type": "string", "description": "Reasoning problem description"},
+                "concepts": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "Concepts to base reasoning on"
+                }
+            },
+            "required": ["problem", "concepts"]
+        }
+    },
+    {
+        "name": "qkd_generate_key",
+        "description": "Generate a quantum-resistant key pair.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "key_id": {"type": "string", "description": "ID of key to generate"}
+            },
+            "required": ["key_id"]
+        }
+    },
+    {
+        "name": "qkd_distribute",
+        "description": "Simulate quantum key distribution.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "sender": {"type": "string", "description": "Sender identifier"},
+                "receiver": {"type": "string", "description": "Receiver identifier"}
+            },
+            "required": ["sender", "receiver"]
+        }
+    },
+    {
+        "name": "qkd_sign",
+        "description": "Create a quantum-resistant signature.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "data": {"type": "string", "description": "Data to sign"},
+                "key_id": {"type": "string", "description": "Key ID to use for signing"}
+            },
+            "required": ["data", "key_id"]
+        }
+    },
+    {
+        "name": "qkd_verify",
+        "description": "Verify a quantum-resistant signature.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "data": {"type": "string", "description": "Original data"},
+                "signature": {"type": "string", "description": "Base64 signature string"},
+                "key_id": {"type": "string", "description": "Key ID used for signing"}
+            },
+            "required": ["data", "signature", "key_id"]
+        }
+    },
+    {
+        "name": "qkd_encrypt",
+        "description": "Encrypt data using post-quantum cryptography.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "data": {"type": "string", "description": "Data to encrypt"},
+                "public_key": {"type": "string", "description": "Base64 public key"}
+            },
+            "required": ["data", "public_key"]
+        }
+    },
+    {
+        "name": "qkd_decrypt",
+        "description": "Decrypt data using post-quantum cryptography.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "encrypted_data": {"type": "string", "description": "Base64 encrypted string"},
+                "private_key": {"type": "string", "description": "Base64 private key"}
+            },
+            "required": ["encrypted_data", "private_key"]
+        }
+    },
+    {
+        "name": "ql_reinforce",
+        "description": "Quantum-enhanced Q-learning step.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "skill": {"type": "string", "description": "Name of skill being learned"},
+                "state": {"type": "string", "description": "Current state"},
+                "action": {"type": "string", "description": "Action taken"},
+                "reward": {"type": "number", "description": "Reward value"},
+                "next_state": {"type": "string", "description": "resulting next state"}
+            },
+            "required": ["skill", "state", "action", "reward", "next_state"]
+        }
+    },
+    {
+        "name": "ql_generate",
+        "description": "Generate content using quantum-inspired generative model.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "context": {"type": "string", "description": "Starting text context"},
+                "max_length": {"type": "integer", "description": "Max length of generated text"}
+            },
+            "required": ["context"]
+        }
+    },
+    {
+        "name": "ql_optimize",
+        "description": "Optimize a problem using quantum-inspired annealing.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "problem": {
+                    "type": "object",
+                    "description": "Problem properties containing variables and iterations"
+                }
+            },
+            "required": ["problem"]
+        }
+    },
+    {
+        "name": "keccak_hash",
+        "description": "Compute Keccak-256 hash of data.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "data": {"type": "string", "description": "Data to hash"}
+            },
+            "required": ["data"]
+        }
+    },
+    {
+        "name": "keccak_patch_status",
+        "description": "Get Keccak-256 patch status.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "keccak_verify_hash",
+        "description": "Verify data against Keccak-256 hash.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "data": {"type": "string", "description": "Original data"},
+                "hash_hex": {"type": "string", "description": "Hex hash string to verify"}
+            },
+            "required": ["data", "hash_hex"]
+        }
+    },
+    {
+        "name": "bci_decode_intent",
+        "description": "Decode brainwave EEG signals into system intention and log in OKF.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "raw_eeg": {
+                    "type": "array",
+                    "items": {"type": "number"},
+                    "description": "Optional list of float values representing raw brainwave voltage stream."
+                }
+            }
+        }
+    },
+    {
+        "name": "dao_legal_status",
+        "description": "Fetch legal sovereignty registry and cert info for the autonomous LLC.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
+        }
+    },
+    {
+        "name": "interstellar_consensus_vote",
+        "description": "Execute proposal vote across space nodes and compensate delay lag.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {
+                "proposal": {"type": "string", "description": "Name or content of proposal to vote on."}
+            },
+            "required": ["proposal"]
+        }
+    },
+    {
+        "name": "calculate_consciousness_phi",
+        "description": "Compute IIT system consciousness metric (Phi Φ) for the swarm.",
+        "inputSchema": {
+            "type": "object",
+            "properties": {}
         }
     }
 ]
@@ -539,8 +1002,8 @@ def main():
             print("Error: fastapi/pydantic not installed.", file=sys.stderr)
             sys.exit(1)
         import uvicorn
-        print("🚀 Igniting Magix OKF Server on port 9000...")
-        uvicorn.run(app, host="127.0.0.1", port=9000)
+        print("🚀 Igniting Magix OKF Server on port 9002...")
+        uvicorn.run(app, host="127.0.0.1", port=9002)
         sys.exit(0)
 
     if action in ("-h", "--help", "help"):
