@@ -1,21 +1,22 @@
 ---
-created: '2026-06-23T02:14:35Z'
+created: '2026-06-23T02:23:48Z'
 tags:
 - antigravity
 - artifact
 - checklist
 title: 'Antigravity Artifact: Task Checklist'
 type: Note
-updated: '2026-06-23T02:14:39.697568Z'
+updated: '2026-06-23T02:23:50.420031Z'
 ---
 
-# Checklist: Operational & Design Gap Closure
+# Checklist: Sovereign 7G CI/CD Pipelines & Workflows
 
-- [x] Task 1: Add NodeLicense revocation & recovery in `NodeLicense.sol`
-- [x] Task 2: Create transaction monitoring bot `monitoring/monitor_bot.py`
-- [x] Task 3: Create cross-chain relayer engine `monitoring/relayer.py`
-- [x] Task 4: Create on-chain integration test suite `test_onchain.py`
-- [x] Task 5: Connect SIP proxy to `CallSession` on-chain transactions in `sip_proxy.py`
-- [x] Task 6: Create DEX liquidity bootstrap deployment script `scripts/deploy_liquidity.sh`
-- [x] Task 7: Create emergency response playbook `00_KNOWLEDGE/emergency_response_plan.md`
-- [x] Verification: compile contracts and run loopback tests
+- [x] Task 1: Create `.pre-commit-config.yaml` with format/lint hooks (Ruff, Mypy, Forge, Cargo, Mojo)
+- [x] Task 2: Create `Makefile` supporting install, lint, test, build, deploy, and clean commands
+- [x] Task 3: Update `.github/workflows/ci.yml` with comprehensive lint, build, test, security, deploy, and docker-push jobs
+- [x] Task 4: Configure `dfx.json` with ICP canister settings for move_vm, aetherdb_bridge, and swarm_brain
+- [x] Task 5: Create `scripts/deploy_icp.sh` and make executable to automate ICP canister deployments
+- [x] Task 6: Create `scripts/run_tests.sh` and make executable to orchestrate the multi-phase testing pipeline
+- [x] Task 7: Create `monitoring/prometheus/prometheus.yml` scrape configuration
+- [x] Task 8: Create `monitoring/grafana/dashboards/sovereign_7g.json` dashboard setup
+- [x] Verification: Confirm syntax validity and local executability
