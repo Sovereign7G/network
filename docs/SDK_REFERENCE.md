@@ -1,42 +1,51 @@
-# S7G SDK Reference — v2.4
+# S7G Python SDK
 
-**83 methods across 5 modules.**
+**v2.4** — 83 methods across 5 modules. Unified client for the S7G network.
 
-## Core Client (`sdk/py/s7g/__init__.py` — 42 methods)
+```python
+pip install s7g
+```
 
-### Configuration
+```python
+from s7g import S7GClient
+client = S7GClient()
+status = client.swarm_status()
+```
+
+---
+
+## Modules
+
+| Module | Methods | Description |
+|--------|---------|-------------|
+| **Core** (`__init__.py`) | 42 | Voice, messaging, nodes, beamforming, analytics, identity, LoRA IoT, ICP mesh |
+| **Bridge** (`domains/bridge.py`) | 13 | CCTP settlement, POS dongle, court operations, stablecoin routes |
+| **Solana** (`domains/solana.py`) | 10 | Validator info, staking, swap, balance, transfer, MoneyGram, DePIN |
+| **Agents** (`domains/agents.py`) | 6 | Swarm status (62 agents), agent info, logs |
+| **Yield** (`domains/yield_router.py`) | 1 | Multi-chain yield aggregation |
+
+---
+
+## Core (`sdk/py/s7g/__init__.py`)
+
 ```python
 from s7g import S7GClient
 client = S7GClient(api_base="https://api.7g.sol")
 ```
 
-### Voice & Messaging
 | Method | Description |
 |--------|-------------|
 | `send_message(to, text)` | Send SIP/SMS message |
 | `get_messages(limit=50)` | Retrieve message history |
 | `initiate_call(to, duration)` | Start SIP call session |
 | `end_call(session_id)` | Terminate active call |
-
-### Nodes & Beamforming
-| Method | Description |
-|--------|-------------|
 | `register_node(node_id, location)` | Register mesh node |
 | `node_status(node_id)` | Get node health metrics |
 | `list_nodes(status=None)` | List all registered nodes |
 | `beam_steer(node_id, azimuth, elevation)` | Steer beam direction |
 | `beam_status(beam_id)` | Get beam parameters |
-
-### Analytics & Identity
-| Method | Description |
-|--------|-------------|
 | `get_analytics(metric, period)` | Query network analytics |
 | `resolve_identity(name, protocol)` | Resolve ENS/HNS/SNS/DID |
-| `bind_identity(node_id, identity)` | Bind identity to node |
-
-### LoRA IoT & ICP Mesh
-| Method | Description |
-|--------|-------------|
 | `lora_send(device_id, payload)` | Send LoRA packet |
 | `lora_receive(device_id)` | Read LoRA telemetry |
 | `mesh_register(node_id, endpoint)` | Register in ICP mesh |
@@ -44,9 +53,8 @@ client = S7GClient(api_base="https://api.7g.sol")
 
 ---
 
-## Bridge Module (`domains/bridge.py` — 13 methods)
+## Bridge (`sdk/py/s7g/domains/bridge.py`)
 
-### CCTP Settlement
 ```python
 from s7g.domains.bridge import cctp_bridge_balance, cctp_cross_chain_settle
 ```
@@ -56,24 +64,16 @@ from s7g.domains.bridge import cctp_bridge_balance, cctp_cross_chain_settle
 | `cctp_bridge_balance()` | Query CCTP bridge balance |
 | `cctp_cross_chain_settle(amount, target_chain)` | Cross-chain USDC settlement |
 | `cctp_verify_attestation(tx_hash)` | Verify CCTP attestation |
-
-### POS Dongle
-| Method | Description |
-|--------|-------------|
 | `pos_settle(amount, currency)` | Settle POS transaction |
 | `pos_verify(proof_hash)` | Verify POS payment proof |
 | `pos_status()` | POS system health |
-
-### Court Operations
-| Method | Description |
-|--------|-------------|
 | `executive_court(action, agent_id)` | Executive court ruling |
 | `arbitration_court(dispute_id)` | Arbitration resolution |
 | `governance_proposal(proposal)` | Submit governance proposal |
 
 ---
 
-## Solana Module (`domains/solana.py` — 10 methods)
+## Solana (`sdk/py/s7g/domains/solana.py`)
 
 ```python
 from s7g.domains.solana import solana_validator_info, solana_stake, solana_swap
@@ -94,7 +94,7 @@ from s7g.domains.solana import solana_validator_info, solana_stake, solana_swap
 
 ---
 
-## Agents Module (`domains/agents.py` — 6 methods)
+## Agents (`sdk/py/s7g/domains/agents.py`)
 
 ```python
 from s7g.domains.agents import swarm_status, swarm_agent_info
@@ -107,16 +107,17 @@ from s7g.domains.agents import swarm_status, swarm_agent_info
 | `swarm_logs(agent_id=None, limit=50)` | Agent log entries |
 
 ### Constants
+
 ```python
-client.AGENTS        # { "total": 62, "ka_sem": 5, "execution": 13, ... }
-client.COURTS        # Court contract addresses
-client.STABLECOINS   # Stablecoin addresses by chain
-client.CHAINS        # Supported chain configs
+client.AGENTS       # {"total": 62, "ka_sem": 5, ...}
+client.COURTS       # Court contract addresses
+client.STABLECOINS  # Stablecoin addresses by chain
+client.CHAINS       # Supported chain configs
 ```
 
 ---
 
-## Yield Module (`domains/yield_router.py` — 1 method)
+## Yield (`sdk/py/s7g/domains/yield_router.py`)
 
 | Method | Description |
 |--------|-------------|
@@ -126,7 +127,7 @@ client.CHAINS        # Supported chain configs
 
 ## Error Handling
 
-All methods return `S7GCall` — a callable response object:
+All methods return `S7GCall`:
 
 ```python
 result = client.solana_balance()
