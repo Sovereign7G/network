@@ -1,12 +1,12 @@
 ---
-created: '2026-06-22T21:45:28Z'
+created: '2026-06-23T02:14:54Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-22T21:45:32.635233Z'
+updated: '2026-06-23T02:14:55.080009Z'
 ---
 
 # Walkthrough: Fabrika OS Physical-Logic Stress Testing Integration & Simulator Modularization
