@@ -1,0 +1,64 @@
+{
+  "dashboard": {
+    "title": "Sovereign Mesh Production",
+    "uid": "sovereign-mesh-prod",
+    "panels": [
+      {
+        "title": "Edge Requests per Second",
+        "targets": [{
+          "expr": "rate(sovereign_edge_requests_total[1m])",
+          "legendFormat": "{{endpoint}}"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 0}
+      },
+      {
+        "title": "Edge P99 Latency (ms)",
+        "targets": [{
+          "expr": "sovereign_edge_p99_latency_ms",
+          "legendFormat": "P99"
+        }],
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 12, "y": 0}
+      },
+      {
+        "title": "Rate Limited Requests",
+        "targets": [{
+          "expr": "rate(sovereign_edge_rate_limited_total[5m])",
+          "legendFormat": "rate limited"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 8}
+      },
+      {
+        "title": "Active WebSockets",
+        "targets": [{
+          "expr": "sovereign_edge_active_websockets",
+          "legendFormat": "connections"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 8}
+      },
+      {
+        "title": "Tunnel Health",
+        "targets": [{
+          "expr": "sovereign_tunnel_health",
+          "legendFormat": "status"
+        }],
+        "type": "stat",
+        "gridPos": {"h": 4, "w": 4, "x": 0, "y": 16}
+      },
+      {
+        "title": "eBPF Routing Latency (microseconds)",
+        "targets": [{
+          "expr": "histogram_quantile(0.99, rate(ebpf_routing_latency_us_bucket[5m]))",
+          "legendFormat": "P99"
+        }],
+        "type": "graph",
+        "gridPos": {"h": 8, "w": 12, "x": 8, "y": 16}
+      }
+    ],
+    "refresh": "30s",
+    "time": {"from": "now-1h", "to": "now"}
+  }
+}

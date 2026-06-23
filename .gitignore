@@ -1,0 +1,46 @@
+# Secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+~/.ssh/
+**/secure.key
+
+# Dependencies
+node_modules/
+**/node_modules/
+.eliza/
+.pnpm-store/
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+__pycache__/
+*.pyc
+**/__pycache__/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+**/logs/
+
+# System
+agent_tools/
+hermes_home/
+docker/.env
+
+# Temp
+/tmp/
+/tmp/*

@@ -1,0 +1,25 @@
+# monitoring/prometheus/prometheus.yml
+global:
+  scrape_interval: 12s
+  evaluation_interval: 30s
+
+scrape_configs:
+  - job_name: 'sip-proxy'
+    static_configs:
+      - targets: ['sip-proxy:5060']
+    metrics_path: /metrics
+
+  - job_name: 'beam-controller'
+    static_configs:
+      - targets: ['beam-controller:8080']
+    metrics_path: /metrics
+
+  - job_name: 'aether-mdu'
+    static_configs:
+      - targets: ['aether-mdu:8899']
+    metrics_path: /metrics
+
+  - job_name: 'conceptron'
+    static_configs:
+      - targets: ['conceptron:8899']
+    metrics_path: /query
