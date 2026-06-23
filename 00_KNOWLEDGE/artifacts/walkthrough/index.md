@@ -1,12 +1,12 @@
 ---
-created: '2026-06-23T02:27:58Z'
+created: '2026-06-23T02:28:37Z'
 tags:
 - antigravity
 - artifact
 - walkthrough
 title: 'Antigravity Artifact: Walkthrough'
 type: Note
-updated: '2026-06-23T02:28:00.923729Z'
+updated: '2026-06-23T02:28:41.141189Z'
 ---
 
 # Walkthrough: Sovereign 7G CI/CD Pipelines, Workflows & Monitoring Activation
@@ -74,3 +74,7 @@ We successfully bootstrapped the financial engineering plane of the network by a
 ### 3. Peg Arbitrage Bot
 - **File**: [arbitrage/liquity_arbitrage.py](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/arbitrage/liquity_arbitrage.py)
 - **Scope**: Actively monitors S7G/LUSD price relative to peg threshold (1.01) and executes mock flash swap loops to lock in spread profit.
+
+### 4. Strategic Value Proposition Document
+- **File**: [00_KNOWLEDGE/liquity_value_proposition.md](file:///media/cherry/4A21-00001/New%20folder/AGE%20REPUBLIC/00_KNOWLEDGE/liquity_value_proposition.md)
+- **Scope**: Outlines the strategic mutual value proposition mapping out the network's value loops to Liquity, Ethereum, and wider chains.
