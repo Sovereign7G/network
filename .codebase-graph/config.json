@@ -1,0 +1,8 @@
+{
+  "outputLanguage": "en",
+  "defaultRole": "architect",
+  "excludePatterns": ["node_modules", ".git", "dist", "build", "__pycache__", ".venv", "out", "target"],
+  "maxFilesPerBatch": 30,
+  "maxConcurrentBatches": 5,
+  "maxTokensPerEnrichment": 2000
+}
