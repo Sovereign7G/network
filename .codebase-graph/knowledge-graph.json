@@ -5617,8 +5617,73 @@
       "type": "defined_in"
     },
     {
+      "source": "file:06_INFRA/MERIENDA_DEPIN_ORCHESTRATOR.py",
+      "target": "file:04_SUBSTRATES/08_HARDWARE/CAD/fabrika_api.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era2_phase2.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era2_phase2.py",
+      "target": "file:06_INFRA/magix_okf.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era3_adaptive.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era3_adaptive.py",
+      "target": "file:06_INFRA/magix_okf.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era3_adaptive.py",
+      "target": "file:06_INFRA/okf_validator.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era4_collaborative.py",
+      "target": "file:06_INFRA/magix_okf.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era5_autonomous.py",
+      "target": "file:06_INFRA/era3_adaptive.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/era5_autonomous.py",
+      "target": "file:06_INFRA/magix_okf.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/magix_okf.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/magix_okf.py",
+      "target": "file:06_INFRA/external_gateway.py",
+      "type": "imports"
+    },
+    {
       "source": "file:06_INFRA/magix_okf.py",
       "target": "file:06_INFRA/okf_validator.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/magix_okf.py",
+      "target": "file:06_INFRA/s2l_pipeline.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/s2l_pipeline.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
       "type": "imports"
     },
     {
@@ -5632,6 +5697,11 @@
       "type": "imports"
     },
     {
+      "source": "file:06_INFRA/token_optimizer.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
+      "type": "imports"
+    },
+    {
       "source": "file:06_INFRA/triad_dashboard.py",
       "target": "file:06_INFRA/era2_phase2.py",
       "type": "imports"
@@ -5639,6 +5709,21 @@
     {
       "source": "file:06_INFRA/triad_dashboard.py",
       "target": "file:06_INFRA/triad_metrics.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/vision_pipeline.py",
+      "target": "file:06_INFRA/embedding_pipeline.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:06_INFRA/vision_pipeline.py",
+      "target": "file:06_INFRA/magix_okf.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:agents/acp_discovery.py",
+      "target": "file:sdk/py/s7g/domains/agents.py",
       "type": "imports"
     },
     {
@@ -5662,8 +5747,28 @@
       "type": "imports"
     },
     {
+      "source": "file:agents/swarm_orchestrator.py",
+      "target": "file:sdk/py/s7g/domains/agents.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:axon_broadway_poc.py",
+      "target": "file:zetto_attestation.py",
+      "type": "imports"
+    },
+    {
       "source": "file:bridge/agent_event_bus.py",
       "target": "file:sdk/py/s7g/domains/bridge.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:tests/test_session_comprehensive.py",
+      "target": "file:sdk/py/s7g/domains/bridge.py",
+      "type": "imports"
+    },
+    {
+      "source": "file:zetto_attestation.py",
+      "target": "file:04_SUBSTRATES/sovereign_trinity/zetto_bridge.py",
       "type": "imports"
     }
   ],
@@ -6108,14 +6213,16 @@
     }
   ],
   "meta": {
-    "gitCommitHash": "a1aa209f6eecf4b28151f03e5d706c8a8bfe6704",
-    "analyzedAt": "2026-06-24T03:43:48Z",
+    "gitCommitHash": "e98b8d8c2704defe1d89f997827b7fd9259f4c12",
+    "analyzedAt": "2026-06-24T03:50:24Z",
     "incremental": false,
     "outputLanguage": "en",
     "role": "architect",
     "totalSourceFiles": 81,
     "totalLines": 15303,
     "totalNodes": 481,
-    "totalEdges": 410
+    "totalEdges": 431,
+    "importEdges": 31,
+    "extractorVersion": "1.3.0 (AST for Python)"
   }
 }
