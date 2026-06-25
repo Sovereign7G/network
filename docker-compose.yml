@@ -1,0 +1,56 @@
+version: "3.8"
+services:
+  chatwoot:
+    image: chatwoot/chatwoot:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - POSTGRES_HOST=postgres
+      - POSTGRES_USERNAME=postgres
+      - POSTGRES_PASSWORD=*** 
+      - POSTGRES_DATABASE=chatwoot
+      - REDIS_URL=redis://redis:6379
+      - NODE_ENV=production
+      - INSTALLATION_ENV=docker
+    depends_on: [postgres, redis]
+    restart: unless-stopped
+
+  mautic:
+    image: mautic/mautic:latest
+    ports:
+      - "8090:80"
+    environment:
+      - MAUTIC_DB_HOST=mysql
+      - MAUTIC_DB_USER=mautic
+      - MAUTIC_DB_PASSWORD=*** 
+      - MAUTIC_DB_NAME=mautic
+      - DOCKER_MAUTIC_ROLE=web
+    depends_on: [mysql]
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_PASSWORD=*** 
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  mysql:
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=*** 
+      - MYSQL_DATABASE=mautic
+      - MYSQL_USER=mautic
+      - MYSQL_PASSWORD=*** 
+    volumes:
+      - mysqldata:/var/lib/mysql
+    restart: unless-stopped
+
+  redis:
+    image: redis:7
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+  mysqldata:

@@ -1,0 +1,13 @@
+.env
+.age_republic/
+00_KNOWLEDGE/
+.codebase-graph/
+.husky/
+04_SUBSTRATES/
+06_INFRA/
+__pycache__/
+*.pyc
+.DS_Store
+bifrost_config.yml
+scripts/axon_broadway_poc.py
+scripts/zetto_attestation.py

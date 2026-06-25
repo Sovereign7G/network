@@ -1,0 +1,8 @@
+canisters:
+  - name: tenant_registry
+    recipe:
+      type: "@dfinity/rust@v3.3.0"
+      configuration:
+        package: tenant_registry_backend
+        shrink: true
+        candid: src/tenant_registry_backend/tenant_registry_backend.did

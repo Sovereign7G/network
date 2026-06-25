@@ -1,0 +1,15 @@
+[package]
+name = "tenant_registry_backend"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+candid = { workspace = true }
+ic-cdk = { workspace = true }
+ic-stable-structures = { workspace = true }
+serde = { workspace = true }
+hex = { workspace = true }
+sha2 = "0.10"
+
+[lib]
+crate-type = ["cdylib"]

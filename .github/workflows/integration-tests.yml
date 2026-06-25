@@ -1,0 +1,29 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 's7g_sdk/**'
+      - 'tests/**'
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install locust pytest
+      - name: Python syntax check
+        run: |
+          python3 -m py_compile tests/conftest.py
+          python3 -m py_compile tests/integration/test_tenant.py
+          python3 -m py_compile tests/integration/test_audit.py
+          python3 -m py_compile tests/load/locustfile.py
+      - name: Dry-run integration tests
+        run: python3 tests/test_canister.py
