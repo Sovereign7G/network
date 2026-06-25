@@ -1,0 +1,23 @@
+{
+  "canisters": {
+    "tenant_registry": {
+      "candid": "src/tenant_registry_backend/tenant_registry_backend.did",
+      "package": "tenant_registry_backend",
+      "type": "rust"
+    },
+    "cycles_ledger": {
+      "type": "custom",
+      "candid": "path/to/candid.did",
+      "wasm": "",
+      "build": ""
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": ""
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
