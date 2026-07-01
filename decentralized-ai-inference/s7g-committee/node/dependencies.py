@@ -7,6 +7,7 @@ with proper lifecycle management.
 """
 
 import os
+import time
 from pathlib import Path
 from contextlib import asynccontextmanager
 
@@ -53,7 +54,7 @@ def get_start_time() -> float:
     """Get server start timestamp."""
     global _start_time
     if _start_time is None:
-        _start_time = __import__("time").time()
+        _start_time = time.time()
     return _start_time
 
 
@@ -66,7 +67,7 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     global _start_time
-    _start_time = __import__("time").time()
+    _start_time = time.time()
 
     # Initialize ledger
     ledger = get_ledger()
@@ -77,9 +78,18 @@ async def lifespan(app: FastAPI):
     print(f"[s7g-node-{app_settings.NODE_ID}] PBFT engine ready: f={engine.f}, quorum={engine.quorum_size}")
     print(f"[s7g-node-{app_settings.NODE_ID}] Role: {'LEADER' if engine.is_leader else 'follower'}")
 
+    # Initialize and start P2P server and GossipSub layer
+    from node.p2p_bridge import init_p2p
+    await init_p2p()
+    print(f"[s7g-node-{app_settings.NODE_ID}] P2P host and GossipSub layer initialized")
+
     yield
 
     # Shutdown
+    from node.p2p_bridge import shutdown_p2p
+    await shutdown_p2p()
+    print(f"[s7g-node-{app_settings.NODE_ID}] P2P server stopped")
+
     if _ledger:
         _ledger.close()
         print(f"[s7g-node-{app_settings.NODE_ID}] Ledger closed")

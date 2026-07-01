@@ -25,6 +25,7 @@ from node.dependencies import (
 )
 from consensus.bft import PBFTEngine
 from consensus.ledger import Ledger
+from node.p2p_bridge import router as p2p_router, get_gossip
 
 
 def create_app() -> FastAPI:
@@ -34,6 +35,9 @@ def create_app() -> FastAPI:
         version="1.0.0",
         lifespan=lifespan,
     )
+
+    # Include P2P endpoints
+    app.include_router(p2p_router)
 
     # ── Health ────────────────────────────────────────────────────────
 
@@ -90,9 +94,26 @@ def create_app() -> FastAPI:
             # PRE-PREPARE (self-acknowledge)
             engine.pre_prepare(block)
 
+            # Broadcast PRE-PREPARE via GossipSub
+            gossip = get_gossip()
+            if gossip:
+                await gossip.publish("consensus", {
+                    "type": "PRE-PREPARE",
+                    "block": block
+                })
+
             # PREPARE (self-sign)
             sig = engine._sign(block)
             quorum_reached = engine.prepare(block, engine.node_id, sig)
+
+            # Broadcast PREPARE via GossipSub
+            if gossip:
+                await gossip.publish("consensus", {
+                    "type": "PREPARE",
+                    "block": block,
+                    "from_node": engine.node_id,
+                    "signature": sig
+                })
 
             return ProposalResponse(
                 proposal_id=block["request_id"],
@@ -129,6 +150,16 @@ def create_app() -> FastAPI:
         # COMMIT (self-acknowledge)
         sig = engine._sign(block)
         finalized = engine.commit(block, engine.node_id, sig)
+
+        # Broadcast COMMIT via GossipSub
+        gossip = get_gossip()
+        if gossip:
+            await gossip.publish("consensus", {
+                "type": "COMMIT",
+                "block": block,
+                "from_node": engine.node_id,
+                "signature": sig
+            })
 
         return {
             "status": "committed" if finalized else "pending",

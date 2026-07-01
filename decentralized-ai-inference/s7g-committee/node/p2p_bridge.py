@@ -58,6 +58,44 @@ async def init_p2p():
     _gossip = GossipSub(_p2p_host)
     _kademlia = Kademlia(_p2p_host)
 
+    # Subscribe PBFT consensus engine to the gossip network
+    engine = get_engine()
+    async def consensus_callback(data: dict):
+        try:
+            msg_type = data.get("type")
+            if msg_type == "PRE-PREPARE":
+                block = data.get("block")
+                if engine.pre_prepare(block):
+                    sig = engine._sign(block)
+                    await _gossip.publish("consensus", {
+                        "type": "PREPARE",
+                        "block": block,
+                        "from_node": settings.NODE_ID,
+                        "signature": sig
+                    })
+            elif msg_type == "PREPARE":
+                block = data.get("block")
+                from_node = data.get("from_node")
+                signature = data.get("signature")
+                quorum_reached = engine.prepare(block, from_node, signature)
+                if quorum_reached:
+                    sig = engine._sign(block)
+                    await _gossip.publish("consensus", {
+                        "type": "COMMIT",
+                        "block": block,
+                        "from_node": settings.NODE_ID,
+                        "signature": sig
+                    })
+            elif msg_type == "COMMIT":
+                block = data.get("block")
+                from_node = data.get("from_node")
+                signature = data.get("signature")
+                engine.commit(block, from_node, signature)
+        except Exception as e:
+            logger.error(f"Error in P2P consensus callback: {e}")
+
+    await _gossip.subscribe("consensus", consensus_callback)
+
     logger.info(
         f"P2P layer initialized: peer_id={_p2p_host.peer_id}, "
         f"port={settings.P2P_PORT}"
