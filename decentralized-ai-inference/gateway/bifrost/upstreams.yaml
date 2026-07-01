@@ -1,0 +1,135 @@
+# ──────────────────────────────────────────────────────────────
+# Bifrost — S7G Sovereign AI Mesh Upstream Configuration
+# 
+# Bifrost acts as the global ingress proxy. LiteLLM handles
+# S7G PBFT consensus orchestration internally.
+#
+# Architecture:
+#   Client → Bifrost (edge) → LiteLLM (S7G) → Committee
+#                              ↓ fallback
+#                           Render GPU / Bittensor
+# ──────────────────────────────────────────────────────────────
+
+upstreams:
+  # ── Primary: S7G-validated inference via LiteLLM ──────────
+  - name: s7g-ai-mesh
+    type: http
+    targets:
+      - http://litellm-gateway:4000
+      - http://localhost:4000
+    health_check:
+      path: /health
+      interval: 15s
+      timeout: 5s
+      healthy_threshold: 2
+      unhealthy_threshold: 3
+    timeout: 120s          # PBFT consensus (propose → commit) can take 2-30s
+    retries: 2
+    retry_on: [connection_error, timeout, 5xx]
+    load_balancing:
+      method: least_connections
+
+  # ── Fallback: Render GPU (when S7G is degraded) ──────────
+  - name: render-gpu-fallback
+    type: http
+    targets:
+      - http://render-gpu.akash.pub:8000
+    health_check:
+      path: /health
+      interval: 60s
+    timeout: 60s
+    retries: 1
+
+  # ── Fallback: Bittensor SN1 (decentralized) ──────────────
+  - name: bittensor-fallback
+    type: http
+    targets:
+      - http://bt-sn1-gateway:8000
+    health_check:
+      path: /health
+      interval: 60s
+    timeout: 60s
+    retries: 1
+
+# ── Route Rules ─────────────────────────────────────────────
+routes:
+  # Health check passthrough
+  - path: /health
+    upstream: s7g-ai-mesh
+    methods: [GET]
+    auth: false
+
+  # Chat completions (primary S7G workload)
+  - path: /v1/chat/completions
+    upstream: s7g-ai-mesh
+    methods: [POST]
+    rate_limit: 100/min per key
+    auth:
+      type: api_key
+      header: X-API-Key
+
+  # Text completions
+  - path: /v1/completions
+    upstream: s7g-ai-mesh
+    methods: [POST]
+    rate_limit: 100/min per key
+    auth:
+      type: api_key
+
+  # Model listing
+  - path: /v1/models
+    upstream: s7g-ai-mesh
+    methods: [GET]
+    cache_ttl: 300s
+
+  # Embeddings
+  - path: /v1/embeddings
+    upstream: s7g-ai-mesh
+    methods: [POST]
+    rate_limit: 300/min per key
+
+  # S7G committee direct access (internal only)
+  - path: /s7g/*
+    upstream: s7g-ai-mesh
+    methods: [GET, POST]
+    auth:
+      type: api_key
+      required: true
+
+# ── Fallback Chain ──────────────────────────────────────────
+# If primary (s7g-ai-mesh) is unhealthy, route to fallbacks.
+# Priority: S7G → Render GPU → Bittensor
+fallback:
+  enabled: true
+  chain:
+    - s7g-ai-mesh         # Try S7G-validated first
+    - render-gpu-fallback  # Fallback to Render GPU
+    - bittensor-fallback   # Last resort: Bittensor
+  circuit_breaker:
+    enabled: true
+    threshold: 5           # After 5 failures, skip this upstream
+    cooldown: 60s           # Retry after 60s
+
+# ── Rate Limiting ───────────────────────────────────────────
+rate_limits:
+  global:
+    requests_per_second: 5000
+    burst: 10000
+  per_key:
+    requests_per_minute: 100
+    burst: 200
+  per_ip:
+    requests_per_minute: 1000
+
+# ── Observability ───────────────────────────────────────────
+observability:
+  metrics:
+    prometheus:
+      enabled: true
+      path: /metrics
+  logging:
+    level: info
+    format: json
+  tracing:
+    enabled: true
+    sampling_rate: 0.1
