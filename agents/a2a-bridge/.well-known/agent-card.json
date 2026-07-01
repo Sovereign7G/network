@@ -1,0 +1,40 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-a2a-bridge",
+  "description": "S7G A2A Cross-Vendor Bridge — translates standard A2A HTTP requests to Iroh QUIC for P2P agent-to-agent communication",
+  "url": "http://localhost:8013",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "a2a-delegate",
+      "name": "Delegate Task",
+      "description": "Send an A2A JSON-RPC task to another agent via Iroh QUIC, returns streaming or completed result",
+      "tags": ["s7g", "a2a", "agent", "delegation", "iroh"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json", "text/event-stream"]
+    },
+    {
+      "id": "a2a-discover",
+      "name": "Discover Agents",
+      "description": "Query the DHT/Iroh mesh for agents advertising a specific skill, return matching agent cards",
+      "tags": ["s7g", "a2a", "discovery", "dht"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "a2a-publish",
+      "name": "Publish Agent Card",
+      "description": "Publish or update an agent card to the DHT for skill-based discovery by other agents",
+      "tags": ["s7g", "a2a", "publish", "registration"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}

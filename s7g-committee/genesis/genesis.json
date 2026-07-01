@@ -1,0 +1,12 @@
+{
+  "chain_id": "s7g-sovereign-1",
+  "genesis_time": "2026-06-30T00:00:00Z",
+  "committee_size": 4,
+  "bft_threshold": 3,
+  "initial_height": 1,
+  "app_state": {
+    "governors": [],
+    "threshold": 3,
+    "sidecar_versions": []
+  }
+}

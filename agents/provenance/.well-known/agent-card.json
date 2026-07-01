@@ -1,0 +1,40 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-provenance",
+  "description": "S7G Provenance Audit Agent — queries Hypercore append-only logs, verifies chain integrity, tracks governance actions",
+  "url": "http://localhost:8011",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "provenance-query",
+      "name": "Query Provenance History",
+      "description": "Read entries from the Hypercore provenance feed, filtered by action type, version, or time range",
+      "tags": ["s7g", "provenance", "hypercore", "audit"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "provenance-verify",
+      "name": "Verify Chain Integrity",
+      "description": "Check that every entry's SHA256 hash links correctly to the previous entry, detect tampering",
+      "tags": ["s7g", "provenance", "security", "verify"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "provenance-log",
+      "name": "Log Action to Provenance",
+      "description": "Append a new signed entry to the Hypercore provenance feed",
+      "tags": ["s7g", "provenance", "logging"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}

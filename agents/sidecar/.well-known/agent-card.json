@@ -1,0 +1,40 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-sidecar",
+  "description": "S7G Sidecar Distribution Agent — registers versions on ICP canister, resolves binaries via P2P, manages auto-updates",
+  "url": "http://localhost:8010",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": true
+  },
+  "skills": [
+    {
+      "id": "sidecar-register",
+      "name": "Register Sidecar Version",
+      "description": "Register a new sidecar version on ICP canister with 32-byte discovery key and SHA256 hash",
+      "tags": ["s7g", "sidecar", "distribution", "pair"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "sidecar-resolve",
+      "name": "Resolve Sidecar Binary",
+      "description": "Resolve sidecar binary from P2P network via Iroh relay or TCP fallback, verify SHA256",
+      "tags": ["s7g", "sidecar", "iroh", "p2p"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "sidecar-status",
+      "name": "Check Sidecar Status",
+      "description": "Query canister for latest sidecar version, active governors, and deployment state",
+      "tags": ["s7g", "sidecar", "canister", "governance"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}

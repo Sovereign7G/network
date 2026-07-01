@@ -1,0 +1,32 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-graph-query",
+  "description": "S7G Knowledge Graph Query Agent — answers questions about codebase structure, vulnerabilities, ownership, and provenance",
+  "url": "http://localhost:8001",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "graph-query",
+      "name": "Query Knowledge Graph",
+      "description": "Execute s7g-query commands and return structured results",
+      "tags": ["s7g", "security", "governance"],
+      "inputModes": ["text/plain", "application/json"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "graph-describe",
+      "name": "Describe File",
+      "description": "Get semantic summary of a file",
+      "tags": ["s7g", "semantic"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["text/plain"]
+    }
+  ]
+}

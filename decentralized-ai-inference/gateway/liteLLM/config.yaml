@@ -1,0 +1,12 @@
+model_list:
+  - model_name: sovereign-llama3
+    litellm_params:
+      model: openai/meta-llama/Meta-Llama-3-8B-Instruct
+      api_base: http://inference-engine:8000/v1
+      api_key: local-secret-key
+
+general_settings:
+  custom_auth: auth.s7g_middleware.custom_auth_fn
+
+litellm_settings:
+  callbacks: ["auth.s7g_middleware.S7GLoggingHandler"]
