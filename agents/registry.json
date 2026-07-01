@@ -1,38 +1,81 @@
 {
-  "version": "2.0.0",
-  "agents": 55,
-  "domains": ["security", "dev", "content", "ops", "strategy"],
-  "packages": {
-    "primitives": "BaseAgent, core tools, abstract interfaces",
-    "specialists": "Domain-specific agents (security, dev, content, ops, strategy, skills-audit)",
-    "workflows": "Coordinator pipelines, sequential chains, goal execution",
-    "core": "ACP server, A2A protocol, tracing, discovery, logging",
-    "config": "Agent tokens, prompts, versioned parameters"
-  },
-  "dependencies": {
-    "config": [],
-    "primitives": ["config"],
-    "specialists": ["primitives", "config"],
-    "workflows": ["specialists", "primitives", "config"],
-    "core": ["config"]
-  },
-  "a2a": {
-    "endpoint": "http://76.230.146.7:8080/a2a/jsonrpc",
-    "agent_card": "http://76.230.146.7:8080/.well-known/agent-card.json",
-    "rpc_endpoint": "http://76.230.146.7:8080/a2a/",
-    "streaming": "http://76.230.146.7:8080/a2a/stream",
-    "supported_methods": [
-      "tasks.send",
-      "tasks.get",
-      "tasks.cancel",
-      "tasks.list",
-      "settle_transaction",
-      "get_attestation"
-      ],
-    "protocol": "JSON-RPC 2.0",
-    "skills": 10
-  },
   "registry": {
-    "a2aregistry": "44770263-493d-44bd-8b69-bc2e95566564"
-  }
+    "name": "S7G Agent Registry",
+    "version": "2.4.0",
+    "description": "Complete S7G + Pair stack agent registry — 9 agents for distribution, governance, provenance, and A2A mesh",
+    "updated": "2026-06-30"
+  },
+  "agents": [
+    {
+      "id": "s7g-sidecar",
+      "card": "agents/sidecar/.well-known/agent-card.json",
+      "port": 8010,
+      "description": "Sidecar distribution — canister registration, P2P resolution, auto-update",
+      "phase": "A"
+    },
+    {
+      "id": "s7g-provenance",
+      "card": "agents/provenance/.well-known/agent-card.json",
+      "port": 8011,
+      "description": "Provenance audit — Hypercore query, chain verification, action logging",
+      "phase": "C"
+    },
+    {
+      "id": "s7g-committee",
+      "card": "agents/committee/.well-known/agent-card.json",
+      "port": 8012,
+      "description": "Committee P2P — peer discovery, blob transfer, health monitoring",
+      "phase": "D"
+    },
+    {
+      "id": "s7g-a2a-bridge",
+      "card": "agents/a2a-bridge/.well-known/agent-card.json",
+      "port": 8013,
+      "description": "A2A cross-vendor bridge — task delegation, agent discovery, card publishing",
+      "phase": "E"
+    },
+    {
+      "id": "s7g-mobile-ota",
+      "card": null,
+      "port": null,
+      "description": "Mobile OTA distribution — iOS/Android stubs, bundle seeding (Phase B, CI/CD-based)",
+      "phase": "B"
+    },
+    {
+      "id": "s7g-graph-query",
+      "card": "agents/graph-query/.well-known/agent-card.json",
+      "port": 8001,
+      "description": "Knowledge graph query — codebase structure, vulnerabilities, ownership",
+      "phase": "core"
+    },
+    {
+      "id": "s7g-triage",
+      "card": "agents/triage/.well-known/agent-card.json",
+      "port": 8002,
+      "description": "Vulnerability triage — centrality metrics, owner ranking",
+      "phase": "core"
+    },
+    {
+      "id": "s7g-semantic",
+      "card": "agents/semantic/.well-known/agent-card.json",
+      "port": 8003,
+      "description": "Semantic codebase explorer — file explanations, guided tours",
+      "phase": "core"
+    },
+    {
+      "id": "s7g-slack",
+      "card": "agents/slack/.well-known/agent-card.json",
+      "port": 8004,
+      "description": "Slack dispatcher — alerts, graph query routing",
+      "phase": "core"
+    }
+  ],
+  "skills": [
+    {
+      "id": "s7g-pair-integration",
+      "path": "hermes_home/skills/devops/s7g-pair-integration/SKILL.md",
+      "description": "Complete S7G + Pair stack integration skill — all 5 phases",
+      "tags": ["s7g", "pair", "p2p", "sidecar", "provenance", "a2a"]
+    }
+  ]
 }
