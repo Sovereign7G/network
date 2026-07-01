@@ -1,0 +1,184 @@
+version: '3.8'
+
+services:
+  # ===== S7G COMMITTEE NODES (4-NODE BFT CLUSTER) =====
+  s7g-node-1:
+    build:
+      context: ./s7g-committee
+      dockerfile: Dockerfile
+    container_name: s7g-node-1
+    ports:
+      - "1317:1317"
+      - "26656:26656"
+    environment:
+      - NODE_ID=1
+      - NODE_ROLE=leader
+      - COMMITTEE_SIZE=4
+      - PEERS=s7g-node-2:26656,s7g-node-3:26656,s7g-node-4:26656
+      - API_HOST=0.0.0.0
+      - API_PORT=1317
+      - LEDGER_PATH=/app/ledger
+    volumes:
+      - s7g-ledger-1:/app/ledger
+    networks:
+      - s7g-mesh
+
+  s7g-node-2:
+    build:
+      context: ./s7g-committee
+      dockerfile: Dockerfile
+    container_name: s7g-node-2
+    ports:
+      - "1318:1317"
+      - "26657:26656"
+    environment:
+      - NODE_ID=2
+      - NODE_ROLE=follower
+      - COMMITTEE_SIZE=4
+      - PEERS=s7g-node-1:26656,s7g-node-3:26656,s7g-node-4:26656
+      - API_HOST=0.0.0.0
+      - API_PORT=1317
+      - LEDGER_PATH=/app/ledger
+    volumes:
+      - s7g-ledger-2:/app/ledger
+    networks:
+      - s7g-mesh
+
+  s7g-node-3:
+    build:
+      context: ./s7g-committee
+      dockerfile: Dockerfile
+    container_name: s7g-node-3
+    ports:
+      - "1319:1317"
+      - "26658:26656"
+    environment:
+      - NODE_ID=3
+      - NODE_ROLE=follower
+      - COMMITTEE_SIZE=4
+      - PEERS=s7g-node-1:26656,s7g-node-2:26656,s7g-node-4:26656
+      - API_HOST=0.0.0.0
+      - API_PORT=1317
+      - LEDGER_PATH=/app/ledger
+    volumes:
+      - s7g-ledger-3:/app/ledger
+    networks:
+      - s7g-mesh
+
+  s7g-node-4:
+    build:
+      context: ./s7g-committee
+      dockerfile: Dockerfile
+    container_name: s7g-node-4
+    ports:
+      - "1320:1317"
+      - "26659:26656"
+    environment:
+      - NODE_ID=4
+      - NODE_ROLE=follower
+      - COMMITTEE_SIZE=4
+      - PEERS=s7g-node-1:26656,s7g-node-2:26656,s7g-node-3:26656
+      - API_HOST=0.0.0.0
+      - API_PORT=1317
+      - LEDGER_PATH=/app/ledger
+    volumes:
+      - s7g-ledger-4:/app/ledger
+    networks:
+      - s7g-mesh
+
+  # ===== LITELLM GATEWAY LAYER =====
+  gateway:
+    image: ghcr.io/berriai/litellm:main-latest
+    container_name: litellm-gateway
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./gateway/liteLLM/config.yaml:/app/config.yaml
+      - ./gateway/auth:/app/auth
+    environment:
+      - S7G_NODE_URL=http://s7g-node-1:1317
+    command: ["--config", "/app/config.yaml"]
+    depends_on:
+      - s7g-node-1
+      - inference
+    networks:
+      - s7g-mesh
+
+  # ===== MOCK INFERENCE LAYER (vLLM simulation) =====
+  inference:
+    image: python:3.11-slim
+    container_name: mock-vllm
+    ports:
+      - "8000:8000"
+    command: >
+      python3 -c "
+      import http.server, json
+      class Handler(http.server.BaseHTTPRequestHandler):
+          def do_POST(self):
+              content_length = int(self.headers['Content-Length'])
+              req_body = json.loads(self.rfile.read(content_length))
+              self.send_response(200)
+              self.send_header('Content-Type', 'application/json')
+              self.end_headers()
+              resp = {
+                  'choices': [{'finish_reason': 'stop', 'message': {'content': 'Sovereign 7G response'}}],
+                  'usage': {'prompt_tokens': 12, 'completion_tokens': 18, 'total_tokens': 30}
+              }
+              self.wfile.write(json.dumps(resp).encode())
+      http.server.HTTPServer(('0.0.0.0', 8000), Handler).serve_forever()
+      "
+    networks:
+      - s7g-mesh
+
+  # ===== DATA & METRICS LAYER =====
+  redis:
+    image: redis:alpine
+    container_name: s7g-cache
+    ports:
+      - "6379:6379"
+    networks:
+      - s7g-mesh
+
+  postgres:
+    image: postgres:alpine
+    container_name: s7g-ledger-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=s7g_analytics
+      - POSTGRES_USER=s7g
+      - POSTGRES_PASSWORD=sovereign
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - s7g-mesh
+
+  # ===== MONITORING STACK =====
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: s7g-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - s7g-mesh
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: s7g-grafana
+    ports:
+      - "3000:3000"
+    networks:
+      - s7g-mesh
+
+volumes:
+  s7g-ledger-1:
+  s7g-ledger-2:
+  s7g-ledger-3:
+  s7g-ledger-4:
+  pgdata:
+
+networks:
+  s7g-mesh:
+    driver: bridge

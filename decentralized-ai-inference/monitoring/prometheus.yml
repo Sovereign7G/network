@@ -1,0 +1,16 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: "s7g-gateway"
+    static_configs:
+      - targets: ["gateway:4000"]
+
+  - job_name: "s7g-committee-nodes"
+    static_configs:
+      - targets:
+          - "s7g-node-1:1317"
+          - "s7g-node-2:1317"
+          - "s7g-node-3:1317"
+          - "s7g-node-4:1317"
