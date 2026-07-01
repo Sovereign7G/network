@@ -168,12 +168,82 @@ class S7GClient:
     def icp_store(self, key: str, value: str) -> Optional[dict]:
         return _ic_call(AETHERDB, "aetherdb_put", [key, list(value.encode("utf-8"))])
 
-    def icp_get(self, key: str) -> Optional[str]:
+    def icp_read(self, key: str) -> Optional[str]:
         r = _ic_call(AETHERDB, "aetherdb_get", [key])
-        if not r: return None
-        data = r.get("result") or r.get("Ok")
-        if isinstance(data, list): return bytes(data).decode("utf-8", errors="replace")
-        return data
+        if r and isinstance(r, dict) and "Ok" in r:
+            return bytes(r["Ok"]).decode("utf-8", errors="replace")
+        return None
+
+    # ═══════════════════════════════════════════════════════════════
+    # CROSS-CHAIN SETTLEMENTS (via SHROUD Orchestrator)
+    # ═══════════════════════════════════════════════════════════════
+    #
+    # These methods submit settlement requests to the SHROUD orchestrator
+    # canister (txdkz-xqaaa-aaaaa-qhkea-cai). Each settlement is:
+    #   - Attested by a 3-of-5 committee (hardware-backed, location-anchored)
+    #   - Terms hidden via FE (only final result visible)
+    #   - Finalized via 2-of-4 multi-ledger verification
+
+    SHROUD_CANISTER = "txdkz-xqaaa-aaaaa-qhkea-cai"
+
+    def _shroud_call(self, method: str, args: list) -> Optional[dict]:
+        """Call the SHROUD orchestrator canister via IC HTTP API."""
+        return _ic_call(self.SHROUD_CANISTER, method, args)
+
+    def settlement_bitcoin(self, to_address: str, amount_sats: int) -> dict:
+        """Settle on Bitcoin via SHROUD committee.
+        
+        The committee verifies the BTC transaction and finalizes via 2-of-4.
+        Settlement terms are hidden — only the final result is visible.
+        """
+        return self._request("POST", "/api/settlement/bitcoin", {
+            "to": to_address, "amount_sats": amount_sats, "identity": self.identity,
+        })
+
+    def settlement_evm(self, chain: str, to_address: str, amount_wei: int) -> dict:
+        """Settle on an EVM chain via SHROUD committee.
+        
+        Supports Ethereum, Polygon, Arbitrum, Optimism, Base.
+        """
+        return self._request("POST", "/api/settlement/evm", {
+            "chain": chain, "to": to_address, "amount_wei": amount_wei,
+            "identity": self.identity,
+        })
+
+    def settlement_solana(self, to_address: str, amount_lamports: int) -> dict:
+        """Settle on Solana via SHROUD committee.
+        
+        Solana's 400ms finality enables fast committee verification.
+        """
+        return self._request("POST", "/api/settlement/solana", {
+            "to": to_address, "amount_lamports": amount_lamports,
+            "identity": self.identity,
+        })
+
+    def settlement_elastos(self, carrier_id: str, service_type: str, units: int) -> dict:
+        """Settle ELASTOS carrier services via SHROUD committee.
+        
+        Carrier location is attested via vAOM/DTC. Routing is computed
+        via FHE (hidden from committee). Terms are hidden via FE.
+        """
+        return self._request("POST", "/api/settlement/elastos", {
+            "carrier_id": carrier_id, "service_type": service_type, "units": units,
+            "identity": self.identity,
+        })
+
+    def settlement_icp(self, to_principal: str, amount_e8s: int) -> dict:
+        """Settle on ICP ledger via SHROUD committee.
+        
+        Native ICP settlement — uses the orchestrator canister directly.
+        """
+        return self._request("POST", "/api/settlement/icp", {
+            "to": to_principal, "amount_e8s": amount_e8s,
+            "identity": self.identity,
+        })
+
+    def settlement_status(self, ledger_id: str) -> dict:
+        """Check the status of a cross-chain settlement."""
+        return self._request("GET", f"/api/settlement/status?ledger_id={ledger_id}")
 
     def icp_list_type(self, prefix: str) -> list:
         r = _ic_call(AETHERDB, "list_by_type", [prefix])
@@ -192,7 +262,7 @@ class S7GClient:
 
     # ── Relayer Status ────────────────────────────────────────────
     def relayer_status(self) -> Optional[dict]:
-        return {"primary": self.icp_get("relayer:primary")}
+        return {"primary": self.icp_read("relayer:primary")}
 
     # ═══════════════════════════════════════════════════════════════
     # LoRA IOT
@@ -203,7 +273,7 @@ class S7GClient:
             [f"lora:device:{dev_eui}", json.dumps({"devEUI":dev_eui,"location":location,"ts":time.time()})])
 
     def lora_get_device(self, dev_eui: str) -> Optional[str]:
-        return self.icp_get(f"lora:device:{dev_eui}")
+        return self.icp_read(f"lora:device:{dev_eui}")
 
     def lora_get_telemetry(self, dev_eui: str) -> list:
         return self.icp_list_type(f"lora:{dev_eui}")

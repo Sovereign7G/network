@@ -1,1 +1,0 @@
-# Hyperliquid integration package
