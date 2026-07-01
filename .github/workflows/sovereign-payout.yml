@@ -1,0 +1,44 @@
+# .github/workflows/sovereign-payout.yml
+name: Sovereign Treasury Payout Automation
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  execute-payout:
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.labels.*.name, 'payout')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          pip install pyyaml requests web3 cryptography
+
+      - name: Execute Bifrost ACH Payout
+        env:
+          NIUM_API_KEY: ${{ secrets.NIUM_API_KEY }}
+          NIUM_CLIENT_HASH: ${{ secrets.NIUM_CLIENT_HASH }}
+          SOVEREIGN_LIVE: "false" # Dry-run sandbox validation by default
+        run: |
+          python3 "06_INFRA/bifrost_ach_bridge.py" \
+            --pr ${{ github.event.pull_request.number }} \
+            --commit ${{ github.event.pull_request.merge_commit_sha }}
+
+      - name: Commit and Push Transaction Receipt
+        run: |
+          git config --global user.name "Sovereign Treasury Bot"
+          git config --global user.email "treasury@agerepublic.gov"
+          git add 06_INFRA/receipts/*.toon
+          git commit -m "chore: commit cryptographic transaction receipt for PR #${{ github.event.pull_request.number }} [skip ci]" || echo "No new receipts to commit"
+          git push origin main

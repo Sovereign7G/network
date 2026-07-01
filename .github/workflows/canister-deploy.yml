@@ -1,0 +1,55 @@
+name: canister-deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tenant_registry/**'
+      - '.github/workflows/canister-deploy.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install dfx
+        run: |
+          sh -ci "$(curl -fsSL https://internetcomputer.org/install.sh)" -y
+          echo "$HOME/.local/share/dfx/bin" >> $GITHUB_PATH
+      - name: Install Rust target
+        run: rustup target add wasm32-unknown-unknown
+      - name: Build canister
+        run: cd tenant_registry && cargo build --target wasm32-unknown-unknown --release
+      - name: Upload WASM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: canister-wasm
+          path: tenant_registry/target/wasm32-unknown-unknown/release/tenant_registry_backend.wasm
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - name: Download WASM
+        uses: actions/download-artifact@v4
+        with:
+          name: canister-wasm
+      - name: Install icp-cli
+        run: |
+          curl -fsSL https://github.com/dfinity/icp-cli/releases/latest/download/icp-cli-x86_64-unknown-linux-gnu.tar.gz | tar xz
+          sudo mv icp-cli /usr/local/bin/
+      - name: Deploy to ICP mainnet
+        env:
+          ICP_PRIVATE_KEY: ${{ secrets.ICP_DEPLOYER_PRIVATE_KEY }}
+          CANISTER_ID: ${{ vars.REGISTRY_CANISTER_ID }}
+        run: |
+          echo "$ICP_PRIVATE_KEY" > /tmp/deployer.pem
+          icp identity import deployer --from-pem /tmp/deployer.pem
+          icp identity default deployer
+          icp canister install $CANISTER_ID \
+            --wasm tenant_registry_backend.wasm \
+            --mode upgrade \
+            --network ic

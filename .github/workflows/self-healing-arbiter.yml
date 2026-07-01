@@ -1,0 +1,23 @@
+name: Self-Healing Arbiter CI/CD
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  forensics-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Codebase
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run Microarchitectural Speculation and Loop Forensics
+        run: |
+          python3 06_INFRA/FRACTAL_MICROARCH_AUDIT.py --run-audit
+          python3 06_INFRA/FRACTAL_SOVEREIGN_ORCHESTRATOR.py --run-all-vectors

@@ -1,0 +1,72 @@
+# .github/workflows/sovereign-serverless-micro-agents.yml
+name: Sovereign Serverless Micro-Agents Execution
+
+on:
+  schedule:
+    # Run every weekday (Monday to Friday) at 22:30 UTC (17:30 EST, shortly after market close)
+    - cron: '30 22 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      agent_type:
+        description: 'Micro-Agent to execute (macro_trend_watcher, payroll_screener, security_auditor, daily_trust_reconciler, yield_optimizer)'
+        required: true
+        default: 'macro_trend_watcher'
+        type: choice
+        options:
+          - macro_trend_watcher
+          - payroll_screener
+          - security_auditor
+          - daily_trust_reconciler
+          - yield_optimizer
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  run-micro-agent:
+    name: Execute Sovereign Micro-Agent
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml requests web3 cryptography litellm
+
+      - name: Run Serverless Micro-Agent Harness
+        env:
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SOVEREIGN_PRIVATE_KEY: ${{ secrets.SOVEREIGN_PRIVATE_KEY }}
+          SOVEREIGN_API_GATEWAY_URL: ${{ secrets.SOVEREIGN_API_GATEWAY_URL }}
+          AGENT_TYPE: ${{ github.event.inputs.agent_type || 'macro_trend_watcher' }}
+          RUN_CONTEXT: "GITHUB_ACTIONS"
+        run: |
+          python3 "06_INFRA/serverless_micro_agent_harness.py" --agent "$AGENT_TYPE"
+
+      - name: Reconcile and Commit Cryptographic Receipts
+        run: |
+          git config --global user.name "Sovereign Micro-Agent Bot"
+          git config --global user.email "agents@agerepublic.gov"
+          
+          # Stage new reports, receipts, or telemetry states
+          git add 06_INFRA/receipts/*.toon || echo "No receipts to add"
+          git add 06_INFRA/reports/*.toon || echo "No reports to add"
+          git add .claw_code/bridge_state.toon || echo "No bridge state to add"
+          
+          git commit -m "chore(agent): commit cryptographically sealed execution receipt [skip ci]" || echo "No new receipts to commit"
+          git push origin main || echo "No changes to push"

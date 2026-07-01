@@ -1,0 +1,53 @@
+# 🏛️ AGE REPUBLIC :: SOVEREIGN PERFORMANCE REGRESSION CHECK
+name: Performance Regression Check
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    paths:
+      - 'age_republic/**/*.py'
+      - 'bumblebee_bridge.py'
+      - 'profile_suite.py'
+      - 'package-lock.json'
+      - '**/package-lock.json'
+      - '**/*.csproj'
+      - '**/packages.config'
+      - '**/app.ini'
+
+jobs:
+  performance-gate:
+    name: Enforce Performance Boundaries
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python Environment
+        uses: actions/setup-python@v5
+        with:
+          python-path: '3.12'
+          cache: 'pip'
+
+      - name: Install Pyinstrument and Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyinstrument psutil
+
+      - name: Run CI/CD Performance Regression Gate
+        env:
+          PYINSTRUMENT_TIMING_THREAD: 1
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          python3 06_INFRA/ci_regression_gate.py --targets pillars agency barter
+
+      - name: Upload Telemetry & Flamegraphs Artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-performance-reports
+          path: |
+            00_KNOWLEDGE/MISSION_REPORTS/*.html
+            00_KNOWLEDGE/MISSION_REPORTS/*.json
+            00_KNOWLEDGE/MISSION_REPORTS/*.db

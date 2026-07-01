@@ -1,0 +1,45 @@
+name: Publish SDKs
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish-sdks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Generate SDKs
+        run: bash scripts/generate_sdks.sh
+      
+      # Publish to PyPI
+      - name: Publish Python SDK
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
+          packages_dir: sdks/python
+      
+      # Publish to npm
+      - name: Publish TypeScript SDK
+        uses: JS-DevTools/npm-publish@v3
+        with:
+          token: ${{ secrets.NPM_TOKEN }}
+          package: sdks/typescript/package.json
+      
+      # Publish to Go module proxy
+      - name: Publish Go SDK
+        run: |
+          cd sdks/go
+          git tag go-sdk/v2.0.0
+          git push origin go-sdk/v2.0.0
+      
+      # Create GitHub release with SDKs attached
+      - name: Attach SDKs to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            sdks/python/dist/*
+            sdks/typescript/*.tgz
+            sdks/go/*.tar.gz

@@ -1,0 +1,339 @@
+name: Sovereign Mesh CI/CD Pipeline
+
+on:
+  push:
+    branches: [main, develop]
+    tags: ['v*']
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Target environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - dev
+          - staging
+          - production
+
+env:
+  REGISTRY_GCP: us-central1-docker.pkg.dev
+  REGISTRY_AWS: ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.us-east-1.amazonaws.com
+  IMAGE_NAME: sovereign-mesh
+  SLIM_VERSION: 1.40.11
+
+jobs:
+  # Job 1: Security Scan & SBOM Generation
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Build base image
+        run: |
+          docker build -t sovereign-mesh:ci \
+            -f 06_INFRA/Dockerfile 06_INFRA/
+      
+      - name: Run Docker Scout
+        uses: docker/scout-action@v1
+        with:
+          command: quickview
+          image: sovereign-mesh:ci
+          only-severities: critical,high
+          exit-code: true
+      
+      - name: Generate SBOM (SPDX)
+        run: |
+          docker scout sbom sovereign-mesh:ci \
+            --format spdx-json > sovereign-mesh-sbom.spdx.json
+      
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sovereign-mesh-sbom.spdx.json
+          retention-days: 90
+      
+      - name: Vulnerability report
+        uses: actions/upload-artifact@v4
+        with:
+          name: vulnerability-report
+          path: |
+            sovereign-mesh:ci.vuln.json
+          retention-days: 30
+
+  # Job 2: Build & Minify (SlimToolkit)
+  build-and-minify:
+    runs-on: ubuntu-latest
+    needs: security-scan
+    outputs:
+      image_tag: ${{ steps.tag.outputs.image_tag }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Build optimized image
+        run: |
+          docker build -t sovereign-mesh:optimized \
+            -f 06_INFRA/Dockerfile 06_INFRA/
+      
+      - name: Install SlimToolkit
+        run: |
+          curl -L -o slim.tar.gz \
+            https://github.com/slimtoolkit/slim/releases/download/${{ env.SLIM_VERSION }}/dist_linux.tar.gz
+          tar -xzf slim.tar.gz
+          sudo mv dist_linux/slim /usr/local/bin/
+          sudo chmod +x /usr/local/bin/slim
+      
+      - name: Minify with SlimToolkit
+        run: |
+          slim --crt-api-version 1.44 build \
+            --target sovereign-mesh:optimized \
+            --tag sovereign-mesh:minified \
+            --http-probe=false \
+            --continue-after 10
+      
+      - name: Generate image tag
+        id: tag
+        run: |
+          if [[ ${{ github.ref_type }} == 'tag' ]]; then
+            echo "image_tag=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "image_tag=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Save minified image
+        run: |
+          docker save sovereign-mesh:minified -o sovereign-mesh-${{ steps.tag.outputs.image_tag }}.tar
+      
+      - name: Upload image artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: minified-image
+          path: sovereign-mesh-${{ steps.tag.outputs.image_tag }}.tar
+          retention-days: 7
+
+  # Job 3: Deploy to GCP
+  deploy-gcp:
+    runs-on: ubuntu-latest
+    needs: build-and-minify
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download minified image
+        uses: actions/download-artifact@v4
+        with:
+          name: minified-image
+          path: /tmp
+      
+      - name: Load Docker image
+        run: |
+          docker load -i /tmp/sovereign-mesh-${{ needs.build-and-minify.outputs.image_tag }}.tar
+          docker tag sovereign-mesh:minified ${{ env.REGISTRY_GCP }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-minify.outputs.image_tag }}
+      
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SERVICE_ACCOUNT_KEY }}
+      
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker ${{ env.REGISTRY_GCP }}
+      
+      - name: Push to GCP Artifact Registry
+        run: |
+          docker push ${{ env.REGISTRY_GCP }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-minify.outputs.image_tag }}
+          docker tag sovereign-mesh:minified ${{ env.REGISTRY_GCP }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY_GCP }}/${{ secrets.GCP_PROJECT_ID }}/${{ env.IMAGE_NAME }}:latest
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Deploy to GKE
+        working-directory: 06_INFRA/terraform/environments/${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          terraform init
+          terraform apply -auto-approve \
+            -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+            -var="environment=${{ github.event.inputs.environment || 'staging' }}" \
+            -var="image_tag=${{ needs.build-and-minify.outputs.image_tag }}"
+      
+      - name: Get GKE credentials
+        run: |
+          gcloud container clusters get-credentials sovereign-mesh-cluster \
+            --region us-central1 --project ${{ secrets.GCP_PROJECT_ID }}
+      
+      - name: Rollout restart
+        run: |
+          kubectl rollout restart deployment/sovereign-router -n sovereign-mesh
+          kubectl rollout status deployment/sovereign-router -n sovereign-mesh --timeout=5m
+
+  # Job 4: Deploy to AWS
+  deploy-aws:
+    runs-on: ubuntu-latest
+    needs: build-and-minify
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.environment || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Download minified image
+        uses: actions/download-artifact@v4
+        with:
+          name: minified-image
+          path: /tmp
+      
+      - name: Load Docker image
+        run: |
+          docker load -i /tmp/sovereign-mesh-${{ needs.build-and-minify.outputs.image_tag }}.tar
+          docker tag sovereign-mesh:minified ${{ env.REGISTRY_AWS }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-minify.outputs.image_tag }}
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+      
+      - name: Login to Amazon ECR
+        run: |
+          aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${{ env.REGISTRY_AWS }}
+      
+      - name: Create ECR repository if not exists
+        run: |
+          aws ecr describe-repositories --repository-names ${{ env.IMAGE_NAME }} || \
+          aws ecr create-repository --repository-name ${{ env.IMAGE_NAME }}
+      
+      - name: Push to AWS ECR
+        run: |
+          docker push ${{ env.REGISTRY_AWS }}/${{ env.IMAGE_NAME }}:${{ needs.build-and-minify.outputs.image_tag }}
+          docker tag sovereign-mesh:minified ${{ env.REGISTRY_AWS }}/${{ env.IMAGE_NAME }}:latest
+          docker push ${{ env.REGISTRY_AWS }}/${{ env.IMAGE_NAME }}:latest
+      
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Deploy to EKS
+        working-directory: 06_INFRA/terraform/environments-aws/${{ github.event.inputs.environment || 'staging' }}
+        run: |
+          terraform init
+          terraform apply -auto-approve \
+            -var="aws_region=us-east-1" \
+            -var="environment=${{ github.event.inputs.environment || 'staging' }}" \
+            -var="image_tag=${{ needs.build-and-minify.outputs.image_tag }}"
+      
+      - name: Update kubeconfig for EKS
+        run: |
+          aws eks update-kubeconfig --name sovereign-mesh-cluster --region us-east-1
+      
+      - name: Rollout restart
+        run: |
+          kubectl rollout restart deployment/sovereign-router -n sovereign-mesh
+          kubectl rollout status deployment/sovereign-router -n sovereign-mesh --timeout=5m
+
+  # Job 5: Post-deployment validation
+  validation:
+    runs-on: ubuntu-latest
+    needs: [deploy-gcp, deploy-aws]
+    if: always()
+    steps:
+      - name: Test GCP deployment
+        run: |
+          GCP_ENDPOINT=$(terraform -chdir=06_INFRA/terraform/environments/${{ github.event.inputs.environment || 'staging' }} output -raw load_balancer_ip)
+          curl -f https://$GCP_ENDPOINT/health || exit 1
+          curl -f https://$GCP_ENDPOINT/docs || exit 1
+      
+      - name: Test AWS deployment
+        run: |
+          AWS_ENDPOINT=$(terraform -chdir=06_INFRA/terraform/environments-aws/${{ github.event.inputs.environment || 'staging' }} output -raw load_balancer_dns)
+          curl -f https://$AWS_ENDPOINT/health || exit 1
+          curl -f https://$AWS_ENDPOINT/docs || exit 1
+      
+      - name: Run smoke tests
+        run: |
+          pip install locust
+          locust -f 06_INFRA/locustfile.py \
+            --host=https://$GCP_ENDPOINT \
+            --users 10 --spawn-rate 5 --run-time 1m --headless
+      
+      - name: Notify Slack (success)
+        if: success()
+        uses: slackapi/slack-github-action@v1.25
+        with:
+          payload: |
+            {
+              "text": "✅ Sovereign Mesh deployment to ${{ github.event.inputs.environment || 'staging' }} completed successfully!",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "✅ *Sovereign Mesh Deployment Successful*\n• Environment: ${{ github.event.inputs.environment || 'staging' }}\n• Image: `${{ needs.build-and-minify.outputs.image_tag }}` (25MB)\n• GCP: https://$GCP_ENDPOINT/docs\n• AWS: https://$AWS_ENDPOINT/docs"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      
+      - name: Notify Slack (failure)
+        if: failure()
+        uses: slackapi/slack-github-action@v1.25
+        with:
+          payload: |
+            {
+              "text": "❌ Sovereign Mesh deployment to ${{ github.event.inputs.environment || 'staging' }} failed!",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "❌ *Sovereign Mesh Deployment Failed*\n• Environment: ${{ github.event.inputs.environment || 'staging' }}\n• Action: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+  # Job 6: Performance regression tests (nightly)
+  performance-regression:
+    runs-on: ubuntu-latest
+    if: github.event.schedule == '0 2 * * *'  # 2 AM daily
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Deploy to performance environment
+        run: |
+          terraform -chdir=06_INFRA/terraform/environments/perf apply -auto-approve
+      
+      - name: Run performance benchmarks
+        run: |
+          locust -f 06_INFRA/locustfile.py \
+            --host=https://perf.sovereign-mesh.io \
+            --users 10000 --spawn-rate 500 --run-time 30m \
+            --headless --csv reports/perf_$(date +%Y%m%d)
+      
+      - name: Compare with baseline
+        run: |
+          python scripts/compare_performance.py \
+            --baseline reports/baseline.json \
+            --current reports/perf_$(date +%Y%m%d).json \
+            --threshold 0.10  # 10% regression threshold
+      
+      - name: Upload performance report
+        uses: actions/upload-artifact@v4
+        with:
+          name: performance-report
+          path: reports/
+          retention-days: 90

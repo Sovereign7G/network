@@ -1,0 +1,30 @@
+name: S7G Vulnerability Graph Triage
+
+on:
+  pull_request:
+    paths:
+      - '**/*.py'
+      - '**/*.rs'
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Dependencies
+        run: |
+          pip install networkx pyvis
+
+      - name: Run Triage Centrality Check
+        run: |
+          # Assert that no file node exceeds centrality safety limit of 8.0
+          python3 /home/cherry/.hermes/skills/security/watcher/graph_triage.py \
+            --sarif /tmp/raptor_s7g_full/combined.sarif \
+            --fail-on-central 8.0

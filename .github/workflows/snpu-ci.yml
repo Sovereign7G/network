@@ -1,0 +1,92 @@
+name: SNPU Sovereign Stack CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-name: '3.12'
+        python-version: '3.12'
+
+    - name: Install Python Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install fastapi uvicorn grpcio grpcio-tools requests pydantic
+
+    - name: Compile gRPC Protobuf Stubs
+      run: |
+        python -m grpc_tools.protoc \
+          -I06_INFRA/proto \
+          --python_out=06_INFRA/proto \
+          --grpc_python_out=06_INFRA/proto \
+          06_INFRA/proto/snpu.proto
+
+    - name: Run Virtual TestCenter (Isolated Sweep)
+      run: |
+        # Executing the full 7-layer validation suite
+        python3 06_INFRA/snpu_virtual_testcenter.py
+
+    - name: Start Microservice and Run Automated Integration Suite
+      run: |
+        # Launch microservice with test security parameters
+        SNPU_API_KEY=test-secret PORT=8089 GRPC_PORT=50051 python3 06_INFRA/snpu_server.py &
+        
+        # Wait for ports to wake up
+        sleep 3
+        
+        # Execute production readiness validations (REST + gRPC + SQLite checks)
+        SNPU_DB_PATH=/tmp/sovereign/snpu_reports/snpu_telemetry.db python3 -c "
+        import sys
+        sys.path.insert(0, '06_INFRA')
+        import requests
+        import grpc
+        import snpu_pb2
+        import snpu_pb2_grpc
+        
+        # 1. Test REST security guard
+        r = requests.post('http://localhost:8089/v1/snpu/run', headers={'X-API-Key': 'test-secret'})
+        assert r.status_code == 200, f'REST check failed: {r.status_code}'
+        
+        # 2. Test gRPC endpoint and credentials
+        channel = grpc.insecure_channel('localhost:50051')
+        stub = snpu_pb2_grpc.SnpuServiceStub(channel)
+        meta = [('x-api-key', 'test-secret')]
+        resp = stub.GetTelemetry(snpu_pb2.GetTelemetryRequest(), metadata=meta)
+        assert resp.details_json is not None
+        print('Integration testing checks passed successfully!')
+        "
+        
+        # Clean up background process
+        pkill -f snpu_server.py
+
+    - name: Install Helm
+      uses: azure/setup-helm@v4
+      with:
+        version: v3.14.0
+
+    - name: Lint Helm Chart
+      run: |
+        helm lint 06_INFRA/helm/
+
+    - name: Render and Verify Helm Templates
+      run: |
+        helm template 06_INFRA/helm/
+
+    - name: Build Helm Package for Distribution
+      run: |
+        mkdir -p dist
+        helm package 06_INFRA/helm/ --destination dist/
+        echo "Helm package compiled in dist/ directory:"
+        ls -la dist/

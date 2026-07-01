@@ -1,0 +1,151 @@
+name: Sovereign Mesh CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/**'
+    paths:
+      - '06_INFRA/**'
+      - '.github/workflows/sovereign-mesh-ci.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '06_INFRA/**'
+
+jobs:
+  build-scan-push:
+    name: Build, Scan & Push Sovereign Router
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write # Required for Docker Scout to comment on PRs
+      id-token: write      # Required for AWS/GCP OIDC authentication
+
+    # Enterprise config variables (Adjust according to target environment)
+    env:
+      IMAGE_NAME: sovereign-local-router
+      # AWS Configuration:
+      AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+      AWS_REGION: us-east-1
+      # Google Cloud Configuration:
+      GCP_REGION: us-central1
+      GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      GAR_REPOSITORY: sovereign-mesh
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (Multi-platform support)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ─── Option A: Authenticate with Google Artifact Registry ──────────────────
+      # Enable if utilizing GCP Artifact Registry for secure storage
+      - name: Authenticate with GCP
+        if: ${{ env.GCP_PROJECT_ID != '' }}
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Log in to Google Artifact Registry
+        if: ${{ env.GCP_PROJECT_ID != '' }}
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GCP_REGION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      # ─── Option B: Authenticate with AWS ECR ────────────────────────────────────
+      # Enable if utilizing AWS ECR for secure storage
+      - name: Configure AWS Credentials
+        if: ${{ env.AWS_ACCOUNT_ID != '' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/SovereignMeshECRPublisher
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Log in to AWS ECR
+        if: ${{ env.AWS_ACCOUNT_ID != '' }}
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ─── Define Image Tags ──────────────────────────────────────────────────────
+      - name: Generate Image Tags
+        id: tags
+        run: |
+          SHA=$(git rev-parse --short HEAD)
+          echo "tag_sha=$SHA" >> $GITHUB_OUTPUT
+          if [ -n "${{ env.GCP_PROJECT_ID }}" ]; then
+            echo "dest_image=${{ env.GCP_REGION }}-docker.pkg.dev/${{ env.GCP_PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
+          elif [ -n "${{ env.AWS_ACCOUNT_ID }}" ]; then
+            echo "dest_image=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.${{ env.AWS_REGION }}.amazonaws.com/${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
+          else
+            # Fallback local registry tag for testing
+            echo "dest_image=local/${{ env.IMAGE_NAME }}" >> $GITHUB_OUTPUT
+          fi
+
+      # ─── Build Container Image ──────────────────────────────────────────────────
+      # Builds and exports to local docker cache for scanning before registry push
+      - name: Build Local Container Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./06_INFRA
+          file: ./06_INFRA/Dockerfile
+          load: true
+          tags: ${{ steps.tags.outputs.dest_image }}:${{ steps.tags.outputs.tag_sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # ─── Security Scan: Docker Scout ────────────────────────────────────────────
+      - name: Authenticate with Docker Hub (Required for Scout API)
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USER }}
+          password: ${{ secrets.DOCKERHUB_PAT }}
+
+      - name: Scan Image for Vulnerabilities (Docker Scout)
+        id: scout
+        uses: docker/scout-action@v1
+        with:
+          command: cves
+          image: ${{ steps.tags.outputs.dest_image }}:${{ steps.tags.outputs.tag_sha }}
+          only-fixed: true
+          only-severities: critical
+          write-comment: true
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          # Fail the build if critical vulnerabilities are discovered
+          exit-code: true
+
+      # ─── SBOM Generation: Docker Scout ──────────────────────────────────────────
+      - name: Generate SBOM (Software Bill of Materials)
+        uses: docker/scout-action@v1
+        with:
+          command: sbom
+          image: ${{ steps.tags.outputs.dest_image }}:${{ steps.tags.outputs.tag_sha }}
+          format: spdx
+          output: sovereign-router-sbom.spdx.json
+
+      - name: Upload SBOM Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sovereign-router-sbom
+          path: sovereign-router-sbom.spdx.json
+
+      # ─── Registry Push ─────────────────────────────────────────────────────────
+      # If scanning succeeded, push the built tags to the private registry
+      - name: Push Image to Registry
+        if: github.event_name == 'push'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./06_INFRA
+          file: ./06_INFRA/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.tags.outputs.dest_image }}:${{ steps.tags.outputs.tag_sha }}
+            ${{ steps.tags.outputs.dest_image }}:latest
+          cache-from: type=gha
