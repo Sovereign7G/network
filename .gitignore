@@ -11,3 +11,4 @@ __pycache__/
 bifrost_config.yml
 scripts/axon_broadway_poc.py
 scripts/zetto_attestation.py
+hermes_home/

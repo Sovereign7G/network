@@ -1,0 +1,24 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-triage",
+  "description": "S7G Vulnerability Triage Agent — ranks vulnerability impacts and assigns code owners",
+  "url": "http://localhost:8002",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "triage-files",
+      "name": "Triage Vulnerabilities",
+      "description": "Calculate centrality metrics and owner rankings",
+      "tags": ["s7g", "triage", "security"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}

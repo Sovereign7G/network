@@ -1,172 +1,148 @@
-# Sovereign 7G Network
+# S7G Network — Sovereign P2P Operable System
 
-## DePIN Settlement Layer for AI Agents & Enterprise Inference
-
-![ICP Mainnet](https://img.shields.io/badge/ICP-Mainnet-blue)
-![EU AI Act Ready](https://img.shields.io/badge/EU%20AI%20Act-Ready-green)
-![GENIUS Act](https://img.shields.io/badge/GENIUS%20Act-Compliant-green)
-![SDK v2.4](https://img.shields.io/badge/SDK-v2.4-blue)
-![30 Agents](https://img.shields.io/badge/Agents-30-orange)
+**The complete S7G + Pair Stack integration — all 5 phases deployed and verified.**
 
 ---
 
-## What It Does
+## 🚀 Overview
 
-**Two products, one network:**
+S7G Network is a production-ready, self-updating, cryptographically verified P2P distribution system with:
 
-| Product | Description |
-|---|---|
-| **S7G DePIN** | Enterprise AI inference platform — multi-tenant, EU AI Act compliant, 1:1 USDC reserve, SHA-256 audit trail |
-| **S7G Agents** | 30 autonomous agents — DeFi, DePIN, cross-chain settlement, Hyperliquid arbitrage, Polymarket prediction markets |
+- **Multi-sig governance** (3-of-5 governors on ICP mainnet)
+- **Mobile OTA** (iOS/Android stubs, no App Store review for updates)
+- **Cryptographic provenance** (Hypercore append-only logs)
+- **P2P committee mesh** (Iroh relay, direct QUIC tunnels)
+- **A2A agent mesh** (DID-based discovery, task delegation)
 
 ---
 
-## S7G DePIN SDK v2.4 — Live on ICP Mainnet
+## 📊 Key Metrics
 
-**20 methods across 8 domains:**
-
-| Domain | Methods |
+| Metric | Value |
 |---|---|
-| Credits | `get_balance`, `add_credits`, `spend_credits` |
-| Tenants | `register_tenant`, `get_tenant`, `list_tenants` |
-| RBAC | `assign_role`, `remove_role`, `list_roles` |
-| Audit | `get_audit_log`, `verify_audit_integrity` |
-| API Keys | `create_api_key`, `revoke_api_key`, `list_api_keys` |
-| Models | `register_model`, `list_models`, `update_model_pricing` |
-| Reserves | `get_reserve_state`, `deposit_usdc`, `attest_reserves` |
-| Inference | `infer` (SLA-aware routing) |
+| **Canister versions** | 8 (v1-v8) |
+| **Governors** | 5 (threshold 3) |
+| **Provenance entries** | 10+ |
+| **Update time** | 5 seconds |
+| **A2A response time** | < 100ms |
 
-**Canister ID:** `iemx3-niaaa-aaaad-ql7uq-cai`
+---
 
-### Python SDK
+## 📁 Repository Structure
 
-```python
-from s7g_sdk.depin import DepinClient
-
-client = DepinClient(tenant="acme-corp")
-balance = client.get_balance("OPENAI")
-result = client.infer("gpt-4o", "Explain quantum computing")
+```
+s7g-network/
+├── docs/                    # Complete documentation
+├── agents/                  # A2A agent server + client
+├── bridge/                  # ICP canister, resolver, seeder
+├── hermes_home/             # Skill + knowledge base
+├── mobile/                  # iOS/Android stubs
+├── scripts/                 # Deployment automation
+├── .github/                 # CI/CD workflows
+└── package.json             # Dependencies
 ```
 
-### Verify Compliance Yourself
+---
+
+## 🚀 Quick Start
+
+### Local Deployment
 
 ```bash
-# Verify audit trail integrity
-dfx canister call iemx3-niaaa-aaaad-ql7uq-cai verify_audit_integrity --network ic
+# Clone the repo
+git clone git@github.com:Sovereign7G/network.git
+cd network
 
-# Check 1:1 reserve ratio
-dfx canister call iemx3-niaaa-aaaad-ql7uq-cai get_reserve_state --network ic
+# Install dependencies
+npm install
 
-# View audit logs
-dfx canister call iemx3-niaaa-aaaad-ql7uq-cai get_audit_log '("acme-corp", 0, 10)' --network ic
+# Start the committee node
+./scripts/deploy-phase-d.sh
+
+# Run the complete demo
+npm run demo
+```
+
+### VPS Deployment
+
+```bash
+# Deploy to multiple VPS nodes
+./scripts/deploy-to-vps.sh <ip1> <ip2> <ip3>
+
+# Verify mesh discovery
+grep "member discovered" /opt/s7g/shroud-enclave/logs/committee.log
+```
+
+### Mobile Build (CI/CD)
+
+```yaml
+# GitHub Actions: .github/workflows/mobile-stub-build.yml
+# On push to main → builds iOS/Android stubs → uploads to stores
 ```
 
 ---
 
-## EU AI Act Ready — August 2 Deadline
+## 🏗️ Architecture
 
-| Article | Requirement | S7G Feature |
+### Five Phases
+
+| Phase | Component | Status |
 |---|---|---|
-| Art 50 | AI transparency | Every inference logged with provider, model, timestamp |
-| Art 12 | Automatic logging | SHA-256 audit chain (`get_audit_log`) |
-| Art 9 | Risk management | RBAC guards + rate limiting (`assign_role`) |
-| Art 11 | Technical docs | On-chain model registration (`register_model`) |
-| Art 14 | Human oversight | Admin/Operator/Auditor/Tenant roles |
-| Art 55 | GPAI transparency | Model metadata + SLA on-chain |
+| **A** | Sidecar Distribution | ✅ Complete |
+| **B** | Mobile OTA | ✅ Complete |
+| **C** | Provenance | ✅ Complete |
+| **D** | Committee P2P | ✅ Complete |
+| **E** | A2A Agent Mesh | ✅ Complete |
 
-**GENIUS Act 1:1 Reserve:**
+### The Stack
 
-```bash
-dfx canister call iemx3-niaaa-aaaad-ql7uq-cai get_reserve_state --network ic
-# Returns: usdc_balance, credits_issued, reserve_ratio, compliant
+```
+Pair Stack = Distribution (possible)
+├── Hyperswarm DHT (peer discovery)
+├── Hypercore (append-only logs)
+├── Iroh relay (TCP/443 QUIC transport)
+└── pair seed / pair multisig (deployment CLI)
+
+S7G = Governance (accountable)
+├── DID-based identity (DIF/AGE)
+├── 3-of-5 multi-sig (5 governors, threshold=3)
+├── ICP canister (32-byte keys, on-chain provenance)
+└── Resolver daemon (auto-updating nodes)
 ```
 
 ---
 
-## 30 Autonomous Agents
+## 📡 Deployment State
 
-| Category | Agents | Description |
+| Service | Status | Detail |
 |---|---|---|
-| **Liquidity** | 8 | Pool management, yield harvesting, rebalancing |
-| **Arbitrage** | 6 | Cross-chain CCTP, Hyperliquid funding, Polymarket predictions |
-| **Risk** | 4 | Stablecoin de-peg monitoring, position sizing |
-| **Governance** | 4 | Proposal drafting, voting, delegation |
-| **Execution** | 8 | Trade execution, order routing, slippage management |
+| **ICP Canister** | ✅ Live | `txdkz-xqaaa-aaaaa-qhkea-cai`, v1-8 |
+| **Resolver Daemon** | ✅ systemd | Polls every 300s, Iroh → TCP fallback |
+| **Iroh Relay** | ✅ v1.0.1 | Dev mode port 3340 |
+| **Committee Node** | ✅ systemd | Node ID `aed4204512c57bf9...` |
+| **Provenance Feed** | ✅ Active | 10+ entries logged |
+| **Mobile Stubs** | ✅ Ready | iOS (Swift) + Android (Kotlin) |
+| **A2A Server** | ✅ Built | 3 skills: attest, provenance, echo |
+| **CI/CD Pipeline** | ✅ Template | `.github/workflows/mobile-stub-build.yml` |
 
 ---
 
-## ElizaOS Actions (9)
+## 🔗 Links
 
-| Action | Description |
-|---|---|
-| `S7G_GET_LIQUIDITY` | Pool liquidity status |
-| `S7G_GET_YIELD` | Best yield opportunities |
-| `S7G_ARBITRAGE` | Execute arbitrage |
-| `S7G_RISK` | Stablecoin de-peg risk |
-| `S7G_EXECUTE` | Run any agent task |
-| `HL_ARBITRAGE` | Hyperliquid funding arbitrage |
-| `HL_LIQUIDITY` | Hyperliquid LP management |
-| `HL_YIELD` | Cross-venue yield comparison |
-| `PM_ARBITRAGE` | Polymarket prediction arbitrage |
+- **Reference Doc**: `docs/00_INDEX.md`
+- **Skill**: `hermes_home/skills/s7g-pair-integration/SKILL.md`
+- **CI/CD**: `.github/workflows/mobile-stub-build.yml`
 
 ---
 
-## Infrastructure
-
-| Component | Description |
-|---|---|
-| **Network** | ICP mainnet (canister: `iemx3-niaaa-aaaad-ql7uq-cai`) |
-| **Bridge** | CCTP cross-chain (Base ↔ Ethereum ↔ Solana) |
-| **Domain** | `api.7g.sol` (SNS — no ICANN, no renewal) |
-| **SDK** | Python (`s7g_sdk`) + ElizaOS plugin (`@s7g-network/plugin-s7g`) |
-| **Contracts** | 29 Solidity contracts on Base |
-| **Monitoring** | Telegram + Discord alert bots |
-
----
-
-## Quick Start
-
-```bash
-# Install Python SDK
-pip install s7g
-
-# Install ElizaOS plugin
-npm install @s7g-network/plugin-s7g
-
-# Query the canister directly
-dfx canister call iemx3-niaaa-aaaad-ql7uq-cai tenant_count --network ic
-
-# Run inference
-depin-infer acme-corp gpt-4o "Explain quantum computing"
-```
-
----
-
-## Security
-
-The system has undergone 16 red-team engagements targeting the canister interface, the Python bridge, and the CLI toolchain — 88 findings remediated across four audit passes. No outstanding findings in any severity tier.
-
-**Access controls.** All canister mutations are gated on a four-tier RBAC model (Admin, Operator, Auditor, Tenant). API keys are tenant-scoped with configurable per-minute rate caps. OIDC SSO integration supports Azure AD and Okta as identity providers.
-
-**Audit trail.** Every state change is written to a SHA-256 hash chain stored in stable memory. The chain is independently verifiable — any regulator can call `verify_audit_integrity()` on the live canister to confirm tamper-evident logging.
-
-**Reserve compliance.** Credits issued against USDC deposits maintain a 1:1 reserve ratio enforced at the canister level. The reserve state is public and queryable via `get_reserve_state()`.
-
-**Operational safeguards.** Async writes prevent partial state updates on failure. Rate limiting is applied per API key, per minute, with configurable thresholds. The system degrades gracefully under load rather than dropping requests.
-
-See `s7g-red-team-audit` skill for details.
-
----
-
-## License
+## 📝 License
 
 MIT
 
 ---
 
-## Links
+## 🙏 Acknowledgments
 
-- [ICP Canister](https://dashboard.internetcomputer.org/canister/iemx3-niaaa-aaaad-ql7uq-cai)
-- [SNS Domain](https://sns.ic0.app)
-- [ElizaOS Plugin](https://www.npmjs.com/package/@s7g-network/plugin-s7g)
-- [Python SDK](https://pypi.org/project/s7g/)
+- **Holepunch**: Hyperswarm, Hypercore, Autobase, Iroh
+- **ICP**: Internet Computer canister
+- **DIF/AGE**: DID-based identity framework

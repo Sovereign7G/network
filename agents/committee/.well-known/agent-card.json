@@ -1,0 +1,40 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-committee",
+  "description": "S7G Committee P2P Agent — manages peer discovery over Iroh relay, blob transfer, and committee health monitoring",
+  "url": "http://localhost:8012",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true
+  },
+  "skills": [
+    {
+      "id": "committee-discover",
+      "name": "Discover Peers",
+      "description": "Find other committee members via Iroh relay topic, return their node IDs and advertised services",
+      "tags": ["s7g", "committee", "p2p", "iroh", "discovery"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "committee-transfer",
+      "name": "Transfer Blob",
+      "description": "Send or receive binary data between committee nodes over Iroh QUIC streams",
+      "tags": ["s7g", "committee", "p2p", "blob", "transfer"],
+      "inputModes": ["application/octet-stream"],
+      "outputModes": ["application/json"]
+    },
+    {
+      "id": "committee-health",
+      "name": "Health Check",
+      "description": "Report committee node status: uptime, connected peers, memory, active tasks",
+      "tags": ["s7g", "committee", "health", "monitoring"],
+      "inputModes": ["text/plain"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}
