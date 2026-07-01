@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "agents": 55,
+  "domains": ["security", "dev", "content", "ops", "strategy"],
+  "packages": {
+    "primitives": "BaseAgent, core tools, abstract interfaces",
+    "specialists": "Domain-specific agents (security, dev, content, ops, strategy, skills-audit)",
+    "workflows": "Coordinator pipelines, sequential chains, goal execution",
+    "core": "ACP server, A2A protocol, tracing, discovery, logging",
+    "config": "Agent tokens, prompts, versioned parameters"
+  },
+  "dependencies": {
+    "config": [],
+    "primitives": ["config"],
+    "specialists": ["primitives", "config"],
+    "workflows": ["specialists", "primitives", "config"],
+    "core": ["config"]
+  },
+  "a2a": {
+    "endpoint": "http://76.230.146.7:8080/a2a/jsonrpc",
+    "agent_card": "http://76.230.146.7:8080/.well-known/agent-card.json",
+    "rpc_endpoint": "http://76.230.146.7:8080/a2a/",
+    "streaming": "http://76.230.146.7:8080/a2a/stream",
+    "supported_methods": [
+      "tasks.send",
+      "tasks.get",
+      "tasks.cancel",
+      "tasks.list",
+      "settle_transaction",
+      "get_attestation"
+      ],
+    "protocol": "JSON-RPC 2.0",
+    "skills": 10
+  },
+  "registry": {
+    "a2aregistry": "44770263-493d-44bd-8b69-bc2e95566564"
+  }
+}

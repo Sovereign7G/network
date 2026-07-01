@@ -1,0 +1,24 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-slack",
+  "description": "S7G Slack Dispatcher Bot — routes graph queries and alerts directly to team channels",
+  "url": "http://localhost:8004",
+  "version": "1.0.0",
+  "provider": {
+    "organization": "S7G"
+  },
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": true
+  },
+  "skills": [
+    {
+      "id": "slack-alert",
+      "name": "Send Alert Notification",
+      "description": "Send formatted slack alert blocks on threshold violations",
+      "tags": ["s7g", "slack", "alert"],
+      "inputModes": ["application/json"],
+      "outputModes": ["application/json"]
+    }
+  ]
+}
