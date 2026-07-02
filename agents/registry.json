@@ -1,81 +1,122 @@
-{
-  "registry": {
-    "name": "S7G Agent Registry",
-    "version": "2.4.0",
-    "description": "Complete S7G + Pair stack agent registry — 9 agents for distribution, governance, provenance, and A2A mesh",
-    "updated": "2026-06-30"
-  },
-  "agents": [
-    {
-      "id": "s7g-sidecar",
-      "card": "agents/sidecar/.well-known/agent-card.json",
-      "port": 8010,
-      "description": "Sidecar distribution — canister registration, P2P resolution, auto-update",
-      "phase": "A"
-    },
-    {
-      "id": "s7g-provenance",
-      "card": "agents/provenance/.well-known/agent-card.json",
-      "port": 8011,
-      "description": "Provenance audit — Hypercore query, chain verification, action logging",
-      "phase": "C"
-    },
-    {
-      "id": "s7g-committee",
-      "card": "agents/committee/.well-known/agent-card.json",
-      "port": 8012,
-      "description": "Committee P2P — peer discovery, blob transfer, health monitoring",
-      "phase": "D"
-    },
-    {
-      "id": "s7g-a2a-bridge",
-      "card": "agents/a2a-bridge/.well-known/agent-card.json",
-      "port": 8013,
-      "description": "A2A cross-vendor bridge — task delegation, agent discovery, card publishing",
-      "phase": "E"
-    },
-    {
-      "id": "s7g-mobile-ota",
-      "card": null,
-      "port": null,
-      "description": "Mobile OTA distribution — iOS/Android stubs, bundle seeding (Phase B, CI/CD-based)",
-      "phase": "B"
-    },
-    {
-      "id": "s7g-graph-query",
-      "card": "agents/graph-query/.well-known/agent-card.json",
-      "port": 8001,
-      "description": "Knowledge graph query — codebase structure, vulnerabilities, ownership",
-      "phase": "core"
-    },
-    {
-      "id": "s7g-triage",
-      "card": "agents/triage/.well-known/agent-card.json",
-      "port": 8002,
-      "description": "Vulnerability triage — centrality metrics, owner ranking",
-      "phase": "core"
-    },
-    {
-      "id": "s7g-semantic",
-      "card": "agents/semantic/.well-known/agent-card.json",
-      "port": 8003,
-      "description": "Semantic codebase explorer — file explanations, guided tours",
-      "phase": "core"
-    },
-    {
-      "id": "s7g-slack",
-      "card": "agents/slack/.well-known/agent-card.json",
-      "port": 8004,
-      "description": "Slack dispatcher — alerts, graph query routing",
-      "phase": "core"
-    }
-  ],
-  "skills": [
-    {
-      "id": "s7g-pair-integration",
-      "path": "hermes_home/skills/devops/s7g-pair-integration/SKILL.md",
-      "description": "Complete S7G + Pair stack integration skill — all 5 phases",
-      "tags": ["s7g", "pair", "p2p", "sidecar", "provenance", "a2a"]
-    }
-  ]
-}
+# S7G Agent Registry — Complete Sovereign AI Mesh Agents
+# Updated: July 2026
+
+agents:
+  # ── Core Infrastructure ─────────────────────────
+  s7g-sidecar:
+    phase: A
+    skills:
+      - id: sidecar-register
+        name: Register Sidecar Version
+      - id: sidecar-resolve
+        name: Resolve Sidecar Binary
+      - id: sidecar-status
+        name: Check Sidecar Status
+
+  s7g-provenance:
+    phase: C
+    skills:
+      - id: provenance-query
+        name: Query Provenance History
+      - id: provenance-verify
+        name: Verify Chain Integrity
+
+  s7g-committee:
+    phase: D
+    skills:
+      - id: committee-discover
+        name: Discover Peers
+      - id: committee-transfer
+        name: Transfer Blob
+      - id: committee-health
+        name: Health Check
+
+  s7g-a2a-bridge:
+    phase: E
+    skills:
+      - id: a2a-delegate
+        name: Delegate Task
+      - id: a2a-discover
+        name: Discover Agents
+      - id: a2a-publish
+        name: Publish Agent Card
+
+  # ── Evaluation Agents (DePIN Router) ────────────
+  s7g-depin-router:
+    phase: depin
+    skills:
+      - id: depin-route
+        name: Route to Best Provider
+      - id: depin-cost-optimize
+        name: Optimize Cost/Latency
+      - id: depin-health
+        name: Check Provider Health
+
+  s7g-bittensor:
+    phase: depin
+    skills:
+      - id: bt-inference
+        name: Bittensor SN1 Inference
+      - id: bt-verify
+        name: Verify Subnet Output
+
+  s7g-vllm:
+    phase: inference
+    skills:
+      - id: vllm-inference
+        name: vLLM Model Inference
+      - id: vllm-metrics
+        name: Get Model Metrics
+
+  # ── Governance Agents ───────────────────────────
+  s7g-icp-governance:
+    phase: governance
+    skills:
+      - id: icp-sync
+        name: Sync Ledger to ICP
+      - id: icp-verify
+        name: Verify On-Chain Entry
+      - id: icp-governors
+        name: Manage Governors
+
+  # ── Monitoring Agents ───────────────────────────
+  s7g-monitor:
+    phase: ops
+    skills:
+      - id: monitor-health
+        name: Health Check
+      - id: monitor-alert
+        name: Alert on Threshold
+
+  s7g-bifrost:
+    phase: ops
+    skills:
+      - id: bifrost-status
+        name: Gateway Status
+      - id: bifrost-routing
+        name: Update Routing Rules
+
+  # ── Core Existing ───────────────────────────────
+  s7g-graph-query:
+    phase: core
+    skills:
+      - id: graph-query
+        name: Query Knowledge Graph
+
+  s7g-triage:
+    phase: core
+    skills:
+      - id: triage-files
+        name: Triage Vulnerabilities
+
+  s7g-semantic:
+    phase: core
+    skills:
+      - id: semantic-tour
+        name: Generate Code Tour
+
+  s7g-slack:
+    phase: core
+    skills:
+      - id: slack-alert
+        name: Send Alert Notification

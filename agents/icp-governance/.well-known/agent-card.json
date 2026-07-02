@@ -1,0 +1,31 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-icp-governance",
+  "description": "ICP canister governance — multi-sig management, provenance sync, on-chain audit trail verification. Powered by shroud_orchestrator canister.",
+  "url": "http://localhost:8022",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": false,
+    "pushNotifications": true
+  },
+  "skills": [
+    {
+      "id": "icp-sync",
+      "name": "Sync Ledger to ICP",
+      "description": "Sync S7G SQLite ledger entries to the ICP canister for on-chain provenance",
+      "tags": ["s7g", "icp", "provenance", "sync", "canister"]
+    },
+    {
+      "id": "icp-verify",
+      "name": "Verify On-Chain Entry",
+      "description": "Verify a ledger entry exists on the ICP canister with correct signature",
+      "tags": ["s7g", "icp", "verify", "provenance"]
+    },
+    {
+      "id": "icp-governors",
+      "name": "Manage Governors",
+      "description": "Add, remove, or list multi-sig governors on the ICP canister",
+      "tags": ["s7g", "icp", "governance", "multi-sig"]
+    }
+  ]
+}

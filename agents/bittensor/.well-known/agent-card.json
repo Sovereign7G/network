@@ -1,0 +1,25 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-bittensor",
+  "description": "Bittensor subnet inference — queries SN1 (LLM) and SN2 (ZK-verified) subnets for verifiable decentralized AI inference.",
+  "url": "http://localhost:8021",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "bt-inference",
+      "name": "Bittensor SN1 Inference",
+      "description": "Send inference request to Bittensor Subnet 1 (LLM inference)",
+      "tags": ["s7g", "bittensor", "sn1", "inference"]
+    },
+    {
+      "id": "bt-verify",
+      "name": "Verify Subnet Output",
+      "description": "Verify inference output using Bittensor SN2 ZK proofs",
+      "tags": ["s7g", "bittensor", "sn2", "verify", "zk"]
+    }
+  ]
+}

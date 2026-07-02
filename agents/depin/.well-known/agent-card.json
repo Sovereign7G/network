@@ -1,0 +1,31 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-depin-router",
+  "description": "Routes inference requests to the cheapest/best DePIN provider (Akash, Bittensor, Render, ICP) based on cost, latency, model availability, and trust requirements.",
+  "url": "http://localhost:8020",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": false
+  },
+  "skills": [
+    {
+      "id": "depin-route",
+      "name": "Route to Best Provider",
+      "description": "Select optimal DePIN provider for inference request based on cost, latency, model, and trust requirements",
+      "tags": ["s7g", "depin", "routing", "optimization"]
+    },
+    {
+      "id": "depin-cost-optimize",
+      "name": "Optimize Cost/Latency",
+      "description": "Analyze provider pricing and latency to recommend optimal routing strategy",
+      "tags": ["s7g", "depin", "cost", "latency"]
+    },
+    {
+      "id": "depin-health",
+      "name": "Check Provider Health",
+      "description": "Check health status of all configured DePIN providers",
+      "tags": ["s7g", "depin", "health", "monitoring"]
+    }
+  ]
+}

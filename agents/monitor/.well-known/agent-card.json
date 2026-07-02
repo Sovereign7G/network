@@ -1,0 +1,25 @@
+{
+  "protocolVersion": "0.3.0",
+  "name": "s7g-monitor",
+  "description": "S7G network monitoring — health checks, alerting on threshold violations, and Prometheus metrics scraping.",
+  "url": "http://localhost:8023",
+  "version": "1.0.0",
+  "capabilities": {
+    "streaming": true,
+    "pushNotifications": true
+  },
+  "skills": [
+    {
+      "id": "monitor-health",
+      "name": "Health Check",
+      "description": "Comprehensive health check across all S7G services and DePIN providers",
+      "tags": ["s7g", "monitoring", "health", "uptime"]
+    },
+    {
+      "id": "monitor-alert",
+      "name": "Alert on Threshold",
+      "description": "Send alert when metrics (latency, error rate, uptime) exceed configured thresholds",
+      "tags": ["s7g", "monitoring", "alert", "threshold"]
+    }
+  ]
+}
