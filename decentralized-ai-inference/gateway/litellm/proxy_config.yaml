@@ -1,0 +1,15 @@
+model_list:
+  - model_name: s7g-committee
+    litellm_params:
+      model: openai/s7g-committee
+      api_base: https://s7g-api.sovereign7g.xyz
+      api_key: dummy
+    model_info:
+      mode: completion
+
+litellm_settings:
+  drop_params: true
+  set_verbose: false
+
+general_settings:
+  master_key: os.environ/MASTER_API_KEY
