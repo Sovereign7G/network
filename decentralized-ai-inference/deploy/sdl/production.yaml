@@ -2,7 +2,7 @@ version: "2.0"
 
 services:
   s7g-node-1:
-    image: ghcr.io/sovereign7g/s7g-committee:latest
+    image: sovereign7g/s7g-committee:latest
     expose:
       - port: 1317
         as: 1317
@@ -26,7 +26,7 @@ services:
           mount: /app/ledger
 
   s7g-node-2:
-    image: ghcr.io/sovereign7g/s7g-committee:latest
+    image: sovereign7g/s7g-committee:latest
     expose:
       - port: 1317
         as: 1317
@@ -50,7 +50,7 @@ services:
           mount: /app/ledger
 
   s7g-node-3:
-    image: ghcr.io/sovereign7g/s7g-committee:latest
+    image: sovereign7g/s7g-committee:latest
     expose:
       - port: 1317
         as: 1317
@@ -74,7 +74,7 @@ services:
           mount: /app/ledger
 
   s7g-node-4:
-    image: ghcr.io/sovereign7g/s7g-committee:latest
+    image: sovereign7g/s7g-committee:latest
     expose:
       - port: 1317
         as: 1317
