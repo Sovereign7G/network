@@ -1,0 +1,39 @@
+{
+  "canisters": {
+    "coordinator": {
+      "main": "src/coordinator/main.mo",
+      "type": "motoko"
+    },
+    "tenant_registry": {
+      "type": "custom",
+      "candid": "target/wasm32-unknown-unknown/release/tenant_registry_backend.did",
+      "wasm": "target/wasm32-unknown-unknown/release/tenant_registry_backend.wasm",
+      "build": "cargo build --target wasm32-unknown-unknown --release -p tenant_registry_backend"
+    },
+    "move_vm_canister": {
+      "main": "src/move_vm_canister/src/lib.rs",
+      "type": "rust",
+      "package": "move_vm_canister",
+      "candid": "src/move_vm_canister/move_vm.did"
+    },
+    "aetherdb_bridge": {
+      "main": "src/aetherdb_bridge/src/lib.rs",
+      "type": "rust",
+      "package": "aetherdb_bridge",
+      "candid": "src/aetherdb_bridge/aetherdb_bridge.did"
+    },
+    "shroud_orchestrator": {
+      "candid": "candid/shroud_orchestrator.did",
+      "package": "swarm_brain",
+      "type": "rust"
+    }
+  },
+  "defaults": {
+    "build": {
+      "args": "",
+      "packtool": "mops source"
+    }
+  },
+  "output_env_file": ".env",
+  "version": 1
+}
