@@ -1,9 +1,8 @@
 """
-bittensor_adapter.py — OpenAI-compatible wrapper for Bittensor SN1 inference.
-Routes /v1/chat/completions to Bittensor subnet 1 miners.
-Mock mode enabled by default — set MOCK_MODE=false and SN1_API_KEY for real inference.
+bittensor_adapter.py — OpenAI-compatible wrapper for Bittensor SN1 (Apex) inference.
+Connects to the Macrocosmos Subnet 1 gateway. Requires SN1_API_KEY.
 """
-import os, json
+import os
 from typing import List, Optional
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
@@ -14,7 +13,6 @@ app = FastAPI(title="Bittensor SN1 Adapter")
 # ── Config ──────────────────────────────────────────────────────────────
 SN1_ENDPOINT = os.getenv("SN1_ENDPOINT", "https://sn1.api.macrocosmos.ai")
 SN1_API_KEY = os.getenv("SN1_API_KEY", "")
-MOCK_MODE = os.getenv("MOCK_MODE", "true").lower() == "true"
 
 # ── Models ──────────────────────────────────────────────────────────────
 
@@ -27,59 +25,52 @@ class ChatRequest(BaseModel):
     messages: List[Message]
     max_tokens: Optional[int] = 256
     temperature: Optional[float] = 0.7
-    stream: Optional[bool] = False
 
 # ── Routes ──────────────────────────────────────────────────────────────
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "adapter": "bittensor-sn1", "mock_mode": MOCK_MODE}
+    api_key_set = bool(SN1_API_KEY)
+    return {"status": "ok", "adapter": "bittensor-sn1", "api_key_set": api_key_set, "endpoint": SN1_ENDPOINT}
 
 @app.post("/v1/chat/completions")
 async def chat_completion(req: ChatRequest):
-    """Forward chat completion to Bittensor SN1 or return mock response."""
     prompt = req.messages[-1].content if req.messages else ""
     
-    if MOCK_MODE:
-        return {
-            "id": "bittensor-sn1-mock",
-            "object": "chat.completion",
-            "choices": [{
-                "index": 0,
-                "message": {
-                    "role": "assistant",
-                    "content": f"This is a mock response from Bittensor SN1 adapter.\n\nYou asked: \"{prompt}\"\n\nTo enable real inference, set MOCK_MODE=false and SN1_API_KEY in the Render environment variables."
-                },
-                "finish_reason": "stop",
-            }],
-            "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0},
-        }
+    if not SN1_API_KEY:
+        raise HTTPException(status_code=401, detail="SN1_API_KEY not configured. Get one from https://sn1.api.macrocosmos.ai")
     
     headers = {"Content-Type": "application/json"}
-    if SN1_API_KEY:
-        headers["Authorization"] = f"Bearer {SN1_API_KEY}"
+    headers["Authorization"] = f"Bearer {SN1_API_KEY}"
     
-    payload = {"prompt": prompt, "max_tokens": req.max_tokens}
+    payload = {
+        "prompt": prompt,
+        "max_tokens": req.max_tokens,
+        "temperature": req.temperature,
+    }
     
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.post(
-                f"{SN1_ENDPOINT}/v1/completions", json=payload, headers=headers
+                f"{SN1_ENDPOINT}/v1/completions",
+                json=payload,
+                headers=headers,
             )
             resp.raise_for_status()
             data = resp.json()
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(status_code=e.response.status_code, detail=f"SN1 upstream error: {e.response.text[:500]}")
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e))
+    
+    completion_text = data.get("choices", [{}])[0].get("text", data.get("completion", ""))
     
     return {
         "id": "bittensor-sn1",
         "object": "chat.completion",
         "choices": [{
             "index": 0,
-            "message": {
-                "role": "assistant",
-                "content": data.get("completion", data.get("text", ""))
-            },
+            "message": {"role": "assistant", "content": completion_text},
             "finish_reason": "stop",
         }],
         "usage": {
@@ -91,26 +82,14 @@ async def chat_completion(req: ChatRequest):
 
 @app.post("/v1/completions")
 async def completion(req: ChatRequest):
-    """Standard completions endpoint (non-chat)."""
+    if not SN1_API_KEY:
+        raise HTTPException(status_code=401, detail="SN1_API_KEY not configured")
+    
+    headers = {"Content-Type": "application/json", "Authorization": f"Bearer {SN1_API_KEY}"}
     prompt = req.messages[-1].content if req.messages else ""
     
-    if MOCK_MODE:
-        return {
-            "id": "bittensor-sn1-mock",
-            "object": "text_completion",
-            "choices": [{
-                "index": 0,
-                "text": f"Mock response. Prompt: \"{prompt}\"",
-                "finish_reason": "stop",
-            }],
-        }
-    
-    headers = {"Content-Type": "application/json"}
-    if SN1_API_KEY:
-        headers["Authorization"] = f"Bearer {SN1_API_KEY}"
-    
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             resp = await client.post(
                 f"{SN1_ENDPOINT}/v1/completions",
                 json={"prompt": prompt, "max_tokens": req.max_tokens},
@@ -126,7 +105,7 @@ async def completion(req: ChatRequest):
         "object": "text_completion",
         "choices": [{
             "index": 0,
-            "text": data.get("completion", data.get("text", "")),
+            "text": data.get("choices", [{}])[0].get("text", data.get("completion", "")),
             "finish_reason": "stop",
         }],
     }
