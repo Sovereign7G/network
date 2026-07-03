@@ -1,5 +1,4 @@
 FROM python:3.11-slim
-RUN echo "S7G-GATEWAY-v2"
 WORKDIR /app
 COPY billing.py s7g_client.py proxy.py setup_gateway.py audit.py audit_routes.py agent_cards.py agent_registry.py agent_routes.py ./
 RUN pip install --no-cache-dir fastapi uvicorn httpx && python setup_gateway.py
