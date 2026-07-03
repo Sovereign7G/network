@@ -58,9 +58,8 @@ router_settings:
   num_retries: 2
   timeout: 30
   fallbacks:
-    - model_name: s7g-committee
-      fallbacks:
-        - icp-llama
-        - icp-qwen
-        - render-gpu
-        - bittensor-sn1
+    - s7g-committee
+    - icp-llama
+    - icp-qwen
+    - render-gpu
+    - bittensor-sn1
