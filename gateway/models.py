@@ -3,7 +3,7 @@ from typing import Optional, List
 
 class CustomerCreate(BaseModel):
     name: str
-    email: EmailStr
+    email: str
 
 class CreditGrant(BaseModel):
     amount: float

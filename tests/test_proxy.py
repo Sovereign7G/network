@@ -51,6 +51,5 @@ async def test_proxy_flow(monkeypatch):
     assert res_data["usage"]["cost"] == 0.10
 
     # Clean up test DB
-    billing.close()
     if os.path.exists(test_db_path):
         os.remove(test_db_path)
