@@ -2,7 +2,7 @@ model_list:
   - model_name: s7g-committee
     litellm_params:
       model: openai/s7g-committee
-      api_base: https://s7g-api.sovereign7g.xyz
+      api_base: https://s7g-committee.onrender.com
       api_key: dummy
     model_info:
       mode: completion
