@@ -7,6 +7,14 @@ model_list:
     model_info:
       mode: completion
 
+  - model_name: bittensor-sn1
+    litellm_params:
+      model: openai/bittensor-sn1
+      api_base: https://bittensor-adapter.onrender.com/v1
+      api_key: dummy
+    model_info:
+      mode: completion
+
 litellm_settings:
   drop_params: true
   set_verbose: false
