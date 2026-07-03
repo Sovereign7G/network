@@ -39,20 +39,21 @@ async def chat_completion(req: ChatRequest):
     
     if not SN1_API_KEY:
         raise HTTPException(status_code=401, detail="SN1_API_KEY not configured. Get one from https://sn1.api.macrocosmos.ai")
-    
     headers = {"Content-Type": "application/json"}
-    headers["Authorization"] = f"Bearer {SN1_API_KEY}"
+    if SN1_API_KEY:
+        headers["Authorization"] = f"Bearer {SN1_API_KEY}"
     
     payload = {
-        "prompt": prompt,
+        "model": "meta-llama/Llama-3.2-3B-Instruct",
+        "messages": [{"role": "user", "content": prompt}],
         "max_tokens": req.max_tokens,
         "temperature": req.temperature,
     }
     
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                f"{SN1_ENDPOINT}/v1/completions",
+                f"{SN1_ENDPOINT}/v1/chat/completions",
                 json=payload,
                 headers=headers,
             )
@@ -63,7 +64,7 @@ async def chat_completion(req: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e))
     
-    completion_text = data.get("choices", [{}])[0].get("text", data.get("completion", ""))
+    completion_text = data.get("choices", [{}])[0].get("message", {}).get("content", data.get("completion", ""))
     
     return {
         "id": "bittensor-sn1",
@@ -84,28 +85,21 @@ async def chat_completion(req: ChatRequest):
 async def completion(req: ChatRequest):
     if not SN1_API_KEY:
         raise HTTPException(status_code=401, detail="SN1_API_KEY not configured")
-    
     headers = {"Content-Type": "application/json", "Authorization": f"Bearer {SN1_API_KEY}"}
     prompt = req.messages[-1].content if req.messages else ""
-    
     try:
-        async with httpx.AsyncClient(timeout=60.0) as client:
+        async with httpx.AsyncClient(timeout=30.0) as client:
             resp = await client.post(
-                f"{SN1_ENDPOINT}/v1/completions",
-                json={"prompt": prompt, "max_tokens": req.max_tokens},
+                f"{SN1_ENDPOINT}/v1/chat/completions",
+                json={"model": "meta-llama/Llama-3.2-3B-Instruct", "messages": [{"role": "user", "content": prompt}], "max_tokens": req.max_tokens},
                 headers=headers,
             )
             resp.raise_for_status()
             data = resp.json()
     except Exception as e:
         raise HTTPException(status_code=502, detail=str(e))
-    
+    content = data.get("choices", [{}])[0].get("message", {}).get("content", "")
     return {
-        "id": "bittensor-sn1",
-        "object": "text_completion",
-        "choices": [{
-            "index": 0,
-            "text": data.get("choices", [{}])[0].get("text", data.get("completion", "")),
-            "finish_reason": "stop",
-        }],
+        "id": "bittensor-sn1", "object": "text_completion",
+        "choices": [{"index": 0, "text": content, "finish_reason": "stop"}],
     }
