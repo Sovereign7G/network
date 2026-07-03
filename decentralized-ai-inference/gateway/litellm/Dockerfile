@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 RUN echo "S7G-GATEWAY-v2"
-COPY --chmod=644 billing.py s7g_client.py proxy.py setup_gateway.py /app/
+COPY billing.py s7g_client.py proxy.py setup_gateway.py audit.py audit_routes.py agent_cards.py agent_registry.py agent_routes.py ./
 WORKDIR /app
 RUN pip install --no-cache-dir fastapi uvicorn httpx && python setup_gateway.py
 CMD ["uvicorn", "proxy:app", "--host", "0.0.0.0", "--port", "1317"]

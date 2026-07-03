@@ -7,6 +7,8 @@ import uuid, time, json, os, sqlite3
 from billing import BillingDB
 from s7g_client import S7GClient
 from audit import AuditDB
+from audit_routes import router as audit_router
+from agent_routes import router as agent_router
 
 FIXED_KEY = "s7g-demo-key-001"
 
@@ -25,6 +27,8 @@ def _ensure_demo_key():
 
 _ensure_demo_key()
 app = FastAPI(title="Sovereign AI Gateway", version="1.0.0")
+app.include_router(audit_router)
+app.include_router(agent_router)
 _db_path = os.getenv("BILLING_DB_PATH", "billing.db")
 billing = BillingDB(_db_path)
 s7g = S7GClient("https://s7g-committee.onrender.com", timeout=35.0)
