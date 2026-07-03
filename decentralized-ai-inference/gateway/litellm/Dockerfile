@@ -1,6 +1,6 @@
 FROM python:3.11-slim
 
-RUN pip install --no-cache-dir litellm uvicorn
+RUN pip install --no-cache-dir 'litellm[proxy]' uvicorn
 
 COPY proxy_config.yaml /app/proxy_config.yaml
 
