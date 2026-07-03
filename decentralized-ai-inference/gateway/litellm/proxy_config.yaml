@@ -53,7 +53,7 @@ general_settings:
   master_key: os.environ/MASTER_API_KEY
 
 router_settings:
-  routing_strategy: "usage-based"
+  routing_strategy: "usage-based-routing"
   enable_loadbalancing: true
   num_retries: 2
   timeout: 30
