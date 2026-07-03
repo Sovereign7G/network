@@ -1,5 +1,5 @@
 FROM python:3.11-slim
-# Build: $(date +%s) — bust cache
+RUN echo "cachebuster-20260703-1640"
 WORKDIR /app
 COPY billing.py s7g_client.py proxy.py setup_gateway.py ./
 RUN pip install --no-cache-dir fastapi uvicorn httpx
