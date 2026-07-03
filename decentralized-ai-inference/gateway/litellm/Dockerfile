@@ -1,4 +1,5 @@
 FROM python:3.11-slim
+# Build: $(date +%s) — bust cache
 WORKDIR /app
 COPY billing.py s7g_client.py proxy.py setup_gateway.py ./
 RUN pip install --no-cache-dir fastapi uvicorn httpx
