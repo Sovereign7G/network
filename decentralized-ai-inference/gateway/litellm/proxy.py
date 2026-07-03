@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""Updated FastAPI proxy with billing + S7G committee integration."""
+"""FastAPI proxy with billing + S7G committee integration."""
 from fastapi import FastAPI, HTTPException, Header
 from typing import Optional
 import uuid, time
 
-from gateway.billing import BillingDB
-from gateway.s7g_client import S7GClient
-from gateway.token_counter import estimate_tokens, calculate_cost
+from billing import BillingDB
+from s7g_client import S7GClient
 
 app = FastAPI(title="Sovereign AI Gateway", version="1.0.0")
 billing = BillingDB("billing.db")
 s7g = S7GClient("https://s7g-committee.onrender.com", timeout=35.0)
 PRICE_PER_1K = 0.001
+
+def estimate_tokens(messages: list) -> int:
+    return sum(len(m.get("content", "").split()) * 1.3 for m in messages) + 10
+
+def calculate_cost(tokens: int) -> float:
+    return (tokens / 1000.0) * PRICE_PER_1K
 
 @app.post("/v1/chat/completions")
 async def chat_completions(request: dict, authorization: Optional[str] = Header(None)):
@@ -26,8 +31,8 @@ async def chat_completions(request: dict, authorization: Optional[str] = Header(
         raise HTTPException(402, "Insufficient credits")
     rid = str(uuid.uuid4())
     messages = request.get("messages", [])
-    tokens = estimate_tokens(messages)
-    cost = calculate_cost(tokens, PRICE_PER_1K)
+    tokens = int(estimate_tokens(messages))
+    cost = calculate_cost(tokens)
     if bal < cost:
         raise HTTPException(402, f"Insufficient — need ${cost:.4f}, have ${bal:.4f}")
     try:
