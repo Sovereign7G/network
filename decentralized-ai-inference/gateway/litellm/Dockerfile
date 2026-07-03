@@ -6,4 +6,4 @@ COPY proxy_config.yaml /app/proxy_config.yaml
 
 EXPOSE 4000
 
-CMD ["litellm", "--config", "/app/proxy_config.yaml", "--port", "4000"]
+CMD ["litellm", "--config", "/app/proxy_config.yaml", "--port", "1317"]
