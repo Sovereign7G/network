@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """FastAPI proxy with billing + S7G committee integration."""
-from fastapi import FastAPI, HTTPException, Header
+from fastapi import FastAPI, HTTPException, Header, Body
 from typing import Optional
-import uuid, time
+import uuid, time, json
 
 from billing import BillingDB
 from s7g_client import S7GClient
@@ -19,7 +19,7 @@ def calculate_cost(tokens: int) -> float:
     return (tokens / 1000.0) * PRICE_PER_1K
 
 @app.post("/v1/chat/completions")
-async def chat_completions(request: dict, authorization: Optional[str] = Header(None)):
+async def chat_completions(request: dict = Body(...), authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "Missing or invalid API key")
     api_key = authorization.replace("Bearer ", "")
