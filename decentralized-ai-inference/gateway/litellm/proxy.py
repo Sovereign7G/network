@@ -42,9 +42,9 @@ def calculate_cost(tokens: int) -> float:
     return (tokens / 1000.0) * PRICE_PER_1K
 
 PROVIDERS = [
-    {"name": "s7g-committee", "url": "https://s7g-committee.onrender.com/propose"},
-    {"name": "bittensor-sn1", "url": "https://bittensor-adapter.onrender.com/v1/chat/completions"},
-    {"name": "icp-llama", "url": "https://llm-canister.icp0.io/v1/chat/completions"},
+    {"name": "s7g-committee", "url": "https://s7g-committee.onrender.com/propose", "format": "s7g"},
+    {"name": "bittensor-sn1", "url": "https://bittensor-adapter.onrender.com/v1/chat/completions", "format": "openai"},
+    {"name": "icp-llama", "url": "https://llm-canister.icp0.io/v1/chat/completions", "format": "openai"},
 ]
 
 @app.post("/v1/chat/completions")
@@ -66,8 +66,12 @@ async def chat_completions(request: dict = Body(...), authorization: str = Heade
     for provider in PROVIDERS:
         try:
             import httpx
+            if provider["format"] == "s7g":
+                body = {"request_id": rid, "payload": request}
+            else:
+                body = request
             async with httpx.AsyncClient(timeout=30.0) as client:
-                resp = await client.post(provider["url"], json=request)
+                resp = await client.post(provider["url"], json=body)
                 resp.raise_for_status()
                 data = resp.json()
         except Exception as e:
