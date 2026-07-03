@@ -2,7 +2,7 @@
 """FastAPI proxy with billing + S7G committee integration."""
 from fastapi import FastAPI, HTTPException, Header, Body
 from typing import Optional
-import uuid, time, json
+import uuid, time, json, os
 
 from billing import BillingDB
 from s7g_client import S7GClient
@@ -12,8 +12,9 @@ FIXED_KEY = "s7g-demo-key-001"
 
 def _ensure_demo_key():
     """Create demo customer with fixed API key on startup if missing."""
+    db_path = os.getenv("BILLING_DB_PATH", "billing.db")
     try:
-        with sqlite3.connect("billing.db") as conn:
+        with sqlite3.connect(db_path) as conn:
             exists = conn.execute("SELECT 1 FROM api_keys WHERE key=?", (FIXED_KEY,)).fetchone()
             if not exists:
                 cid = "demo-customer-001"
@@ -29,7 +30,8 @@ def _ensure_demo_key():
 _ensure_demo_key()
 
 app = FastAPI(title="Sovereign AI Gateway", version="1.0.0")
-billing = BillingDB("billing.db")
+_db_path = os.getenv("BILLING_DB_PATH", "billing.db")
+billing = BillingDB(_db_path)
 s7g = S7GClient("https://s7g-committee.onrender.com", timeout=35.0)
 PRICE_PER_1K = 0.001
 
