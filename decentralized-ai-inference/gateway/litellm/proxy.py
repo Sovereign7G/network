@@ -44,7 +44,6 @@ def calculate_cost(tokens: int) -> float:
 PROVIDERS = [
     {"name": "s7g-committee", "url": "https://s7g-committee.onrender.com/propose", "format": "s7g"},
     {"name": "bittensor-sn1", "url": "https://bittensor-adapter.onrender.com/v1/chat/completions", "format": "openai"},
-    {"name": "icp-llama", "url": "https://llm-canister.icp0.io/v1/chat/completions", "format": "openai"},
 ]
 
 @app.post("/v1/chat/completions")
