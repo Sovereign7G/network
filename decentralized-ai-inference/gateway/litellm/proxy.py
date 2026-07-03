@@ -6,6 +6,27 @@ import uuid, time, json
 
 from billing import BillingDB
 from s7g_client import S7GClient
+import sqlite3
+
+FIXED_KEY = "s7g-demo-key-001"
+
+def _ensure_demo_key():
+    """Create demo customer with fixed API key on startup if missing."""
+    try:
+        with sqlite3.connect("billing.db") as conn:
+            exists = conn.execute("SELECT 1 FROM api_keys WHERE key=?", (FIXED_KEY,)).fetchone()
+            if not exists:
+                cid = "demo-customer-001"
+                now = int(__import__('time').time())
+                conn.execute("INSERT INTO customers VALUES (?,?,?,?)", (cid, "Demo User", "demo@s7g.ai", now))
+                conn.execute("INSERT INTO api_keys (key, customer_id, name, created_at) VALUES (?,?,?,?)", (FIXED_KEY, cid, "default", now))
+                conn.execute("INSERT INTO balances VALUES (?,?,?)", (cid, 10.0, now))
+                conn.commit()
+                print(f"Created demo key: {FIXED_KEY} ($10.00)")
+    except Exception as e:
+        print(f"Demo key setup: {e}")
+
+_ensure_demo_key()
 
 app = FastAPI(title="Sovereign AI Gateway", version="1.0.0")
 billing = BillingDB("billing.db")
