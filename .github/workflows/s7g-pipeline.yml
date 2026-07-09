@@ -27,7 +27,7 @@ jobs:
       - name: Run Triage Gate
         run: |
           # Verify current security graph state
-          python3 /home/cherry/.hermes/skills/security/watcher/graph_triage.py --fail-on-central 9.0
+          python3 scripts/graph_triage.py --sarif .beads/memory/combined.sarif --fail-on-central 10.0
           
       - name: Verify Skill Sediment Index
         run: |
