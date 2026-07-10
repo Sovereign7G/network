@@ -28,12 +28,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.agent == 'all' || github.event.inputs.agent == 'hermes_security_auditor' || github.event_name != 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-python: '3.10'
+          python-version: '3.12'
           
       - name: Run Container Security Verification
         run: |
@@ -49,12 +49,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.agent == 'all' || github.event.inputs.agent == 'hermes_cost_optimizer' || github.event_name != 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-python: '3.10'
+          python-version: '3.12'
           
       - name: Analyze Cloud Costs
         run: |
@@ -70,12 +70,12 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.inputs.agent == 'all' || github.event.inputs.agent == 'hermes_capacity_planner' || github.event_name != 'workflow_dispatch'
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-python: '3.10'
+          python-version: '3.12'
           
       - name: Forecast Capacity
         run: |
@@ -92,12 +92,12 @@ jobs:
     needs: [security-audit, cost-optimization, capacity-planning]
     if: github.ref == 'refs/heads/main'
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v5
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-python: '3.10'
+          python-version: '3.12'
           
       - name: Run Full Production Operations
         run: |
