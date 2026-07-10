@@ -13,26 +13,31 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
-      
+        uses: actions/checkout@v4
+
       - name: Setup Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          
+
       - name: Install Dependencies
         run: |
           pip install networkx pyvis requests
-          
+
       - name: Run Triage Gate
         run: |
           # Verify current security graph state
-          python3 scripts/graph_triage.py --sarif .beads/memory/combined.sarif --fail-on-central 10.0
-          
+          # graph_triage.py is tracked in repo scripts/ — committed alongside this workflow
+          python3 scripts/graph_triage.py \
+            --sarif .beads/memory/combined.sarif \
+            --fail-on-central 10.0
+
       - name: Verify Skill Sediment Index
         run: |
-          python3 scripts/scan_skills.py --path hermes_home/skills --threshold 0.10
-          
+          # Scan repo's documentation for vagueness and duplication
+          # Default path is current directory (the repo itself)
+          python3 scripts/scan_skills.py --threshold 0.10
+
       - name: Notify Slack on Failure
         if: failure()
         run: |
