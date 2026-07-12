@@ -6,6 +6,7 @@ use std::io::Write;
 mod oewse_driver;
 mod oewse_orchestrator;
 mod oewse_worker;
+mod oewse_peer;
 mod zerosync_verifier;
 
 use oewse_orchestrator::{
@@ -143,6 +144,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Allow time for execution pass and async result return
     tokio::time::sleep(Duration::from_secs(1)).await;
     println!("\n🏁 Multi-Node Pool Pipeline (v2) Integration Verification Completed!");
+
+    // 4. Test P2P Worker Initialization and capability broadcast
+    println!("\n🌐 Initiating P2P Worker Daemon (Iroh substrate)...");
+    match oewse_peer::OewseP2PWorker::new("p2p-node-alpha", spatial_model_path) {
+        Ok(p2p_worker) => {
+            if let Err(e) = p2p_worker.run().await {
+                eprintln!("❌ P2P Worker runtime error: {}", e);
+            }
+        }
+        Err(e) => eprintln!("❌ Failed to initialize P2P Worker: {}", e),
+    }
 
     Ok(())
 }
