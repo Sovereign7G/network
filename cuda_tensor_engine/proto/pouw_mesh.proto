@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package sovereign.mesh.v2;
+
+service SovereignMeshOrchestrator {
+  rpc ProcessMeshInference(stream SettlementReceipt) returns (stream WorkAllocation);
+}
+
+message WorkAllocation {
+  string job_id = 1;
+  uint64 nonce = 2;
+  bytes zerosync_chain_proof = 3;
+  bytes bitcoin_block_header = 4;
+  bytes packed_ternary_activations = 5;
+  uint32 target_difficulty = 6;
+}
+
+message SettlementReceipt {
+  string job_id = 1;
+  bytes proof_hash = 2;
+  bool verified_by_laws_of_math = 3;
+  string bel2_clearing_tx_id = 4;
+  uint64 s7g_tokens_minted = 5;
+  float execution_entropy = 6;
+  uint32 signal_change = 7;
+}

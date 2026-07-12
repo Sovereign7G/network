@@ -12,3 +12,33 @@ bifrost_config.yml
 scripts/axon_broadway_poc.py
 scripts/zetto_attestation.py
 hermes_home/
+
+.mops
+.migrations-*/
+
+# Production and local environment secrets
+.env.production
+.env.local
+.env.development
+*.pem
+*.key
+canister_ids.json
+
+# Model files — too large, contain weights derived from open models
+07_MODELS/*.gguf
+07_MODELS/*.bin
+07_MODELS/*.spat
+07_MODELS/*.npz
+
+# Compiled simulator (contains RTL-derived binary)
+build/verilator/
+**/libVsnpu_top.so
+
+# CUDA build artifacts
+cuda_tensor_engine/target/
+cuda_tensor_engine/Cargo.lock
+
+# Conversion temp files
+*.bak
+*.toon
+

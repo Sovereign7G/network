@@ -1,0 +1,24 @@
+[package]
+name = "cuda_tensor_engine"
+version = "0.1.0"
+edition = "2021"
+
+[workspace]
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }
+candle-core = "0.3.3"
+rand = "=0.8.5"
+rand_distr = "=0.4.3"
+half = "=2.4.1"
+tonic = "0.10.2"
+prost = "0.12.3"
+tokio-stream = { version = "0.1.14", features = ["net"] }
+
+[build-dependencies]
+tonic-build = "0.10.2"
+
+[lints.clippy]
+let_underscore_must_use = "warn"
+let_underscore_untyped = "warn"
+
