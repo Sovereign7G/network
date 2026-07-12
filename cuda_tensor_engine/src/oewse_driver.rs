@@ -118,6 +118,25 @@ impl OewseGpuContext {
     }
 }
 
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub struct IrohNode {
+    node_id: String,
+}
+
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+impl IrohNode {
+    #[wasm_bindgen::prelude::wasm_bindgen(constructor)]
+    pub fn new(node_id: String) -> Self {
+        Self { node_id }
+    }
+
+    pub fn node_id(&self) -> String {
+        self.node_id.clone()
+    }
+}
+
 #[cfg(not(target_arch = "wasm32"))]
 impl OewseGpuContext {
     pub fn new(threads_per_block: u32) -> Self {

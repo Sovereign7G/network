@@ -291,6 +291,7 @@
     <script type="module">
         import init, { OewseGpuContext } from './pkg/cuda_tensor_engine.js';
         import { WebGLPipelinedEngine } from './webgl/webgl_engine.js';
+        import { BrowserMeshNode } from './webgl/iroh_mesh.js';
 
         const term = document.getElementById('terminal-out');
         const grid = document.getElementById('visual-grid');
@@ -314,6 +315,7 @@
 
         let wasmCtx = null;
         let webglEngine = null;
+        let meshNode = null;
         async function start() {
             try {
                 await init();
@@ -335,6 +337,33 @@
                 canvas.height = 16;
                 webglEngine = new WebGLPipelinedEngine(canvas, wasmCtx);
                 log("✅ WebGL2 Pipelined Engine (RG packed channel) successfully initialized.");
+
+                // Initialize P2P Mesh Node
+                meshNode = new BrowserMeshNode(webglEngine);
+                await meshNode.joinMesh('wss://relay.iroh.network');
+                log(`✅ Cryptographic Node Identity set: ${meshNode.nodeId}`);
+
+                // Hook mesh task loop to WebGL accelerator
+                meshNode.onTask(async (task) => {
+                    log(`📥 Gossip Task received: ${task.id}. Processing on GPU...`);
+                    metricEng.textContent = "WebGL2 GPU (P2P)";
+                    const start = performance.now();
+                    const output = webglEngine.runInference(task.input);
+                    const latency = performance.now() - start;
+                    const throughput = (4096 * 16 / latency * 1000).toFixed(0);
+
+                    metricTok.textContent = throughput;
+                    metricLat.textContent = `${latency.toFixed(1)} ms`;
+
+                    const proof = meshNode.generateProof(output, task.challenge);
+                    await meshNode.publishProof({
+                        taskId: task.id,
+                        output: Array.from(output.slice(0, 10)),
+                        proof: Array.from(proof.slice(0, 10))
+                    });
+
+                    log(`✅ Task processed successfully. Proof verified.`);
+                });
             } catch (err) {
                 log(`❌ Initialization Failed: ${err}`);
             }
