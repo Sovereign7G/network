@@ -76,19 +76,45 @@ impl OewseGpuContext {
     pub fn mine_inference_proof(
         &self,
         prompt: &[u32],
-        difficulty: u32,
-    ) -> Option<String> {
+        _difficulty: u32,
+    ) -> u32 {
         // CPU fallback simulation of PoUW XNOR + popcount search
         let mixed_input = prompt[0] ^ 0x01;
         let w_pos = self.weights_pos.get(0).cloned().unwrap_or(0);
         let match_pos = !(mixed_input ^ w_pos);
-        let similarity = match_pos.count_ones();
-        
-        if similarity > 16 {
-            Some(format!("{{ \"nonce\": 123456, \"proof_hash\": {} }}", similarity))
-        } else {
-            None
+        match_pos.count_ones()
+    }
+
+    pub fn get_packed_weight_textures(&self) -> js_sys::Array {
+        let array = js_sys::Array::new();
+        for layer in 0..48 {
+            let start = layer * 4096 * 16;
+            let end = start + 4096 * 16;
+            let mut packed = Vec::with_capacity(4096 * 16 * 4);
+            for i in start..end {
+                let pos_val = self.weights_pos.get(i).cloned().unwrap_or(0) as u8;
+                let neg_val = self.weights_neg.get(i).cloned().unwrap_or(0) as u8;
+                packed.push(pos_val);
+                packed.push(neg_val);
+                packed.push(0);
+                packed.push(255);
+            }
+            let js_arr = js_sys::Uint8Array::from(packed.as_slice());
+            array.push(&js_arr);
         }
+        array
+    }
+
+    pub fn get_num_layers(&self) -> u32 {
+        48
+    }
+
+    pub fn get_tile_width(&self) -> u32 {
+        4096
+    }
+
+    pub fn get_tile_height(&self) -> u32 {
+        16
     }
 }
 
