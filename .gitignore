@@ -24,10 +24,9 @@ hermes_home/
 *.key
 canister_ids.json
 
-# Model files — too large, contain weights derived from open models
+# Model weight files — too large, contain weights derived from open models
 07_MODELS/*.gguf
 07_MODELS/*.bin
-07_MODELS/*.spat
 07_MODELS/*.npz
 
 # Compiled simulator (contains RTL-derived binary)
