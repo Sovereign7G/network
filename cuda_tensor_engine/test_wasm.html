@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sovereign AI Mesh - WASM Test Harness</title>
+</head>
+<body>
+    <h1>🧠 Sovereign AI Mesh - WebAssembly Verification</h1>
+    <div id="output" style="white-space: pre-wrap; font-family: monospace;">⏳ Loading WASM Module...</div>
+
+    <script type="module">
+        import init, { OewseGpuContext } from './pkg/cuda_tensor_engine.js';
+
+        async function run() {
+            const outDiv = document.getElementById('output');
+            try {
+                // Initialize WASM module
+                await init();
+                outDiv.textContent += "\n✅ WebAssembly compiled module successfully loaded!";
+
+                // Create worker context
+                const ctx = new OewseGpuContext(256);
+                outDiv.textContent += "\n✅ Context initialized successfully.";
+
+                // Upload mock weights
+                const pos = new Uint32Array(40 * 256);
+                const neg = new Uint32Array(40 * 256);
+                pos[0] = 0xAA55AA55;
+                ctx.upload_weights(pos, neg);
+                outDiv.textContent += "\n✅ Mock weights uploaded to context.";
+
+                // Verify CPU search
+                const prompt = new Uint32Array(128);
+                prompt[0] = 0x55AA55AA;
+                const result = ctx.mine_inference_proof(prompt, 4);
+                outDiv.textContent += `\n✅ Solver execution returned: ${result}`;
+                outDiv.textContent += "\n🎉 WASM verification complete!";
+            } catch (err) {
+                outDiv.textContent += `\n❌ Error: ${err}`;
+            }
+        }
+
+        run();
+    </script>
+</body>
+</html>

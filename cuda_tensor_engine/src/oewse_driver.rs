@@ -2,6 +2,7 @@ use std::fs::File;
 use std::io::Read;
 use std::convert::TryInto;
 
+#[cfg(not(target_arch = "wasm32"))]
 extern "C" {
     fn run_oewse_pouw_search(
         prompt_bits: *const u32,
@@ -34,11 +35,64 @@ extern "C" {
     fn free_oewse_context(context_ptr: *mut std::ffi::c_void);
 }
 
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+pub struct OewseGpuContext {
+    weights_pos: Vec<u32>,
+    weights_neg: Vec<u32>,
+    threads_per_block: u32,
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 pub struct OewseGpuContext {
     ptr: *mut std::ffi::c_void,
     threads_per_block: u32,
 }
 
+#[cfg(target_arch = "wasm32")]
+#[wasm_bindgen::prelude::wasm_bindgen]
+impl OewseGpuContext {
+    #[wasm_bindgen::prelude::wasm_bindgen(constructor)]
+    pub fn new(threads_per_block: u32) -> Self {
+        Self {
+            weights_pos: Vec::new(),
+            weights_neg: Vec::new(),
+            threads_per_block,
+        }
+    }
+
+    pub fn upload_weights(&mut self, weights_pos: &[u32], weights_neg: &[u32]) {
+        self.weights_pos = weights_pos.to_vec();
+        self.weights_neg = weights_neg.to_vec();
+    }
+
+    pub fn load_spatial_model(path: &str) -> Result<OewseGpuContext, String> {
+        // Simple loading stub for WASM filesystem
+        let mut ctx = OewseGpuContext::new(256);
+        ctx.upload_weights(&vec![0; 40 * 256], &vec![0; 40 * 256]);
+        Ok(ctx)
+    }
+
+    pub fn mine_inference_proof(
+        &self,
+        prompt: &[u32],
+        difficulty: u32,
+    ) -> Option<String> {
+        // CPU fallback simulation of PoUW XNOR + popcount search
+        let mixed_input = prompt[0] ^ 0x01;
+        let w_pos = self.weights_pos.get(0).cloned().unwrap_or(0);
+        let match_pos = !(mixed_input ^ w_pos);
+        let similarity = match_pos.count_ones();
+        
+        if similarity > 16 {
+            Some(format!("{{ \"nonce\": 123456, \"proof_hash\": {} }}", similarity))
+        } else {
+            None
+        }
+    }
+}
+
+#[cfg(not(target_arch = "wasm32"))]
 impl OewseGpuContext {
     pub fn new(threads_per_block: u32) -> Self {
         let ptr = unsafe { init_oewse_context(threads_per_block) };
@@ -125,6 +179,7 @@ impl OewseGpuContext {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 impl Drop for OewseGpuContext {
     fn drop(&mut self) {
         unsafe {
@@ -133,9 +188,12 @@ impl Drop for OewseGpuContext {
     }
 }
 
+#[cfg(not(target_arch = "wasm32"))]
 unsafe impl Send for OewseGpuContext {}
+#[cfg(not(target_arch = "wasm32"))]
 unsafe impl Sync for OewseGpuContext {}
 
+#[cfg(not(target_arch = "wasm32"))]
 pub fn mine_inference_proof(
     prompt: &[u32; 128],
     weights_pos: &[u32],

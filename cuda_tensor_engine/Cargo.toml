@@ -3,20 +3,32 @@ name = "cuda_tensor_engine"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "cuda_tensor_engine"
+path = "src/oewse_driver.rs"
+crate-type = ["cdylib", "rlib"]
+
 [workspace]
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
-candle-core = "0.3.3"
-rand = "=0.8.5"
-rand_distr = "=0.4.3"
-half = "=2.4.1"
-tonic = "0.10.2"
-prost = "0.12.3"
-tokio-stream = { version = "0.1.14", features = ["net"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0"
-iroh = { version = "0.30.0", default-features = false }
+tokio = { version = "1", features = ["full"], optional = true }
+candle-core = { version = "0.3.3", optional = true }
+rand = { version = "=0.8.5", optional = true }
+rand_distr = { version = "=0.4.3", optional = true }
+half = { version = "=2.4.1", optional = true }
+tonic = { version = "0.10.2", optional = true }
+prost = { version = "0.12.3", optional = true }
+tokio-stream = { version = "0.1.14", features = ["net"], optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0", optional = true }
+iroh = { version = "0.30.0", default-features = false, optional = true }
+wasm-bindgen = { version = "0.2.92", optional = true }
+js-sys = { version = "0.3.69", optional = true }
+
+[features]
+default = ["native"]
+native = ["tokio", "candle-core", "rand", "rand_distr", "half", "tonic", "prost", "tokio-stream", "serde", "serde_json", "iroh"]
+wasm = ["wasm-bindgen", "js-sys"]
 
 [build-dependencies]
 tonic-build = "0.10.2"
