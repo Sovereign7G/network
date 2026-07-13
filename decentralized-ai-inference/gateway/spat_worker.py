@@ -6,7 +6,7 @@ No CUDA, no GPU. Zero dependencies. Serves OpenAI-compatible API.
 Usage:
     python3 spat_worker.py --model deepseek-v4-flash-spatial.spat --port 8007
 """
-import argparse, ctypes, os, struct, time, uuid
+import argparse, ctypes, os, struct, time, uuid, json, asyncio
 from pathlib import Path
 import numpy as np
 import uvicorn
@@ -92,20 +92,30 @@ def run_cpu_inference(spat_bytes: bytes, prompt_tokens: list, max_tokens: int, t
 
 # ── Tokenizer ───────────────────────────────────────────────────────────
 
-WORD_MAP = {
-    "hello": 15339, "world": 1917, "the": 262, "a": 257, "is": 318,
-    "what": 644, "how": 774, "are": 389, "you": 499, "i": 40,
-    "am": 642, "from": 285, "to": 284, "and": 306, "of": 271,
-    "in": 281, "that": 326, "for": 287, "it": 340, "with": 351,
-    "sovereign": 100000, "ai": 100001, "mesh": 100002, "spat": 100003,
-}
-REV_MAP = {v: k for k, v in WORD_MAP.items()}
+# Load vocabulary from JSON file
+import json
+_VOCAB_PATH = os.path.join(os.path.dirname(__file__), "vocab.json")
+if os.path.exists(_VOCAB_PATH):
+    with open(_VOCAB_PATH) as _f:
+        _raw = json.load(_f)
+    VOCAB = {int(k): v for k, v in _raw.items()}
+    print(f"📖 Loaded {len(VOCAB)} vocabulary entries (max ID: {max(VOCAB.keys())})")
+else:
+    VOCAB = {}
+    print("⚠️  vocab.json not found, using fallback mapping")
 
 def encode(text: str) -> List[int]:
     tokens = []
     for word in text.lower().split():
-        if word in WORD_MAP:
-            tokens.append(WORD_MAP[word])
+        if word in VOCAB:
+            # Find the token ID for this word
+            for tid, tword in VOCAB.items():
+                if tword == word:
+                    tokens.append(tid)
+                    break
+            else:
+                for ch in word:
+                    tokens.append(max(32, min(126, ord(ch))))
         else:
             for ch in word:
                 tokens.append(max(32, min(126, ord(ch))))
@@ -114,15 +124,16 @@ def encode(text: str) -> List[int]:
 def decode(tokens: List[int]) -> str:
     chars = []
     for t in tokens:
-        if t in REV_MAP:
-            chars.append(REV_MAP[t])
+        if t in VOCAB:
+            chars.append(VOCAB[t])
         elif 32 <= t <= 126:
             chars.append(chr(t))
         elif t == 0:
             break
         else:
             chars.append(" ")
-    return "".join(chars).strip()
+    result = "".join(chars).strip()
+    return result
 
 # ── FastAPI Server ──────────────────────────────────────────────────────
 
@@ -170,6 +181,76 @@ async def chat_completions(request: ChatRequest):
 
     prompt_tokens = encode(prompt)
     temperature = request.temperature or 0.7
+
+    if request.stream:
+        async def stream_generator():
+            completion_id = f"chatcmpl-{uuid.uuid4().hex[:12]}"
+            # 1. Initial metadata chunk
+            initial_chunk = {
+                "id": completion_id,
+                "object": "chat.completion.chunk",
+                "created": int(time.time()),
+                "model": MODEL_NAME,
+                "choices": []
+            }
+            yield f"data: {json.dumps(initial_chunk)}\n\n"
+
+            tokens = prompt_tokens.copy()
+            max_toks = request.max_tokens or 50
+            for step in range(max_toks):
+                if RUST_LIB:
+                    logits, gen = run_rust_inference(RUST_LIB, SPAT_BYTES, tokens, 1, temperature)
+                else:
+                    logits, gen = run_cpu_inference(SPAT_BYTES, tokens, 1, temperature)
+
+                next_token = gen[0] if gen else 0
+                text = decode([next_token])
+                if not text and next_token != 0:
+                    text = f"[token {next_token}]"
+
+                chunk = {
+                    "id": completion_id,
+                    "object": "chat.completion.chunk",
+                    "created": int(time.time()),
+                    "model": MODEL_NAME,
+                    "choices": [{
+                        "index": 0,
+                        "delta": {"content": text},
+                        "finish_reason": None
+                    }]
+                }
+                yield f"data: {json.dumps(chunk)}\n\n"
+
+                tokens.append(next_token)
+                if next_token == 0 or next_token == 50256:  # EOS token
+                    break
+
+                await asyncio.sleep(0.01)
+
+            # Final chunk
+            final_chunk = {
+                "id": completion_id,
+                "object": "chat.completion.chunk",
+                "created": int(time.time()),
+                "model": MODEL_NAME,
+                "choices": [{
+                    "index": 0,
+                    "delta": {},
+                    "finish_reason": "stop"
+                }]
+            }
+            yield f"data: {json.dumps(final_chunk)}\n\n"
+            yield "data: [DONE]\n\n"
+
+        return StreamingResponse(
+            stream_generator(),
+            media_type="text/event-stream",
+            headers={
+                "Cache-Control": "no-cache",
+                "Connection": "keep-alive",
+                "X-Accel-Buffering": "no",
+            }
+        )
 
     if RUST_LIB:
         logits, gen_tokens = run_rust_inference(RUST_LIB, SPAT_BYTES, prompt_tokens, request.max_tokens, temperature)
