@@ -28,6 +28,14 @@ def _ensure_demo_key():
 
 _ensure_demo_key()
 app = FastAPI(title="Sovereign AI Gateway", version="1.0.0")
+from fastapi.staticfiles import StaticFiles
+import os
+_wasm_dir = os.path.join(os.path.dirname(__file__), "..", "wasm-demo")
+if os.path.exists(_wasm_dir):
+    app.mount("/wasm-demo", StaticFiles(directory=_wasm_dir, html=True), name="wasm-demo")
+    print(f"Serving WASM demo from {_wasm_dir}")
+else:
+    print(f"WASM demo directory not found at {_wasm_dir}")
 app.include_router(audit_router)
 app.include_router(agent_router)
 _db_path = os.getenv("BILLING_DB_PATH", "billing.db")
@@ -45,6 +53,7 @@ def calculate_cost(tokens: int) -> float:
 PROVIDERS = [
     {"name": "s7g-committee", "url": "https://s7g-committee.onrender.com/propose", "format": "s7g"},
     {"name": "bittensor-sn1", "url": "https://bittensor-adapter.onrender.com/v1/chat/completions", "format": "openai"},
+    {"name": "icp-coordinator", "url": "https://q4v42-riaaa-aaaaa-qhkoq-cai", "format": "icp"},
 ]
 
 # ── Rate Limiting ─────────────────────────────────────────────────────
@@ -85,7 +94,23 @@ async def metrics():
         body.append(f"s7g_provider_hits{{provider=\"{p}\"}} {h}")
     return Response(content="\n".join(body), media_type="text/plain")
 
-@app.post("/v1/chat/completions")
+    model_name = request.get("model", "")
+    if is_spat_model(model_name):
+        worker_url = get_worker_url(model_name)
+        import httpx
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                resp = await client.post(f"{worker_url}/v1/chat/completions", json=request)
+                resp.raise_for_status()
+                result = resp.json()
+            _metrics["requests_success"] += 1
+            _metrics["tokens_total"] += result.get("usage", {}).get("total_tokens", 0)
+            _metrics["provider_hits"]["spat-" + model_name] = _metrics["provider_hits"].get("spat-" + model_name, 0) + 1
+            billing.deduct_usage(cid, rid, tokens, cost)
+            return result
+        except Exception as e:
+            raise HTTPException(502, f"SPAT worker error: {str(e)[:200]}")
+    # ── End SPAT routing ────────────────────────────────────────
 async def chat_completions(request: dict = Body(...), authorization: str = Header(None)):
     if not authorization or not authorization.startswith("Bearer "):
         raise HTTPException(401, "Missing or invalid API key")
@@ -102,19 +127,96 @@ async def chat_completions(request: dict = Body(...), authorization: str = Heade
     cost = calculate_cost(tokens)
     if bal < cost: raise HTTPException(402, f"Insufficient — need ${cost:.4f}, have ${bal:.4f}")
 
+    # ── SPAT model routing ──────────────────────────────────────────
+    from spat_config import is_spat_model, get_worker_url
+    model_name = request.get("model", "")
+    if is_spat_model(model_name):
+        import httpx
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                resp = await client.post(f"{get_worker_url(model_name)}/v1/chat/completions", json=request)
+                resp.raise_for_status()
+                result = resp.json()
+            _metrics["requests_success"] += 1
+            _metrics["tokens_total"] += result.get("usage", {}).get("total_tokens", 0)
+            _metrics["provider_hits"]["spat-" + model_name] = _metrics["provider_hits"].get("spat-" + model_name, 0) + 1
+            billing.deduct_usage(cid, rid, tokens, cost)
+            return result
+        except Exception as e:
+            raise HTTPException(502, f"SPAT worker error: {str(e)[:200]}")
+    # ── End SPAT routing ────────────────────────────────────────────
+
+
+    # ── SPAT model routing ──────────────────────────────────────────
+    from spat_config import is_spat_model, get_worker_url
+    model_name = request.get("model", "")
+    if is_spat_model(model_name):
+        import httpx
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                resp = await client.post(f"{get_worker_url(model_name)}/v1/chat/completions", json=request)
+                resp.raise_for_status()
+                result = resp.json()
+            _metrics["requests_success"] += 1
+            _metrics["tokens_total"] += result.get("usage", {}).get("total_tokens", 0)
+            _metrics["provider_hits"]["spat-" + model_name] = _metrics["provider_hits"].get("spat-" + model_name, 0) + 1
+            billing.deduct_usage(cid, rid, tokens, cost)
+            return result
+        except Exception as e:
+            raise HTTPException(502, f"SPAT worker error: {str(e)[:200]}")
+    # ── End SPAT routing ────────────────────────────────────────────
+
+    # ── SPAT model routing ──────────────────────────────────────
+    from spat_config import is_spat_model, get_worker_url
+    model_name = request.get("model", "")
+    if is_spat_model(model_name):
+        import httpx
+        try:
+            async with httpx.AsyncClient(timeout=120.0) as client:
+                resp = await client.post(f"{get_worker_url(model_name)}/v1/chat/completions", json=request)
+                resp.raise_for_status()
+                result = resp.json()
+            _metrics["requests_success"] += 1
+            _metrics["tokens_total"] += result.get("usage", {}).get("total_tokens", 0)
+            _metrics["provider_hits"]["spat-" + model_name] = _metrics["provider_hits"].get("spat-" + model_name, 0) + 1
+            billing.deduct_usage(cid, rid, tokens, cost)
+            return result
+        except Exception as e:
+            raise HTTPException(502, f"SPAT worker error: {str(e)[:200]}")
+    # ── End SPAT routing ────────────────────────────────────────
+
     _metrics["requests_total"] += 1
     last_error = None
     for provider in PROVIDERS:
         try:
-            import httpx
-            if provider["format"] == "s7g":
-                body = {"request_id": rid, "payload": request}
+            if provider["format"] == "icp":
+                import subprocess
+                prompt = messages[-1].get("content", "") if messages else ""
+                cmd = [
+                    "dfx", "canister", "call", "q4v42-riaaa-aaaaa-qhkoq-cai", "submit_inference",
+                    f'("{prompt}")', "--network", "ic", "--output", "json"
+                ]
+                res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, env=dict(os.environ, DFX_WARNING="-mainnet_plaintext_identity"))
+                if res.returncode != 0:
+                    raise Exception(f"ICP canister call failed: {res.stderr}")
+                # Parse result
+                candid_resp = json.loads(res.stdout)
+                # Extract results
+                data = {
+                    "result": candid_resp[0]["result"] if isinstance(candid_resp, list) else candid_resp.get("result", ""),
+                    "provider": "ICP",
+                    "committee_signatures": []
+                }
             else:
-                body = request
-            async with httpx.AsyncClient(timeout=30.0) as client:
-                resp = await client.post(provider["url"], json=body)
-                resp.raise_for_status()
-                data = resp.json()
+                import httpx
+                if provider["format"] == "s7g":
+                    body = {"request_id": rid, "payload": request}
+                else:
+                    body = request
+                async with httpx.AsyncClient(timeout=30.0) as client:
+                    resp = await client.post(provider["url"], json=body)
+                    resp.raise_for_status()
+                    data = resp.json()
         except Exception as e:
             last_error = str(e)[:100]
             continue
