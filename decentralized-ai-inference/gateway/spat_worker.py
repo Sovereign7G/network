@@ -11,8 +11,9 @@ from pathlib import Path
 import numpy as np
 import uvicorn
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional, List, AsyncGenerator
 
 # ── SPAT Transformer FFI ────────────────────────────────────────────────
 
@@ -130,6 +131,7 @@ class ChatMessage(BaseModel):
     content: str
 
 class ChatRequest(BaseModel):
+    stream: Optional[bool] = False
     model: str
     messages: List[ChatMessage]
     max_tokens: Optional[int] = 50
@@ -188,6 +190,48 @@ async def chat_completions(request: ChatRequest):
         "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}],
         "usage": {"prompt_tokens": len(prompt_tokens), "completion_tokens": len(gen_tokens), "total_tokens": len(prompt_tokens) + len(gen_tokens)},
     }
+
+@app.post("/v1/chat/completions/stream")
+async def chat_completions_stream(request: ChatRequest):
+    if not request.stream:
+        return await chat_completions(request)
+    
+    prompt = request.messages[-1].content if request.messages else ""
+    if not prompt:
+        raise HTTPException(400, "Empty prompt")
+
+    prompt_tokens = encode(prompt)
+    temperature = request.temperature or 0.7
+
+    async def generate():
+        tokens = prompt_tokens.copy()
+        for step in range(request.max_tokens or 50):
+            if RUST_LIB:
+                logits, gen = run_rust_inference(RUST_LIB, SPAT_BYTES, tokens, 1, temperature)
+            else:
+                logits, gen = run_cpu_inference(SPAT_BYTES, tokens, 1, temperature)
+            
+            next_token = gen[0] if gen else 0
+            text = decode([next_token]) or f"[token {next_token}]"
+            
+            import json
+            data = json.dumps({
+                "id": f"chatcmpl-{uuid.uuid4().hex[:12]}",
+                "object": "chat.completion.chunk",
+                "created": int(time.time()),
+                "model": MODEL_NAME,
+                "choices": [{"index": 0, "delta": {"content": text}, "finish_reason": None}]
+            })
+            yield f"data: {data}\n\n"
+            
+            tokens.append(next_token)
+            if next_token == 0:
+                break
+        
+        yield "data: [DONE]\n\n"
+    
+    return StreamingResponse(generate(), media_type="text/event-stream")
+
 
 def main():
     global SPAT_BYTES, MODEL_NAME, WORKER_PORT, ENGINE
