@@ -47,6 +47,9 @@ pub struct OewseGpuContext {
 pub struct OewseGpuContext {
     ptr: *mut std::ffi::c_void,
     threads_per_block: u32,
+    // Cached weights for transformer forward pass
+    weights_pos: Vec<u32>,
+    weights_neg: Vec<u32>,
 }
 
 #[cfg(target_arch = "wasm32")]
@@ -141,10 +144,10 @@ impl IrohNode {
 impl OewseGpuContext {
     pub fn new(threads_per_block: u32) -> Self {
         let ptr = unsafe { init_oewse_context(threads_per_block) };
-        Self { ptr, threads_per_block }
+        Self { ptr, threads_per_block, weights_pos: Vec::new(), weights_neg: Vec::new() }
     }
 
-    pub fn upload_weights(&self, weights_pos: &[u32], weights_neg: &[u32]) {
+    pub fn upload_weights(&mut self, weights_pos: &[u32], weights_neg: &[u32]) {
         unsafe {
             upload_oewse_weights(self.ptr, weights_pos.as_ptr(), weights_neg.as_ptr(), self.threads_per_block);
         }
@@ -187,7 +190,7 @@ impl OewseGpuContext {
             weights_neg[i] = u32::from_le_bytes(chunk.try_into()?);
         }
 
-        let ctx = Self::new(threads_per_block);
+        let mut ctx = Self::new(threads_per_block);
         ctx.upload_weights(&weights_pos, &weights_neg);
 
         Ok(ctx)
@@ -270,5 +273,85 @@ pub fn mine_inference_proof(
         Some((winning_nonce, final_proof_hash))
     } else {
         None
+    }
+}
+
+// ── Transformer Inference FFI ────────────────────────────────────────────
+
+extern "C" {
+    fn run_oewse_transformer_infer(
+        prompt_tokens: *const u32,
+        weight_matrix_pos: *const u32,
+        weight_matrix_neg: *const u32,
+        output_logits: *mut f32,
+        num_layers: u32,
+        hidden_dim: u32,
+        vocab_size: u32,
+        threads_per_block: u32,
+        blocks: u32,
+    );
+}
+
+/// Run chained transformer inference: 40+ layers of XNOR + popcount,
+/// producing float logits for token sampling.
+/// This is the free-function version (no context required).
+pub fn transformer_infer(
+    prompt_tokens: &[u32; 128],
+    weights_pos: &[u32],
+    weights_neg: &[u32],
+    output_logits: &mut [f32],
+    num_layers: u32,
+    hidden_dim: u32,
+    vocab_size: u32,
+) {
+    if weights_pos.is_empty() || weights_neg.is_empty() {
+        eprintln!("transformer_infer: no weights loaded");
+        return;
+    }
+    let threads_per_block = 256;
+    let blocks = (vocab_size + threads_per_block - 1) / threads_per_block;
+
+    unsafe {
+        run_oewse_transformer_infer(
+            prompt_tokens.as_ptr(),
+            weights_pos.as_ptr(),
+            weights_neg.as_ptr(),
+            output_logits.as_mut_ptr(),
+            num_layers,
+            hidden_dim,
+            vocab_size,
+            threads_per_block,
+            blocks,
+        );
+    }
+}
+
+// ── OewseGpuContext method for transformer forward pass ────────────────
+
+#[cfg(not(target_arch = "wasm32"))]
+impl OewseGpuContext {
+    /// Run full transformer forward pass through all SPAT layers.
+    /// Uses the cached weights loaded via upload_weights().
+    pub fn transformer_forward(
+        &self,
+        prompt_tokens: &[u32; 128],
+        output_logits: &mut [f32],
+        vocab_size: u32,
+    ) {
+        if self.weights_pos.is_empty() || self.weights_neg.is_empty() {
+            eprintln!("transformer_forward: no weights cached — call upload_weights first");
+            return;
+        }
+        let n_layers = self.weights_pos.len() as u32 / self.threads_per_block;
+        let h_dim = 4096;
+        transformer_infer(
+            prompt_tokens,
+            &self.weights_pos,
+            &self.weights_neg,
+            output_logits,
+            n_layers,
+            h_dim,
+            vocab_size,
+        );
     }
 }

@@ -196,3 +196,100 @@ extern "C" void run_oewse_pouw_search(
     );
     free_oewse_context(ctx);
 }
+
+// ── Transformer Inference Kernel ─────────────────────────────────────────
+// Chains the same 40-layer XNOR+popcount pass but produces output logits
+// instead of mining for a proof hash. Used for actual text generation.
+
+__global__ void oewse_transformer_infer_kernel(
+    const uint32_t* __restrict__ prompt_tokens,
+    const uint32_t* __restrict__ weight_matrix_pos,
+    const uint32_t* __restrict__ weight_matrix_neg,
+    float* __restrict__ output_logits,
+    const uint32_t num_layers,
+    const uint32_t hidden_dim,
+    const uint32_t vocab_size
+) {
+    __shared__ uint32_t shared_tokens[128];
+
+    int tid = threadIdx.x + blockIdx.x * blockDim.x;
+    int local_tid = threadIdx.x;
+
+    // Load input tokens into shared memory
+    if (local_tid < 128) {
+        shared_tokens[local_tid] = prompt_tokens[local_tid];
+    }
+    __syncthreads();
+
+    // Run layer-chain inference
+    uint32_t accumulator_positive = 0;
+    uint32_t accumulator_negative = 0;
+
+    #pragma unroll
+    for (int layer = 0; layer < (int)num_layers; ++layer) {
+        uint32_t w_pos = weight_matrix_pos[layer * blockDim.x + local_tid];
+        uint32_t w_neg = weight_matrix_neg[layer * blockDim.x + local_tid];
+
+        uint32_t input = shared_tokens[local_tid];
+
+        // XNOR + popcount for this layer
+        uint32_t match_pos = __popc(~(input ^ w_pos));
+        uint32_t match_neg = __popc(~(input ^ w_neg));
+
+        accumulator_positive += match_pos;
+        accumulator_negative += match_neg;
+
+        // Propagate activation to next layer
+        shared_tokens[local_tid] = input ^ (w_pos ^ w_neg);
+        __syncthreads();
+    }
+
+    // Final score = positive minus negative (net activation)
+    int32_t net_score = (int32_t)(accumulator_positive - accumulator_negative);
+
+    // Write output logit for this vocabulary position
+    if (tid < (int)vocab_size) {
+        output_logits[tid] = (float)net_score;
+    }
+}
+
+// Host wrapper for transformer inference
+extern "C" void run_oewse_transformer_infer(
+    const uint32_t* prompt_tokens,
+    const uint32_t* weight_matrix_pos,
+    const uint32_t* weight_matrix_neg,
+    float* output_logits,
+    uint32_t num_layers,
+    uint32_t hidden_dim,
+    uint32_t vocab_size,
+    uint32_t threads_per_block,
+    uint32_t blocks
+) {
+    // Device memory
+    uint32_t* d_tokens;
+    uint32_t* d_w_pos;
+    uint32_t* d_w_neg;
+    float* d_logits;
+
+    cudaMalloc(&d_tokens, 128 * sizeof(uint32_t));
+    cudaMalloc(&d_w_pos, num_layers * threads_per_block * sizeof(uint32_t));
+    cudaMalloc(&d_w_neg, num_layers * threads_per_block * sizeof(uint32_t));
+    cudaMalloc(&d_logits, vocab_size * sizeof(float));
+
+    cudaMemcpy(d_tokens, prompt_tokens, 128 * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_w_pos, weight_matrix_pos, num_layers * threads_per_block * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_w_neg, weight_matrix_neg, num_layers * threads_per_block * sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemset(d_logits, 0, vocab_size * sizeof(float));
+
+    oewse_transformer_infer_kernel<<<blocks, threads_per_block>>>(
+        d_tokens, d_w_pos, d_w_neg, d_logits, num_layers, hidden_dim, vocab_size
+    );
+
+    cudaDeviceSynchronize();
+    cudaMemcpy(output_logits, d_logits, vocab_size * sizeof(float), cudaMemcpyDeviceToHost);
+
+    cudaFree(d_tokens);
+    cudaFree(d_w_pos);
+    cudaFree(d_w_neg);
+    cudaFree(d_logits);
+}
