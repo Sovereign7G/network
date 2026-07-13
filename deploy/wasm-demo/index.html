@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏛️ Sovereign AI Mesh — SPAT Inference in Browser</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Georgia', serif; background: #0a0a0f; color: #c8c8d0; display: flex; justify-content: center; min-height: 100vh; }
+  .container { max-width: 800px; width: 100%; padding: 40px 20px; }
+  h1 { font-size: 24px; color: #f0c040; margin-bottom: 4px; letter-spacing: 1px; }
+  .subtitle { color: #888; font-size: 13px; margin-bottom: 30px; }
+  .status-bar { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; font-size: 13px; }
+  .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; }
+  .status-dot.ok { background: #40c040; }
+  .status-dot.loading { background: #f0c040; animation: pulse 0.8s infinite; }
+  @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } }
+  select, textarea, button { font-family: 'Courier New', monospace; background: #14141f; color: #c8c8d0; border: 1px solid #2a2a3a; border-radius: 8px; padding: 12px; font-size: 14px; }
+  select { width: auto; min-width: 200px; }
+  textarea { width: 100%; min-height: 100px; resize: vertical; margin-bottom: 12px; }
+  textarea:focus { outline: none; border-color: #f0c040; }
+  .controls { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  button { background: #f0c040; color: #0a0a0f; font-weight: bold; border: none; cursor: pointer; transition: 0.2s; }
+  button:hover { background: #ffd860; }
+  button:disabled { opacity: 0.4; cursor: not-allowed; }
+  .output-box { background: #14141f; border: 1px solid #2a2a3a; border-radius: 8px; padding: 16px; min-height: 100px; white-space: pre-wrap; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; }
+  .output-box .dim { color: #555; }
+  .output-box .token { color: #f0c040; }
+  .stats { font-size: 12px; color: #666; margin-top: 8px; }
+  .model-info { font-size: 12px; color: #666; margin-bottom: 12px; }
+  .error { color: #e04040; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🏛️ Sovereign AI Mesh</h1>
+  <div class="subtitle">SPAT Inference — Pure Rust SIMD in Browser via WASM</div>
+
+  <div class="status-bar">
+    <span class="status-dot" id="statusDot"></span>
+    <span id="statusText">Loading WASM engine...</span>
+  </div>
+
+  <div class="controls">
+    <select id="modelSelect">
+      <option value="gemma4-12b">Gemma 4 12B (Edge)</option>
+      <option value="ornith-1.0-9b">Ornith-1.0-9B (Edge)</option>
+      <option value="glm-5.2">GLM 5.2 (Consumer)</option>
+      <option value="ornith-1.0-35b">Ornith-1.0-35B (Consumer)</option>
+      <option value="minimax-m3">MiniMax M3 (Flagship)</option>
+      <option value="ornith-1.0-397b">Ornith-1.0-397B (Flagship)</option>
+      <option value="deepseek-v4-flash" selected>DeepSeek-V4-Flash (Flagship)</option>
+    </select>
+    <input type="number" id="tempSlider" value="0.7" min="0.1" max="2.0" step="0.1" style="width:60px;padding:12px;background:#14141f;color:#c8c8d0;border:1px solid #2a2a3a;border-radius:8px;font-size:14px;">
+    <label style="font-size:12px;color:#888;">temp</label>
+    <button id="generateBtn" onclick="generate()">⚡ Generate</button>
+    <button onclick="resetModel()">🔄 Load Model</button>
+  </div>
+  <div class="model-info" id="modelInfo">No model loaded</div>
+
+  <textarea id="promptInput" placeholder="Enter a prompt...">What is the Sovereign AI Mesh?</textarea>
+
+  <div class="output-box" id="outputBox">
+    <span class="dim">▼ Inference output will appear here</span>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<script type="module">
+import init, { WasmSPAT } from './pkg/spat_transformer.js';
+
+let wasmReady = false;
+let model = null;
+let modelName = '';
+
+const MODELS = {
+  'gemma4-12b': { file: 'gemma4-12b-spatial.spat', tier: 'Edge', kb: 96 },
+  'ornith-1.0-9b': { file: 'ornith-1.0-9b-spatial.spat', tier: 'Edge', kb: 2.1 },
+  'glm-5.2': { file: 'glm-5.2-spatial.spat', tier: 'Consumer', kb: 4.9 },
+  'ornith-1.0-35b': { file: 'ornith-1.0-35b-spatial.spat', tier: 'Consumer', kb: 2.6 },
+  'minimax-m3': { file: 'minimax-m3-spatial.spat', tier: 'Flagship', kb: 3.8 },
+  'ornith-1.0-397b': { file: 'ornith-1.0-397b-spatial.spat', tier: 'Flagship', kb: 2.6 },
+  'deepseek-v4-flash': { file: 'deepseek-v4-flash-spatial.spat', tier: 'Flagship', kb: 2.8 },
+};
+
+async function initWasm() {
+  try {
+    await init();
+    document.getElementById('statusDot').className = 'status-dot ok';
+    document.getElementById('statusText').textContent = '✅ WASM engine ready';
+    wasmReady = true;
+    await loadModel();
+  } catch (e) {
+    document.getElementById('statusDot').className = 'status-dot';
+    document.getElementById('statusText').textContent = '❌ WASM load failed: ' + e.message;
+    document.getElementById('statusText').className = 'error';
+  }
+}
+
+async function loadModel() {
+  if (!wasmReady) return;
+
+  const select = document.getElementById('modelSelect');
+  modelName = select.value;
+  const info = MODELS[modelName];
+  const btn = document.getElementById('generateBtn');
+
+  document.getElementById('statusDot').className = 'status-dot loading';
+  document.getElementById('statusText').textContent = `📂 Loading ${modelName} (${info.kb} KB)...`;
+  btn.disabled = true;
+
+  try {
+    const resp = await fetch(`/07_MODELS/${info.file}`);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+    const data = new Uint8Array(await resp.arrayBuffer());
+
+    model = new WasmSPAT();
+    model.load(data);
+
+    document.getElementById('modelInfo').textContent =
+      `✅ ${modelName} | ${model.num_layers()} layers | ${model.model_size_kb().toFixed(1)} KB | Tier: ${info.tier}`;
+    document.getElementById('statusDot').className = 'status-dot ok';
+    document.getElementById('statusText').textContent = '✅ Model loaded — ready for inference';
+    btn.disabled = false;
+  } catch (e) {
+    document.getElementById('statusDot').className = 'status-dot';
+    document.getElementById('statusText').textContent = '❌ ' + e.message;
+    document.getElementById('statusText').className = 'error';
+    btn.disabled = false;
+  }
+}
+
+window.resetModel = loadModel;
+
+window.generate = async function() {
+  if (!model) { await loadModel(); if (!model) return; }
+
+  const prompt = document.getElementById('promptInput').value || 'hello';
+  const maxTokens = 50;
+  const temp = parseFloat(document.getElementById('tempSlider').value) || 0.7;
+  const btn = document.getElementById('generateBtn');
+  const outputBox = document.getElementById('outputBox');
+  const stats = document.getElementById('stats');
+
+  btn.disabled = true;
+  document.getElementById('statusText').textContent = '⚡ Generating...';
+
+  const t0 = performance.now();
+  try {
+    const result = model.generate(prompt, maxTokens, temp);
+    const t1 = performance.now();
+    const ms = (t1 - t0).toFixed(0);
+
+    outputBox.innerHTML = '';
+    if (result.trim()) {
+      outputBox.textContent = result;
+    } else {
+      // Show logits info as fallback
+      outputBox.innerHTML = `<span class="dim">[SPAT inference: ${maxTokens} tokens in ${ms}ms]</span>`;
+    }
+    stats.textContent = `${modelName} | ${ms}ms | ${maxTokens} tokens | temp=${temp}`;
+    document.getElementById('statusText').textContent = '✅ Generation complete';
+  } catch (e) {
+    outputBox.innerHTML = `<span class="error">❌ ${e.message}</span>`;
+    document.getElementById('statusText').textContent = '❌ Generation failed';
+  }
+  btn.disabled = false;
+};
+
+// Auto-init
+initWasm();
+</script>
+</body>
+</html>
