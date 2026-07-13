@@ -9,3 +9,15 @@ crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 rand = "0.8"
+wasm-bindgen = { version = "0.2", optional = true }
+getrandom = { version = "0.2", features = ["js"] }
+
+[features]
+default = []
+wasm = ["wasm-bindgen"]
+
+[profile.release]
+opt-level = "s"
+codegen-units = 1
+lto = true
+strip = true

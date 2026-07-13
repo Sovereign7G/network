@@ -135,3 +135,39 @@ pub extern "C" fn spat_transformer_infer(
     }
     0
 }
+
+// ── WASM Bindings ────────────────────────────────────────────────────
+
+#[cfg(feature = "wasm")]
+mod wasm_bindings {
+    use wasm_bindgen::prelude::*;
+    use crate::{SpatModel, generate, transformer_forward};
+
+    #[wasm_bindgen]
+    pub struct WasmSPAT {
+        model: SpatModel,
+    }
+
+    #[wasm_bindgen]
+    impl WasmSPAT {
+        #[wasm_bindgen(constructor)]
+        pub fn new() -> Self {
+            WasmSPAT { model: SpatModel { num_layers: 0, threads_per_block: 0, weights_len: 0, pos_weights: vec![], neg_weights: vec![], vocab_size: 0 } }
+        }
+
+        pub fn load(&mut self, data: &[u8]) -> Result<(), String> {
+            self.model = SpatModel::from_bytes(data).map_err(|e| e.to_string())?;
+            Ok(())
+        }
+
+        pub fn generate(&self, prompt: &str, max_tokens: usize, temperature: f32) -> String {
+            let tokens: Vec<u32> = prompt.bytes().map(|b| b as u32).collect();
+            let generated = generate(&self.model, &tokens, max_tokens, temperature);
+            String::from_utf8_lossy(&generated.iter().map(|&t| t as u8).collect::<Vec<_>>()).to_string()
+        }
+
+        pub fn num_layers(&self) -> u32 { self.model.num_layers }
+        pub fn weights_len(&self) -> u32 { self.model.weights_len }
+        pub fn model_size_kb(&self) -> f32 { (self.model.pos_weights.len() * 8) as f32 / 1024.0 }
+    }
+}
