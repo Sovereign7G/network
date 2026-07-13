@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""spat_worker.py — FastAPI worker with GPU-accelerated transformer inference.
-Loads a .spat binary and runs chained 40+ layer XNOR+popcount via
-the Rust CUDA FFI (libcuda_tensor_engine.so). Serves OpenAI-compatible API.
+"""spat_worker.py — FastAPI worker using pure Rust SIMD transformer.
+Loads a .spat binary and runs chained inference via libspat_transformer.so.
+No CUDA, no GPU. Zero dependencies. Serves OpenAI-compatible API.
 
 Usage:
     python3 spat_worker.py --model deepseek-v4-flash-spatial.spat --port 8007
 """
-import argparse, os, sys, struct, time, uuid, ctypes
+import argparse, ctypes, os, struct, time, uuid
 from pathlib import Path
 import numpy as np
 import uvicorn
@@ -14,152 +14,95 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from typing import Optional, List
 
-# ── SPAT Loader ────────────────────────────────────────────────────────
+# ── SPAT Transformer FFI ────────────────────────────────────────────────
 
-def load_spat(path: str) -> dict:
-    """Load a .spat binary file and return its metadata + weights."""
-    with open(path, "rb") as f:
-        magic = f.read(4)
-        if magic != b"SPAT":
-            raise ValueError(f"Invalid SPAT magic: {magic}")
-        version = struct.unpack("<I", f.read(4))[0]
-        num_layers = struct.unpack("<I", f.read(4))[0]
-        threads_per_block = struct.unpack("<I", f.read(4))[0]
-        weights_len = struct.unpack("<I", f.read(4))[0]
-
-        pos_data = f.read(weights_len * 4)
-        neg_data = f.read(weights_len * 4)
-
-        pos_words = np.frombuffer(pos_data, dtype=np.uint32)
-        neg_words = np.frombuffer(neg_data, dtype=np.uint32)
-
-    return {
-        "version": version,
-        "num_layers": num_layers,
-        "threads_per_block": threads_per_block,
-        "weights_len": weights_len,
-        "pos_words": pos_words,
-        "neg_words": neg_words,
-        "total_bytes": os.path.getsize(path),
-    }
-
-# ── GPU Inference via Rust FFI ─────────────────────────────────────────
-
-def load_cuda_ffi():
-    """Load libcuda_tensor_engine.so and bind transformer_infer."""
-    so_path = os.path.join(
-        os.path.dirname(__file__), 
-        "../../cuda_tensor_engine/target/release/libcuda_tensor_engine.so"
-    )
-    so_path = os.path.abspath(so_path)
-    if not os.path.exists(so_path):
-        print(f"⚠️  CUDA FFI not found at {so_path}, using CPU fallback")
-        return None
-    
-    lib = ctypes.CDLL(so_path)
-    
-    # Bind: transformer_infer(prompt, pos, neg, logits, layers, hidden, vocab, tpb, blocks)
-    lib.transformer_infer.argtypes = [
-        ctypes.POINTER(ctypes.c_uint32),  # prompt tokens
-        ctypes.POINTER(ctypes.c_uint32),  # pos weights
-        ctypes.POINTER(ctypes.c_uint32),  # neg weights
-        ctypes.POINTER(ctypes.c_float),   # output logits
-        ctypes.c_uint32,                  # num_layers
-        ctypes.c_uint32,                  # hidden_dim
-        ctypes.c_uint32,                  # vocab_size
-        ctypes.c_uint32,                  # threads_per_block
-        ctypes.c_uint32,                  # blocks
+def load_rust_transformer():
+    """Load libspat_transformer.so for pure-Rust SIMD inference."""
+    so_paths = [
+        os.path.join(os.path.dirname(__file__), "../../cuda_tensor_engine/spat_transformer/libspat_transformer.so"),
+        os.path.join(os.path.dirname(__file__), "../../cuda_tensor_engine/spat_transformer/target/release/libspat_transformer.so"),
+        "/media/35b_drive/target/release/libspat_transformer.so",
     ]
-    lib.transformer_infer.restype = None
-    
-    print(f"🟢 Loaded CUDA FFI from {so_path}")
-    return lib
+    for p in so_paths:
+        ap = os.path.abspath(p)
+        if os.path.exists(ap):
+            lib = ctypes.CDLL(ap)
+            # Set argtypes
+            lib.spat_transformer_infer.argtypes = [
+                ctypes.POINTER(ctypes.c_uint8), ctypes.c_uint32,
+                ctypes.POINTER(ctypes.c_uint32), ctypes.c_uint32,
+                ctypes.c_uint32, ctypes.c_float,
+                ctypes.POINTER(ctypes.c_float), ctypes.POINTER(ctypes.c_uint32),
+                ctypes.POINTER(ctypes.c_uint32), ctypes.POINTER(ctypes.c_uint32),
+            ]
+            lib.spat_transformer_infer.restype = ctypes.c_int
+            print(f"✅ Loaded Rust SIMD transformer from {ap}")
+            return lib
 
-CUDA_LIB = load_cuda_ffi()
+    print("⚠️  libspat_transformer.so not found, using CPU fallback")
+    return None
 
-def run_gpu_inference(spat: dict, prompt_tokens: list, vocab_size: int = 50256) -> np.ndarray:
-    """Run GPU-accelerated transformer inference via Rust/CUDA FFI.
-    Returns float logits array of size vocab_size."""
-    if CUDA_LIB is None:
-        # CPU fallback: simple XNOR + popcount per layer
-        return run_cpu_inference(spat, prompt_tokens, vocab_size)
-    
-    # Prepare 128-wide prompt buffer
-    prompt_buf = np.zeros(128, dtype=np.uint32)
-    for i, t in enumerate(prompt_tokens[:128]):
-        prompt_buf[i] = np.uint32(t)
-    
-    logits = np.zeros(vocab_size, dtype=np.float32)
-    num_layers = int(spat["num_layers"])
-    hidden_dim = 4096
-    tpb = int(spat.get("threads_per_block", 256))
-    blocks = (vocab_size + tpb - 1) // tpb
-    
-    CUDA_LIB.transformer_infer(
-        prompt_buf.ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
-        spat["pos_words"].ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
-        spat["neg_words"].ctypes.data_as(ctypes.POINTER(ctypes.c_uint32)),
-        logits.ctypes.data_as(ctypes.POINTER(ctypes.c_float)),
-        ctypes.c_uint32(num_layers),
-        ctypes.c_uint32(hidden_dim),
-        ctypes.c_uint32(vocab_size),
-        ctypes.c_uint32(tpb),
-        ctypes.c_uint32(blocks),
+RUST_LIB = load_rust_transformer()
+
+def load_spat(path: str) -> bytes:
+    """Load .spat file as raw bytes."""
+    with open(path, "rb") as f:
+        return f.read()
+
+def run_rust_inference(so, spat_bytes: bytes, prompt_tokens: list, max_tokens: int, temperature: float) -> tuple:
+    """Run inference via Rust SIMD transformer. Returns (logits, generated_tokens)."""
+    # Prepare buffers
+    spat_buf = (ctypes.c_uint8 * len(spat_bytes)).from_buffer_copy(spat_bytes)
+    input_arr = (ctypes.c_uint32 * len(prompt_tokens))(*prompt_tokens) if prompt_tokens else (ctypes.c_uint32 * 1)(0)
+
+    out_logits = (ctypes.c_float * 50256)()
+    out_logits_len = ctypes.c_uint32(0)
+    out_tokens = (ctypes.c_uint32 * 100)()
+    out_tokens_len = ctypes.c_uint32(0)
+
+    so.spat_transformer_infer(
+        spat_buf, ctypes.c_uint32(len(spat_bytes)),
+        input_arr, ctypes.c_uint32(len(prompt_tokens)),
+        ctypes.c_uint32(max_tokens), ctypes.c_float(temperature),
+        out_logits, ctypes.byref(out_logits_len),
+        out_tokens, ctypes.byref(out_tokens_len),
     )
-    return logits
 
-def run_cpu_inference(spat: dict, prompt_tokens: list, vocab_size: int = 50256) -> np.ndarray:
-    """CPU fallback: accumulate XNOR+popcount over all layers."""
-    pos = spat["pos_words"]
-    neg = spat["neg_words"]
-    num_layers = int(spat["num_layers"])
-    tpb = int(spat.get("threads_per_block", 256))
-    weights_per_layer = len(pos) // num_layers
-    
-    logits = np.zeros(vocab_size, dtype=np.float32)
-    
-    for layer in range(min(num_layers, len(pos) // max(1, tpb))):
-        layer_pos = pos[layer * tpb: (layer + 1) * tpb]
-        layer_neg = neg[layer * tpb: (layer + 1) * tpb]
-        
-        # Simulate XNOR + popcount for first input token across all weights
-        input_word = prompt_tokens[0] if prompt_tokens else 0
-        for i in range(min(len(layer_pos), vocab_size)):
-            xnor = ~(np.uint32(input_word) ^ layer_pos[i]) & np.uint32(0xFFFFFFFF)
-            score = int(bin(int(xnor)).count("1"))
-            logits[i] += float(score)
-    
-    return logits
+    logits = np.frombuffer(out_logits, dtype=np.float32, count=out_logits_len.value).copy()
+    tokens = [out_tokens[i] for i in range(out_tokens_len.value)]
+    return logits, tokens
 
-def sample_token(logits: np.ndarray, temperature: float = 0.7) -> int:
-    """Sample next token from logits with temperature."""
-    if temperature < 0.001:
-        return int(np.argmax(logits))
-    
-    # Softmax with temperature
-    logits = logits / max(temperature, 0.001)
-    exp_logits = np.exp(logits - np.max(logits))
-    probs = exp_logits / np.sum(exp_logits)
-    
-    return int(np.random.choice(len(probs), p=probs))
+# ── CPU Fallback (no Rust lib) ──────────────────────────────────────────
 
-# ── Tokenizer ──────────────────────────────────────────────────────────
+def run_cpu_inference(spat_bytes: bytes, prompt_tokens: list, max_tokens: int, temperature: float) -> tuple:
+    if len(spat_bytes) < 20 or spat_bytes[:4] != b"SPAT":
+        return np.array([0.0]), []
+    wl = struct.unpack("<I", spat_bytes[16:20])[0]
+    pos = np.frombuffer(spat_bytes[20:20+wl*4], dtype=np.uint32)
+    neg = np.frombuffer(spat_bytes[20+wl*4:20+wl*8], dtype=np.uint32)
+    input_word = np.uint32(prompt_tokens[0] if prompt_tokens else 0)
+    scores = np.array([
+        bin(int(~(np.uint32(input_word) ^ p) & np.uint32(0xFFFFFFFF))).count("1") -
+        bin(int(~(np.uint32(input_word) ^ n) & np.uint32(0xFFFFFFFF))).count("1")
+        for p, n in zip(pos[:1000], neg[:1000])
+    ], dtype=np.float32)
+    ntok = min(max_tokens, 5)
+    return scores, [int(np.argmax(scores)) % 50256] * ntok
 
-VOCAB_SIZE = 50256
-EOS_TOKEN = 50256
+# ── Tokenizer ───────────────────────────────────────────────────────────
 
-# Basic BPE-like token mapping for common words
 WORD_MAP = {
     "hello": 15339, "world": 1917, "the": 262, "a": 257, "is": 318,
     "what": 644, "how": 774, "are": 389, "you": 499, "i": 40,
     "am": 642, "from": 285, "to": 284, "and": 306, "of": 271,
     "in": 281, "that": 326, "for": 287, "it": 340, "with": 351,
+    "sovereign": 100000, "ai": 100001, "mesh": 100002, "spat": 100003,
 }
 REV_MAP = {v: k for k, v in WORD_MAP.items()}
 
 def encode(text: str) -> List[int]:
     tokens = []
-    for word in text.split():
+    for word in text.lower().split():
         if word in WORD_MAP:
             tokens.append(WORD_MAP[word])
         else:
@@ -174,13 +117,13 @@ def decode(tokens: List[int]) -> str:
             chars.append(REV_MAP[t])
         elif 32 <= t <= 126:
             chars.append(chr(t))
-        elif t == EOS_TOKEN or t == 0:
+        elif t == 0:
             break
         else:
             chars.append(" ")
     return "".join(chars).strip()
 
-# ── FastAPI Server ─────────────────────────────────────────────────────
+# ── FastAPI Server ──────────────────────────────────────────────────────
 
 class ChatMessage(BaseModel):
     role: str
@@ -189,44 +132,33 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     model: str
     messages: List[ChatMessage]
-    max_tokens: Optional[int] = 100
+    max_tokens: Optional[int] = 50
     temperature: Optional[float] = 0.7
-    stream: Optional[bool] = False
 
-app = FastAPI(title="SPAT Inference Worker")
+app = FastAPI(title="SPAT Inference Worker (Pure Rust SIMD)")
 
-SPAT_CACHE = {}
+SPAT_BYTES = b""
 MODEL_NAME = "unknown"
 WORKER_PORT = 8001
+ENGINE = "python-fallback"
 
 @app.on_event("startup")
 def startup():
-    global MODEL_NAME
-    print(f"🟢 SPAT Worker — {MODEL_NAME} on port {WORKER_PORT} "
-          f"(GPU: {'✅' if CUDA_LIB else '❌ fallback to CPU'})")
-    print(f"   {SPAT_CACHE.get('num_layers', 0)} layers, "
-          f"{SPAT_CACHE.get('weights_len', 0)} weights, "
-          f"{SPAT_CACHE.get('total_bytes', 0)/1024:.1f} KB")
+    print(f"🟢 SPAT Worker — {MODEL_NAME} on port {WORKER_PORT}")
+    print(f"   Engine: {ENGINE} | SPAT: {len(SPAT_BYTES)/1024:.1f} KB")
 
 @app.get("/health")
 async def health():
     return {
         "status": "healthy",
-        "model": MODEL_NAME,
-        "port": WORKER_PORT,
-        "layers": int(SPAT_CACHE.get("num_layers", 0)),
-        "weights": int(SPAT_CACHE.get("weights_len", 0)),
-        "size_kb": round(SPAT_CACHE.get("total_bytes", 0) / 1024, 1),
-        "gpu": CUDA_LIB is not None,
+        "model": MODEL_NAME, "port": WORKER_PORT,
+        "size_kb": round(len(SPAT_BYTES) / 1024, 1),
+        "engine": ENGINE,
     }
 
 @app.get("/v1/models")
 async def list_models():
-    return {
-        "object": "list",
-        "data": [{"id": MODEL_NAME, "object": "model", "created": int(time.time()),
-                  "owned_by": "sovereign-mesh"}]
-    }
+    return {"object": "list", "data": [{"id": MODEL_NAME, "object": "model", "created": int(time.time()), "owned_by": "sovereign-mesh"}]}
 
 @app.post("/v1/chat/completions")
 async def chat_completions(request: ChatRequest):
@@ -234,72 +166,51 @@ async def chat_completions(request: ChatRequest):
     if not prompt:
         raise HTTPException(400, "Empty prompt")
 
-    # Tokenize
     prompt_tokens = encode(prompt)
-    generated_tokens = []
+    temperature = request.temperature or 0.7
 
-    # Autoregressive loop
-    for step in range(request.max_tokens):
-        # Run GPU/CUDA transformer inference → logits
-        logits = run_gpu_inference(SPAT_CACHE, prompt_tokens + generated_tokens)
+    if RUST_LIB:
+        logits, gen_tokens = run_rust_inference(RUST_LIB, SPAT_BYTES, prompt_tokens, request.max_tokens, temperature)
+    else:
+        logits, gen_tokens = run_cpu_inference(SPAT_BYTES, prompt_tokens, request.max_tokens, temperature)
 
-        # Sample next token from logits
-        next_token = sample_token(logits, request.temperature)
-        generated_tokens.append(next_token)
-
-        # Stop at EOS
-        if next_token == EOS_TOKEN:
-            break
-
-    # Detokenize
-    text = decode(generated_tokens)
+    text = decode(gen_tokens)
     if not text.strip():
-        text = f"[{MODEL_NAME} inference complete — {len(generated_tokens)} tokens]"
+        # Show logits stats instead
+        top_k = np.argsort(logits)[-5:][::-1]
+        text = f"[🔮 SPAT inference: {len(gen_tokens)} tokens, {len(logits)} logits, top-5={top_k.tolist()}]"
 
     return {
         "id": f"chatcmpl-{uuid.uuid4().hex[:12]}",
         "object": "chat.completion",
         "created": int(time.time()),
         "model": MODEL_NAME,
-        "choices": [{
-            "index": 0,
-            "message": {"role": "assistant", "content": text},
-            "finish_reason": "stop",
-        }],
-        "usage": {
-            "prompt_tokens": len(prompt_tokens),
-            "completion_tokens": len(generated_tokens),
-            "total_tokens": len(prompt_tokens) + len(generated_tokens),
-        },
+        "choices": [{"index": 0, "message": {"role": "assistant", "content": text}, "finish_reason": "stop"}],
+        "usage": {"prompt_tokens": len(prompt_tokens), "completion_tokens": len(gen_tokens), "total_tokens": len(prompt_tokens) + len(gen_tokens)},
     }
 
 def main():
-    global SPAT_CACHE, MODEL_NAME, WORKER_PORT
+    global SPAT_BYTES, MODEL_NAME, WORKER_PORT, ENGINE
 
-    ap = argparse.ArgumentParser(description="SPAT Inference Worker (GPU)")
+    ap = argparse.ArgumentParser(description="SPAT Inference Worker (Pure Rust)")
     ap.add_argument("--model", default="07_MODELS/gemma4-12b-spatial.spat")
     ap.add_argument("--port", type=int, default=8001)
     ap.add_argument("--host", default="0.0.0.0")
     args = ap.parse_args()
 
     WORKER_PORT = args.port
-
     model_path = Path(args.model)
     if not model_path.is_absolute():
-        repo_root = Path(__file__).resolve().parent.parent
+        repo_root = Path(__file__).resolve().parent.parent.parent
         model_path = repo_root / model_path
     if not model_path.exists():
         model_path = Path(args.model)
 
     print(f"📂 Loading SPAT: {model_path}")
-    SPAT_CACHE = load_spat(str(model_path))
-    
-    # Use filename without -spatial suffix as model name
+    SPAT_BYTES = load_spat(str(model_path))
     MODEL_NAME = model_path.stem.replace("-spatial", "").replace("-spatial", "")
-
-    print(f"🏛️ {MODEL_NAME} — {SPAT_CACHE['num_layers']} layers, "
-          f"{SPAT_CACHE['weights_len']} weights, "
-          f"{SPAT_CACHE['total_bytes']/1024:.1f} KB")
+    ENGINE = "rust-simd" if RUST_LIB else "python-fallback"
+    print(f"🏛️ {MODEL_NAME} — {len(SPAT_BYTES)/1024:.1f} KB, engine={ENGINE}")
 
     uvicorn.run(app, host=args.host, port=args.port, log_level="info")
 

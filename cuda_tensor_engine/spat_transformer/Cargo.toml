@@ -1,0 +1,11 @@
+[package]
+name = "spat_transformer"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "spat_transformer"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+rand = "0.8"

@@ -9,6 +9,7 @@ path = "src/oewse_driver.rs"
 crate-type = ["cdylib", "rlib"]
 
 [workspace]
+members = ["spat_transformer"]
 
 [dependencies]
 tokio = { version = "1", features = ["full"], optional = true }
@@ -36,4 +37,3 @@ tonic-build = "0.10.2"
 [lints.clippy]
 let_underscore_must_use = "warn"
 let_underscore_untyped = "warn"
-
