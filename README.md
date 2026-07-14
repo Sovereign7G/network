@@ -19,6 +19,9 @@ Iroh relay with QUIC transport, Hyperswarm DHT for peer discovery, and direct P2
 ### A2A Agent Network
 DID-based identity framework (DIF/AGE) with an A2A agent server supporting attestation, provenance queries, and health/connectivity testing. Task delegation across the agent mesh with sub-100ms response time.
 
+### S7G Treasury DAO
+3-of-5 Gnosis Safe Multi-sig deployed on Base network at `0x2827a2aeaf72213c2dB0cD359935df533Ac70Ba5` for secure treasury and asset management. See the [Signer Onboarding Guide](file:///media/cherry/Lexar/New%20folder/AGE%20REPUBLIC/treasury/SIGNER_ONBOARDING.md) for detail on wallet setup and signing procedures.
+
 ---
 
 ## Deployment Status
@@ -32,6 +35,7 @@ DID-based identity framework (DIF/AGE) with an A2A agent server supporting attes
 | Provenance Feed | Active |
 | Mobile Stubs | iOS + Android |
 | A2A Server | Built |
+| Safe Multisig | Deployed (v1.0.0) |
 | CI/CD Pipeline | Operational |
 
 ---
