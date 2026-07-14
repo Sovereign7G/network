@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html><head><title>SPAT WASM Runtime</title>
+<style>body{font-family:system-ui;max-width:800px;margin:2rem auto;padding:0 1rem;background:#0a0a0f;color:#e0e0e0}pre{background:#14141e;padding:1rem;border-radius:8px;border:1px solid #2a2a3a;overflow:auto}.ok{color:#00ff88}.err{color:#ff3344}</style>
+</head><body>
+<h1>SPAT WASM Runtime</h1>
+<pre id="out">Loading WASM...</pre>
+
+<script>
+(async()=>{
+  const out = document.getElementById('out');
+  try {
+    // Provide the imports Odin runtime expects
+    const wasmMemory = new WebAssembly.Memory({initial: 1, maximum: 10});
+    const importObj = {
+      odin_env: {
+        exp: (ptr) => 0,  // needed by odin_env
+        write: (fd, ptr, len) => {
+          const bytes = new Uint8Array(wasmMemory.buffer, ptr, len);
+          const str = new TextDecoder().decode(bytes);
+          out.textContent += str;
+          return len;
+        },
+        rand_bytes: (ptr, len) => {
+          const buf = new Uint8Array(wasmMemory.buffer, ptr, len);
+          crypto.getRandomValues(buf);
+        }
+      },
+      wasi_snapshot_preview1: {
+        fd_write: (fd, iovs, iovsLen, nwritten) => 0,
+        fd_close: (fd) => 0,
+        fd_seek: (fd, offset, whence, newoffset) => 0,
+        environ_sizes_get: (count, size) => 0,
+        environ_get: (environ, environBuf) => 0,
+        args_sizes_get: (argc, bufSize) => 0,
+        args_get: (argv, argvBuf) => 0,
+        proc_exit: (code) => 0,
+      },
+      env: {
+        memory: wasmMemory,
+      }
+    };
+
+    const resp = await fetch('spat_runtime.wasm');
+    const bytes = await resp.arrayBuffer();
+    const mod = await WebAssembly.instantiate(bytes, importObj);
+    const e = mod.instance.exports;
+    
+    let exports = Object.keys(e).join(', ');
+    out.innerHTML = '<span class="ok">WASM loaded!</span>\n\nExports: ' + exports + '\n\n';
+    
+    // Try calling wasmspat_encode if it exists
+    if (e.wasmspat_encode) {
+      out.innerHTML += '\nCalling wasmspat_encode...\n';
+      // Prepare input string in WASM memory
+      const text = "def add(a,b): return a+b";
+      const enc = new TextEncoder();
+      const textBytes = enc.encode(text);
+      
+      // Copy string to WASM memory
+      const ptr = e.malloc ? e.malloc(textBytes.length + 1) : 0;
+      if (ptr) {
+        const view = new Uint8Array(wasmMemory.buffer);
+        view.set(textBytes, ptr);
+        view[ptr + textBytes.length] = 0; // null terminator
+        
+        e.wasmspat_encode(ptr);
+        out.innerHTML += '<span class="ok">wasmspat_encode called successfully</span>\n';
+      }
+    }
+    
+    console.log('SPAT WASM exports:', e);
+  } catch(e) {
+    out.innerHTML = '<span class="err">Error:</span> ' + e.message + '\n\n' + e.stack;
+    console.error(e);
+  }
+})();
+</script></body></html>
